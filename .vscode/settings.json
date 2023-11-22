@@ -1,0 +1,14 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 30353,
+            "driver": "PostgreSQL",
+            "name": "vkps",
+            "database": "datasabe_test",
+            "username": "postgres",
+            "password": "postgres"
+        }
+    ]
+}

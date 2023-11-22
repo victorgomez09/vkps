@@ -1,24 +1,27 @@
 import express from 'express';
-import { listNamespacedPod } from "./utils/k8s.util";
-import { createPostgresqlTemplate } from "./templates/postgresql.template";
+
+import templateRoutes from './routes/templates.route';
+import deploymentRoutes from './routes/deployment.route';
 
 const host = process.env.HOST ?? 'localhost';
 const port = process.env.PORT ? Number(process.env.PORT) : 3000;
 
 const app = express();
 
-app.get('/', (req, res) => {
-  res.send({ message: 'Hello API' });
+// For parsing application/json
+app.use(express.json());
+
+// For parsing application/x-www-form-urlencoded
+app.use(express.urlencoded({ extended: true }));
+
+app.get('/', (_req, res) => {
+    res.send({ message: 'Hello API' });
 });
 
+// Use routes from other files
+app.use('/templates', templateRoutes);
+app.use('/deployments', deploymentRoutes);
+
 app.listen(port, host, () => {
-  console.log(`[ ready ] http://${host}:${port}`);
-
-  listNamespacedPod("default").then((data) => {
-    console.log("data: " + data);
-  });
-
-  createPostgresqlTemplate("postgresql4", "datasabe_test", "postgres", "postgres", 10, 1).then(() => {
-  });
-
+    console.log(`[ ready ] http://${host}:${port}`);
 });

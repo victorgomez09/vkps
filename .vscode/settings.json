@@ -3,5 +3,14 @@
     {
       "mode": "auto"
     }
+  ],
+  "sqltools.useNodeRuntime": true,
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "driver": "SQLite",
+      "name": "vkps",
+      "database": "apps/api/prisma/dev.db"
+    }
   ]
 }

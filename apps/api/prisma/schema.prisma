@@ -1,0 +1,53 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Template {
+  id             String            @id @default(uuid())
+  name           String            @unique
+  fancyName      String
+  description    String?
+  image          String
+  versions       TemplateVersion[]
+  type           TemplateType      @relation(fields: [templateTypeId], references: [id])
+  templateTypeId String
+  env            TemplateEnv[]
+  volumes        TemplateVolume[]
+}
+
+model TemplateType {
+  id       String     @id @default(uuid())
+  type     String
+  template Template[]
+}
+
+model TemplateVersion {
+  id      String @id @default(uuid())
+  version String
+
+  template   Template? @relation(fields: [templateId], references: [id])
+  templateId String?
+}
+
+model TemplateEnv {
+  id         String    @id @default(uuid())
+  key        String
+  value      String
+  template   Template? @relation(fields: [templateId], references: [id])
+  templateId String?
+}
+
+model TemplateVolume {
+  id         String    @id @default(uuid())
+  path       String
+  template   Template? @relation(fields: [templateId], references: [id])
+  templateId String
+}

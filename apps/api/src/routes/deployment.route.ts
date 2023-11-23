@@ -21,6 +21,7 @@ router.post("/template/:templateName", async (req: Request, res: Response) => {
     const {
         namespace,
         deploymentName,
+        version,
         replicas,
         env,
         volumes,
@@ -31,6 +32,7 @@ router.post("/template/:templateName", async (req: Request, res: Response) => {
         templateName,
         namespace: namespace,
         deploymentName,
+        version,
         replicas,
         env,
         volumes,

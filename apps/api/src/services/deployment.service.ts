@@ -1,13 +1,14 @@
 import { V1ConfigMap, V1PersistentVolumeClaim, V1VolumeMount, V1ContainerPort } from '@kubernetes/client-node'
 import { createConfigMap, createPersistentVolume, createPersistentVolumeClaim, createDeployment, getDeployment, getPodsFromDeployment, Pod } from 'engine'
 
-import { templates } from '../templates/data';
 import { ApiResponse } from '../types';
+import { prisma } from '../config/database.config';
 
 export const deployTemplate = async ({
     templateName,
     namespace,
     deploymentName,
+    version,
     replicas,
     env,
     volumes,
@@ -16,6 +17,7 @@ export const deployTemplate = async ({
     templateName: string,
     namespace: string,
     deploymentName: string,
+    version: string,
     replicas: number,
     env: { [key: string]: string },
     volumes: { path: string, size: string, accessMode: string[] }[],
@@ -25,7 +27,14 @@ export const deployTemplate = async ({
     namespace: string,
     replicas: number
 }>> => {
-    const template = templates.find((t) => t.name === templateName);
+    const template = await prisma.template.findFirst({
+        where: { name: templateName },
+        include: {
+            env: true,
+            versions: true,
+            volumes: true
+        }
+    })
 
     if (!template) {
         return {
@@ -35,7 +44,7 @@ export const deployTemplate = async ({
     }
 
     let configMap: V1ConfigMap;
-    if (template.env) {
+    if (template.env.length) {
         const result = await createConfigMap({
             namespace: namespace,
             name: deploymentName,
@@ -107,7 +116,7 @@ export const deployTemplate = async ({
         labels: {
             app: deploymentName,
         },
-        image: template.image,
+        image: `${template.image}:${!version ? 'latest' : version}`,
         replicas: replicas,
         ports: ports,
         configMapRefName: configMap.metadata.name,

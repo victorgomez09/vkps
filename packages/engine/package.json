@@ -1,0 +1,17 @@
+{
+  "name": "engine",
+  "version": "0.0.1",
+  "description": "K8S engine for vkps",
+  "module": "index.ts",
+  "license": "MIT",
+  "scripts": {
+    "lint": "prettier --check --ignore-path=../../.prettierignore . && eslint \".\"",
+    "format": "prettier --write --ignore-path=../../.prettierignore ."
+  },
+  "devDependencies": {
+    "eslint-config-custom": "workspace:*"
+  },
+  "dependencies": {
+    "@kubernetes/client-node": "^0.20.0"
+  }
+}

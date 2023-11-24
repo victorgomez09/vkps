@@ -15,6 +15,7 @@ model Template {
   name           String            @unique
   fancyName      String
   description    String?
+  icon           String
   image          String
   versions       TemplateVersion[]
   type           TemplateType      @relation(fields: [templateTypeId], references: [id])

@@ -1,5 +1,5 @@
 <script lang="ts">
-	export let data;
+	export let data: any;
 
 	const templates = data.templates.data;
 </script>
@@ -8,14 +8,17 @@
 	<div class="flex flex-col">
 		<div class="grid grid-flow-rows grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
 			{#each templates.data as template}
-				<div class="card shadow bg-base-200 text-base-content">
+				<a href={`/templates/new/${template.name}`} class="card shadow bg-base-200 text-base-content hover:scale-105">
 					<div class="card-body p-4">
-						<div>
-							<h1 class="font-bold text-xl">{template.fancyName}</h1>
-							<p class="mt-2 text-sm truncate">{template.description}</p>
+						<div class="flex flex-col items-center">
+							<div class="flex flex-1 items-center gap-2">
+								<img src={template.icon} alt={`${template.name} icon`} class="h-10 w-10" />
+								<h1 class="font-bold text-xl">{template.fancyName}</h1>
+							</div>
+							<p class="mt-2 text-sm font-thin text-ellipsis text-center">{template.description}</p>
 						</div>
 					</div>
-				</div>
+				</a>
 			{/each}
 		</div>
 	</div>

@@ -10,39 +10,31 @@ router.get("/template/:templateName", async (req: Request, res: Response) => {
     const response = await getTemplateDeployment(String(templateName), String(namespace));
 
     if (response.statusCode !== 200) {
-        return res.sendStatus(response.statusCode).json({error: response.error})
+        return res.status(response.statusCode).json({ error: response.error });
     }
-    
+
     return res.json({ data: response.data });
 });
 
 router.post("/template/:templateName", async (req: Request, res: Response) => {
     const { templateName } = req.params;
-    const {
-        namespace,
-        deploymentName,
+    const { namespace, name, version, replicas, env, volumes, ports } = req.body;
+
+    const response = await deployTemplate({
+        templateName,
+        namespace: namespace,
+        deploymentName: name,
         version,
         replicas,
         env,
         volumes,
         ports,
-    } = req.body;
-
-    const response = await deployTemplate({
-        templateName,
-        namespace: namespace,
-        deploymentName,
-        version,
-        replicas,
-        env,
-        volumes,
-        ports
     });
 
     if (response.statusCode !== 200) {
-        return res.sendStatus(response.statusCode).json({error: response.error})
+        return res.status(response.statusCode).json({ error: response.error });
     }
-    
+
     return res.json({ data: response.data });
 });
 

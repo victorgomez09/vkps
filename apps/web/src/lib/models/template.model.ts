@@ -1,30 +1,31 @@
 export type Template = {
-        id: string,
-        name: string,
-        fancyName: string,
-        description: string,
-        icon: string,
-        image: string,
-        env: TemplateEnv[],
-        type: TemplateType,
-        versions: TemplateVersion[],
-        volumes: TemplateVolume[]
-}
+	id: string;
+	name: string;
+	fancyName: string;
+	description: string;
+	icon: string;
+	image: string;
+	env: TemplateEnv[];
+	type: TemplateType;
+	versions: TemplateVersion[];
+	volumes: TemplateVolume[];
+};
 
 export type TemplateEnv = {
-    key: string,
-    value: string
-}
+	key: string;
+	value: string;
+};
 
 export type TemplateType = {
-    type: "DATABASE"
-}
+	type: 'DATABASE';
+};
 
 export type TemplateVersion = {
-    version: string
-}
+	version: string;
+};
 
 export type TemplateVolume = {
-    path: string,
-    mount: string
-}
+	path: string;
+	accessMode: ['ReadWriteOnce'] | ['ReadWriteMany'];
+	size: number;
+};

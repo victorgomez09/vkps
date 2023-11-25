@@ -1,8 +1,9 @@
-import { V1ConfigMap, V1PersistentVolumeClaim, V1VolumeMount, V1ContainerPort } from '@kubernetes/client-node'
-import { createConfigMap, createPersistentVolume, createPersistentVolumeClaim, createDeployment, getDeployment, getPodsFromDeployment, Pod } from 'engine'
+import { V1ConfigMap, V1PersistentVolumeClaim, V1VolumeMount, V1ContainerPort } from "@kubernetes/client-node";
+import { createConfigMap, createPersistentVolume, createPersistentVolumeClaim, createDeployment, getDeployment, getPodsFromDeployment, Pod } from "engine";
 
-import { ApiResponse } from '../types';
-import { prisma } from '../config/database.config';
+import { ApiResponse } from "../types";
+import { prisma } from "../config/database.config";
+import { parseName } from "engine/lib/utils.engine";
 
 export const deployTemplate = async ({
     templateName,
@@ -12,135 +13,150 @@ export const deployTemplate = async ({
     replicas,
     env,
     volumes,
-    ports
+    ports,
 }: {
-    templateName: string,
-    namespace: string,
-    deploymentName: string,
-    version: string,
-    replicas: number,
-    env: { [key: string]: string },
-    volumes: { path: string, size: string, accessMode: string[] }[],
-    ports: V1ContainerPort[]
-}): Promise<ApiResponse<{
-    name: string,
-    namespace: string,
-    replicas: number
-}>> => {
-    const template = await prisma.template.findFirst({
-        where: { name: templateName },
-        include: {
-            env: true,
-            versions: true,
-            volumes: true
-        }
-    })
-
-    if (!template) {
-        return {
-            statusCode: 404,
-            error: 'Template not found',
-        };
-    }
-
-    let configMap: V1ConfigMap;
-    if (template.env.length) {
-        const result = await createConfigMap({
-            namespace: namespace,
-            name: deploymentName,
-            labels: {
-                app: deploymentName,
+    templateName: string;
+    namespace: string;
+    deploymentName: string;
+    version: string;
+    replicas: number;
+    env: { [key: string]: string };
+    volumes: { path: string; size: string; accessMode: string[] }[];
+    ports: V1ContainerPort[];
+}): Promise<
+    ApiResponse<{
+        name: string;
+        namespace: string;
+        replicas: number;
+    }>
+> => {
+    try {
+        const template = await prisma.template.findFirst({
+            where: { name: templateName },
+            include: {
+                env: true,
+                versions: true,
+                volumes: true,
             },
-            data: env,
         });
 
-        if (result.statusCode !== 201) {
+        if (!template) {
             return {
-                statusCode: result.statusCode,
-                error: result.error,
+                statusCode: 404,
+                error: "Template not found",
             };
         }
 
-        configMap = result.data;
-    }
-
-    let pvc: V1PersistentVolumeClaim;
-    const volumeMounts: V1VolumeMount[] = [];
-    if (volumes.length > 0) {
-        for await (const volume of volumes) {
-            const pvData = await createPersistentVolume({
+        let configMap: V1ConfigMap;
+        if (template.env.length) {
+            const result = await createConfigMap({
                 namespace: namespace,
-                name: deploymentName,
+                name: parseName(deploymentName),
                 labels: {
-                    app: deploymentName,
+                    app: parseName(deploymentName),
                 },
-                accessModes: volume.accessMode || ['ReadWriteOnce'],
-                storage: volume.size,
-                path: volume.path,
+                data: env,
             });
-            if (pvData.statusCode !== 201) {
+
+            if (result.statusCode !== 201) {
                 return {
-                    statusCode: pvData.statusCode,
-                    error: pvData.error,
+                    statusCode: result.statusCode,
+                    error: result.error,
                 };
             }
-            console.log('pvData', pvData.data.metadata.name);
 
-            const pvcData = await createPersistentVolumeClaim({
-                namespace: namespace,
-                name: deploymentName,
-                labels: {
-                    app: deploymentName,
-                },
-                accessModes: volume.accessMode || ['ReadWriteOnce'],
-                storage: volume.size,
-            });
-            if (pvcData.statusCode !== 201) {
-                return {
-                    statusCode: pvcData.statusCode,
-                    error: pvcData.error,
-                };
+            configMap = result.data;
+        }
+
+        let pvc: V1PersistentVolumeClaim;
+        const volumeMounts: V1VolumeMount[] = [];
+        if (volumes.length > 0) {
+            for await (const volume of volumes) {
+                const pvData = await createPersistentVolume({
+                    namespace: namespace,
+                    name: parseName(deploymentName),
+                    labels: {
+                        app: parseName(deploymentName),
+                    },
+                    accessModes: volume.accessMode || ["ReadWriteOnce"],
+                    storage: volume.size,
+                    path: volume.path,
+                });
+                if (pvData.statusCode !== 201) {
+                    return {
+                        statusCode: pvData.statusCode,
+                        error: pvData.error,
+                    };
+                }
+                console.log("pvData", pvData.data.metadata.name);
+
+                const pvcData = await createPersistentVolumeClaim({
+                    namespace: namespace,
+                    name: parseName(deploymentName),
+                    labels: {
+                        app: parseName(deploymentName),
+                    },
+                    accessModes: volume.accessMode || ["ReadWriteOnce"],
+                    storage: volume.size,
+                });
+                if (pvcData.statusCode !== 201) {
+                    return {
+                        statusCode: pvcData.statusCode,
+                        error: pvcData.error,
+                    };
+                }
+                pvc = pvcData.data;
+
+                volumeMounts.push({
+                    name: pvcData.data.metadata.name,
+                    mountPath: volume.path,
+                });
             }
-            pvc = pvcData.data;
-
-            volumeMounts.push({
-                name: pvcData.data.metadata.name,
-                mountPath: volume.path,
-            });
         }
+
+        const result = await createDeployment({
+            namespace: namespace,
+            name: parseName(deploymentName),
+            labels: {
+                app: parseName(deploymentName),
+            },
+            image: `${template.image}:${!version ? "latest" : version}`,
+            replicas: replicas,
+            ports: ports,
+            configMapRefName: configMap.metadata.name,
+            persistentVolumeClaimRefName: pvc.metadata.name,
+            volumeMounts,
+        });
+
+        return {
+            statusCode: 200,
+            data: {
+                name: result.data.metadata.name,
+                namespace: result.data.metadata.namespace,
+                replicas: result.data.spec.replicas,
+            },
+        };
+    } catch (error) {
+        console.log(error);
+        return {
+            error: error.message,
+            statusCode: error.statusCode,
+        };
     }
-
-    const result = await createDeployment({
-        namespace: namespace,
-        name: deploymentName,
-        labels: {
-            app: deploymentName,
-        },
-        image: `${template.image}:${!version ? 'latest' : version}`,
-        replicas: replicas,
-        ports: ports,
-        configMapRefName: configMap.metadata.name,
-        persistentVolumeClaimRefName: pvc.metadata.name,
-        volumeMounts,
-    });
-
-    return {
-        statusCode: 200,
-        data: {
-            name: result.data.metadata.name,
-            namespace: result.data.metadata.namespace,
-            replicas: result.data.spec.replicas,
-        }
-    };
 };
 
-export const getTemplateDeployment = async (name: string, namespace: string): Promise<ApiResponse<{
+export const getTemplateDeployment = async (
     name: string,
-    namespace: string,
-    replicas: number,
-    availableReplicas: number,
-    pods: Pod[]
-}>> => {
+    namespace: string
+): Promise<
+    ApiResponse<{
+        name: string;
+        namespace: string;
+        replicas: number;
+        availableReplicas: number;
+        pods: Pod[];
+    }>
+> => {
     try {
         const deployment = await getDeployment(String(name), String(namespace));
 
@@ -153,7 +169,7 @@ export const getTemplateDeployment = async (name: string, namespace: string): Pr
             };
         }
 
-        console.log('podsData', podsData.data.items[0].spec.volumes);
+        console.log("podsData", podsData.data.items[0].spec.volumes);
         podsData.data.items.forEach((pod) => {
             pods.push({
                 name: pod.metadata.name,
@@ -170,7 +186,7 @@ export const getTemplateDeployment = async (name: string, namespace: string): Pr
                 replicas: deployment.data.spec.replicas,
                 availableReplicas: deployment.data.status.availableReplicas,
                 pods: pods,
-            }
+            },
         };
     } catch (error) {
         return {

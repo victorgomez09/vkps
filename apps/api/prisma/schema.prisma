@@ -22,6 +22,7 @@ model Template {
   templateTypeId String
   env            TemplateEnv[]
   volumes        TemplateVolume[]
+  Deployment     Deployment[]
 }
 
 model TemplateType {
@@ -39,11 +40,12 @@ model TemplateVersion {
 }
 
 model TemplateEnv {
-  id         String    @id @default(uuid())
-  key        String
-  value      String
-  template   Template? @relation(fields: [templateId], references: [id])
-  templateId String?
+  id          String    @id @default(uuid())
+  key         String
+  value       String
+  description String?
+  template    Template? @relation(fields: [templateId], references: [id])
+  templateId  String?
 }
 
 model TemplateVolume {
@@ -51,4 +53,34 @@ model TemplateVolume {
   path       String
   template   Template? @relation(fields: [templateId], references: [id])
   templateId String
+}
+
+// DEPLOYMENT
+model Deployment {
+  id           String @id @default(uuid())
+  deploymentId String @unique
+  name         String @unique
+  description  String
+  replicas     Int
+  memory       Int
+  cpu          Int
+
+  template     Template? @relation(fields: [templateId], references: [id])
+  templateId   String
+  creationDate DateTime
+  updateTime   DateTime
+}
+
+model DeploymentVolume {
+  id         String                       @id @default(uuid())
+  path       String
+  size       Int
+  accessMode DeploymentVolumeAccessMode[]
+}
+
+model DeploymentVolumeAccessMode {
+  id                 String            @id @default(uuid())
+  accessMode         String
+  DeploymentVolume   DeploymentVolume? @relation(fields: [deploymentVolumeId], references: [id])
+  deploymentVolumeId String?
 }

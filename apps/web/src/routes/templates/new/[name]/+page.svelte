@@ -20,6 +20,8 @@
 		.join('');
 	let selectedVersion: string = 'latest';
 	let replicas: number = 1;
+	let cpu: number = 100;
+	let memory: number = 128;
 
 	// FUNCTIONS
 	function selectTemplateVersion(version: string) {
@@ -39,7 +41,10 @@
 			body: JSON.stringify({
 				namespace: 'default',
 				name,
+				description: template.description,
 				replicas,
+				cpu,
+				memory,
 				version: selectedVersion,
 				env: envs,
 				volumes: template.volumes
@@ -181,6 +186,28 @@
 								type="number"
 								class="input input-bordered w-full"
 								bind:value={replicas}
+							/>
+						</div>
+
+						<div class="mt-2 grid grid-cols-2 items-center">
+							<label for="cpu" class="font-bold">Cpu(mcpu)</label>
+							<input
+								name="cpu"
+								id="cpu"
+								type="number"
+								class="input input-bordered w-full"
+								bind:value={cpu}
+							/>
+						</div>
+
+						<div class="mt-2 grid grid-cols-2 items-center">
+							<label for="memory" class="font-bold">Memory(Mb)</label>
+							<input
+								name="memory"
+								id="memory"
+								type="number"
+								class="input input-bordered w-full"
+								bind:value={memory}
 							/>
 						</div>
 					{:else if selectedTab === 'env'}

@@ -40,14 +40,17 @@ router.get("/template/:templateName", async (req: Request, res: Response) => {
 
 router.post("/template/:templateName", async (req: Request, res: Response) => {
     const { templateName } = req.params;
-    const { namespace, name, version, replicas, env, volumes, ports } = req.body;
+    const { namespace, name, description, version, replicas, cpu, memory, env, volumes, ports } = req.body;
 
     const response = await deployTemplate({
         templateName,
         namespace: namespace,
         deploymentName: name,
+        description,
         version,
         replicas,
+        cpu,
+        memory,
         env,
         volumes,
         ports,

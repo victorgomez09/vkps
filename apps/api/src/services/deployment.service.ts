@@ -16,10 +16,35 @@ import { prisma } from "../config/database.config";
 import { Queue } from "../queue/queue";
 import { ApiResponse } from "../types";
 
-export const getDeployments = async (): Promise<ApiResponse<Deployment[]>> => {
-    try {
-        const deployments = await prisma.deployment.findMany();
+type DeploymentResponse = Deployment & {
+    workingReplicas: number;
+    totalReplicas: number;
+};
 
+export const getDeployments = async (): Promise<ApiResponse<DeploymentResponse[]>> => {
+    try {
+        const deployments: DeploymentResponse[] = [];
+        const deploymentsDb = await prisma.deployment.findMany({
+            include: {
+                template: true,
+            },
+        });
+
+        for await (const deploymentDb of deploymentsDb) {
+            console.log("loop iteration");
+            const k8sDeployment = await getDeployment(deploymentDb.deploymentId, "default");
+            if (k8sDeployment.statusCode !== 200 || !k8sDeployment.data) {
+                continue;
+            }
+
+            deployments.push({
+                ...deploymentDb,
+                workingReplicas: k8sDeployment.data.status?.availableReplicas || 0,
+                totalReplicas: k8sDeployment.data.status?.replicas || 0,
+            });
+        }
+
+        console.log("deployments", deployments);
         return {
             statusCode: 200,
             data: deployments,
@@ -102,8 +127,11 @@ export const deployTemplate = async ({
     templateName,
     namespace,
     deploymentName,
+    description,
     version,
     replicas,
+    cpu,
+    memory,
     env,
     volumes,
     ports,
@@ -111,8 +139,11 @@ export const deployTemplate = async ({
     templateName: string;
     namespace: string;
     deploymentName: string;
+    description: string;
     version: string;
     replicas: number;
+    cpu: number;
+    memory: number;
     env: { [key: string]: string };
     volumes: { path: string; size: string; accessMode: string[] }[];
     ports: V1ContainerPort[];
@@ -243,11 +274,28 @@ export const deployTemplate = async ({
             });
 
         // Add to database
+        const deployment = await prisma.deployment.create({
+            data: {
+                deploymentId: parseName(deploymentName),
+                name: deploymentName,
+                description: description,
+                replicas: replicas,
+                cpu: cpu,
+                memory: memory,
+                creationDate: new Date(),
+                updateTime: new Date(),
+                template: {
+                    connect: {
+                        id: template.id,
+                    },
+                },
+            },
+        });
 
         return {
             statusCode: 200,
             data: {
-                name: deploymentName,
+                name: deployment.name,
                 namespace: namespace,
                 replicas: replicas,
             },

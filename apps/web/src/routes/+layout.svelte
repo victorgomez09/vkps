@@ -19,8 +19,8 @@
 		<li>
 			<a
 				href="/templates"
-				class:bg-base-300={$page.url.pathname === '/templates'}
-				class:text-secondary={$page.url.pathname === '/templates'}
+				class:bg-base-300={$page.url.pathname.includes('/templates')}
+				class:text-secondary={$page.url.pathname.includes('/templates')}
 				class="hover:bg-base-100 hover:text-secondary"
 			>
 				Templates

@@ -7,9 +7,12 @@
 <div class="flex-col justify-center">
 	<div class="flex flex-col">
 		<div class="flex justify-between">
+			<h1 class="text-2xl font-bold">Templates</h1>
 			<a href="/templates/new" class="btn btn-primary btn-sm">+ Add</a>
 		</div>
-		<div class="grid grid-flow-rows grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+		<div
+			class="grid grid-flow-rows grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mt-4"
+		>
 			{#each templates.data as template}
 				<a
 					href={`/templates/deploy/${template.name}`}

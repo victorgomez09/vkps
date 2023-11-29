@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { env } from '$env/dynamic/public';
-	import type { Template, TemplateEnv } from '$lib/models/template.model';
+	import type { Template, TemplateEnv, TemplateVolume } from '$lib/models/template.model';
 	import { randomName } from '$lib/name-generator';
 
 	export let data: any;
@@ -13,6 +13,8 @@
 	const type: string = [...template.type.type.toLowerCase()]
 		.map((char, index) => (index === 0 ? char.toUpperCase() : char))
 		.join('');
+	const envs: TemplateEnv[] = template.env || [];
+	const volumes: TemplateVolume[] = template.volumes || [];
 
 	// DEPLOYMENT
 	let name: string = [...randomName]
@@ -30,7 +32,7 @@
 
 	async function handleSubmit() {
 		const envs: TemplateEnv = {} as TemplateEnv;
-		Object.values(template.env).forEach(({ key, value }) => {
+		Object.values(template.env!).forEach(({ key, value }) => {
 			envs.key = value;
 		});
 		const result = await fetch(`${env.PUBLIC_API_URL}/deployments/template/${template.name}`, {
@@ -214,7 +216,7 @@
 						<div class="flex items-center">
 							<h1 class="font-normal">Environment variables</h1>
 						</div>
-						{#each template.env as env}
+						{#each envs as env}
 							<div class="mt-2 grid grid-cols-2 items-center">
 								<div class="flex">
 									<label for={env.key} class="font-bold">{env.key}</label>
@@ -230,7 +232,7 @@
 						{/each}
 					{:else}
 						<h1 class="font-normal">Volumes to mount</h1>
-						{#each template.volumes as volume, index}
+						{#each volumes as volume, index}
 							<div class="mt-2 grid grid-cols-3 gap-2 items-center">
 								<div class="form-control w-full max-w-xs">
 									<label for={`volume-path-${index}`} class="label">

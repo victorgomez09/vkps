@@ -1,5 +1,4 @@
 <script lang="ts">
-	import type { ApiResponse } from '$lib/models/api.model';
 	import type { Deployment } from '$lib/models/deployment.model';
 
 	export let data;
@@ -17,7 +16,7 @@
 	<div class="mt-6 flex flex-col gap-2">
 		{#if deployments.length > 0}
 			{#each deployments as deployment}
-				<div class="grid w-full rounded p-4 bg-base-300 text-base-content">
+				<div class="card w-full p-4 bg-base-300 text-base-content">
 					<div class="flex items-baseline gap-4">
 						<span class="font-bold text-lg">{deployment.name}</span>
 						<span class="text-sm">

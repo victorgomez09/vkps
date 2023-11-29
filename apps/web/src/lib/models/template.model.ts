@@ -1,14 +1,14 @@
 export type Template = {
-	id: string;
+	id?: string;
 	name: string;
 	fancyName: string;
 	description: string;
 	icon: string;
 	image: string;
-	env: TemplateEnv[];
+	env?: TemplateEnv[];
 	type: TemplateType;
 	versions: TemplateVersion[];
-	volumes: TemplateVolume[];
+	volumes?: TemplateVolume[];
 };
 
 export type TemplateEnv = {

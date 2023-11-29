@@ -6,10 +6,13 @@
 
 <div class="flex-col justify-center">
 	<div class="flex flex-col">
+		<div class="flex justify-between">
+			<a href="/templates/new" class="btn btn-primary btn-sm">+ Add</a>
+		</div>
 		<div class="grid grid-flow-rows grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
 			{#each templates.data as template}
 				<a
-					href={`/templates/new/${template.name}`}
+					href={`/templates/deploy/${template.name}`}
 					class="card shadow bg-base-200 text-base-content hover:scale-105"
 				>
 					<div class="card-body p-4">

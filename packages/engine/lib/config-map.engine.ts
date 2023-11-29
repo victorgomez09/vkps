@@ -33,7 +33,7 @@ export const createConfigMap = async (configMap: ConfigMap): Promise<EngineData<
       data: configMapData
     };
   } catch (error) {
-    console.log(error.body.message);
+    console.log(error.body ? error.body.message : error.message);
     return {
       error: error.body ? error.body.message : error.message,
       statusCode: error.statusCode

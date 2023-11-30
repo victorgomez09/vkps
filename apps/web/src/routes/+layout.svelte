@@ -2,6 +2,10 @@
 	import { page } from '$app/stores';
 	import { themes } from '$lib/data/themes';
 	import '../app.css';
+
+	function changeTheme(theme: string) {
+		localStorage.setItem('theme', theme);
+	}
 </script>
 
 <div class="flex flex-1 h-full">
@@ -98,21 +102,20 @@
 						><path d="M1799 349l242 241-1017 1017L7 590l242-241 775 775 775-775z" /></svg
 					>
 				</div>
-				<ul
+				<div
 					class="dropdown-content z-[1] p-2 shadow-2xl bg-base-300 rounded-box w-52 h-[15em] overflow-auto"
 				>
 					{#each themes as theme}
-						<li>
-							<input
-								type="radio"
-								name="theme-dropdown"
-								class="theme-controller btn btn-sm btn-block btn-ghost justify-start"
-								aria-label={theme}
-								value={theme}
-							/>
-						</li>
+						<input
+							type="radio"
+							name="theme-dropdown"
+							class="theme-controller btn btn-sm btn-block btn-ghost justify-start"
+							aria-label={theme}
+							value={theme}
+							on:click={() => changeTheme(theme)}
+						/>
 					{/each}
-				</ul>
+				</div>
 			</div>
 		</div>
 	</div>

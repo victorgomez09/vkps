@@ -2,7 +2,7 @@
 	import { env } from '$env/dynamic/public';
 	import { default as FormDiv, default as Input } from '$lib/components/FormDiv.svelte';
 	import type { Template, TemplateEnv, TemplateVolume } from '$lib/models/template.model';
-	import { randomName } from '$lib/name-generator';
+	import { randomName } from '$lib/utils/name-generator';
 	import { get } from 'svelte/store';
 	import { field, form, min, required } from 'ui';
 

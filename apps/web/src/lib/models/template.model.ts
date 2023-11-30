@@ -12,8 +12,7 @@ export type Template = {
 };
 
 export type TemplateEnv = {
-	key: string;
-	value: string;
+	[key: string]: string;
 };
 
 export type TemplateType = {

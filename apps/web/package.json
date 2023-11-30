@@ -15,7 +15,7 @@
 		"test:unit": "vitest"
 	},
 	"dependencies": {
-		"preline": "^2.0.2",
+		"ui": "workspace:*",
 		"unique-names-generator": "^4.7.1"
 	},
 	"devDependencies": {

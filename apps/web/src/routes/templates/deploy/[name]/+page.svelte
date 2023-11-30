@@ -1,29 +1,39 @@
 <script lang="ts">
 	import { env } from '$env/dynamic/public';
+	import { default as FormDiv, default as Input } from '$lib/components/FormDiv.svelte';
 	import type { Template, TemplateEnv, TemplateVolume } from '$lib/models/template.model';
 	import { randomName } from '$lib/name-generator';
+	import { get } from 'svelte/store';
+	import { field, form, min, required } from 'ui';
 
 	export let data: any;
 
-	// PAGE SETTINGS
-	let selectedTab: 'config' | 'env' | 'vols' = 'config';
-
 	// DATA
 	const template: Template = data.template.data.data;
-	const type: string = [...template.type.type.toLowerCase()]
-		.map((char, index) => (index === 0 ? char.toUpperCase() : char))
-		.join('');
 	const envs: TemplateEnv[] = template.env || [];
 	const volumes: TemplateVolume[] = template.volumes || [];
 
+	const name = field('name', randomName, [required()]);
+	const replicas = field('replicas', '1', [required(), min(1)], {
+		checkOnInit: true
+	});
+	const memory = field('memory', '128', [required(), min(128)], {
+		checkOnInit: true
+	});
+	const cpu = field('cpu', '100', [required(), min(100)], {
+		checkOnInit: true
+	});
+	const envFields = (template.env || ([] as TemplateEnv[])).map((env) => {
+		return field('env', env.value, [required()]);
+	});
+	const volumeFields = (template.volumes || ([] as TemplateVolume[])).map((volume) => {
+		return field('volume', '1024', [required(), min(100)]);
+	});
+
+	const tempDeployForm = form(name, replicas, memory, cpu);
+
 	// DEPLOYMENT
-	let name: string = [...randomName]
-		.map((char, index) => (index === 0 ? char.toUpperCase() : char))
-		.join('');
 	let selectedVersion: string = 'latest';
-	let replicas: number = 1;
-	let cpu: number = 100;
-	let memory: number = 128;
 
 	// FUNCTIONS
 	function selectTemplateVersion(version: string) {
@@ -31,9 +41,21 @@
 	}
 
 	async function handleSubmit() {
-		const envs: TemplateEnv = {} as TemplateEnv;
-		Object.values(template.env!).forEach(({ key, value }) => {
-			envs.key = value;
+		const updatedEnvs: TemplateEnv = {} as TemplateEnv;
+		Object.values(envs).map(({ key }, index) => {
+			console.log('test', {
+				[key]: get(envFields[index]).value
+			});
+			updatedEnvs[key] = get(envFields[index]).value;
+		});
+
+		const updatedvolumes: TemplateVolume[] = [];
+		Object.values(volumes).map(({ path }, index) => {
+			updatedvolumes.push({
+				path,
+				size: Number(get(volumeFields[index]).value),
+				accessMode: ['ReadWriteOnce']
+			});
 		});
 		const result = await fetch(`${env.PUBLIC_API_URL}/deployments/template/${template.name}`, {
 			method: 'POST',
@@ -42,60 +64,26 @@
 			},
 			body: JSON.stringify({
 				namespace: 'default',
-				name,
+				name: [...get(name).value]
+					.map((char, index) => (index === 0 ? char.toUpperCase() : char))
+					.join(''),
 				description: template.description,
-				replicas,
-				cpu,
-				memory,
+				replicas: Number(get(replicas).value),
+				cpu: Number(get(cpu).value),
+				memory: Number(get(memory).value),
 				version: selectedVersion,
-				env: envs,
-				volumes: template.volumes
+				env: updatedEnvs,
+				volumes: updatedvolumes
 			})
 		});
-
 		const data = await result.json();
 		console.log('data', data);
 	}
 </script>
 
 <div class="flex flex-1 gap-2 w-full h-full">
-	<ul class="menu bg-base-200 w-56 rounded-box gap-1">
-		<li>
-			<button
-				type="button"
-				on:click={() => (selectedTab = 'config')}
-				class="px-4 py-2 cursor-pointer rounded-btn hover:bg-neutral focus:bg-neutral!"
-				class:active={selectedTab === 'config'}
-			>
-				Configuration
-			</button>
-		</li>
-
-		<li>
-			<button
-				type="button"
-				on:click={() => (selectedTab = 'env')}
-				class="px-4 py-2 cursor-pointer rounded-btn hover:bg-neutral focus:bg-neutral!"
-				class:active={selectedTab === 'env'}
-			>
-				Env variables
-			</button>
-		</li>
-
-		<li>
-			<button
-				type="button"
-				on:click={() => (selectedTab = 'vols')}
-				class="px-4 py-2 cursor-pointer rounded-btn hover:bg-neutral focus:bg-neutral!"
-				class:active={selectedTab === 'vols'}
-			>
-				Volumes
-			</button>
-		</li>
-	</ul>
-
-	<div class="card shadow bg-base-200 w-full h-full">
-		<div class="card-body w-full h-full overflow-auto">
+	<div class="card shadow bg-base-200 w-full overflow-auto">
+		<div class="card-body w-full h-full max-h-0">
 			<form on:submit|preventDefault={handleSubmit} class="w-full h-full">
 				<div class="card-title justify-between">
 					<span class="flex gap-2 items-center">
@@ -103,24 +91,19 @@
 						<img src={template.icon} alt={`${template.fancyName} icon`} class="h-6 w-6" />
 					</span>
 
-					<button class="btn btn-sm btn-primary">Save</button>
+					<button
+						type="submit"
+						class="btn btn-sm btn-primary"
+						disabled={$tempDeployForm.dirty && !$tempDeployForm.valid}>Save</button
+					>
 				</div>
 
 				<div class="divider" />
 
 				<div class="grid grid-flow-row gap-2 px-4">
-					{#if selectedTab === 'config'}
-						<h1 class="font-normal">General template setting</h1>
-						<div class="mt-2 grid grid-cols-2 items-center">
-							<label for="name" class="font-bold">Name</label>
-							<input
-								name="name"
-								id="name"
-								class="input input-bordered w-full"
-								bind:value={name}
-								required
-							/>
-						</div>
+					<h1 class="font-bold text-xl">Configuration</h1>
+					<div class="flex flex-col mt-2">
+						<FormDiv label="Name" field={name} />
 
 						<div class="mt-2 grid grid-cols-2 items-center">
 							<label for="description" class="font-bold">Description</label>
@@ -144,16 +127,7 @@
 							/>
 						</div>
 
-						<div class="mt-2 grid grid-cols-2 items-center">
-							<label for="type" class="font-bold">Type</label>
-							<input
-								name="type"
-								id="type"
-								class="input !bg-base-300 w-full"
-								value={type}
-								disabled
-							/>
-						</div>
+						<!-- <FormDiv label="Type" field={type} /> -->
 
 						<div class="mt-2 grid grid-cols-2 items-center">
 							<label for="version" class="font-bold">Version</label>
@@ -180,86 +154,31 @@
 							</div>
 						</div>
 
-						<div class="mt-2 grid grid-cols-2 items-center">
-							<label for="replicas" class="font-bold">Replicas</label>
-							<input
-								name="replicas"
-								id="replicas"
-								type="number"
-								class="input input-bordered w-full"
-								bind:value={replicas}
-							/>
-						</div>
+						<FormDiv label="Replicas" field={replicas} />
 
-						<div class="mt-2 grid grid-cols-2 items-center">
-							<label for="cpu" class="font-bold">Cpu(mcpu)</label>
-							<input
-								name="cpu"
-								id="cpu"
-								type="number"
-								class="input input-bordered w-full"
-								bind:value={cpu}
-							/>
-						</div>
+						<FormDiv label="Cpu" field={cpu} />
 
-						<div class="mt-2 grid grid-cols-2 items-center">
-							<label for="memory" class="font-bold">Memory(Mb)</label>
-							<input
-								name="memory"
-								id="memory"
-								type="number"
-								class="input input-bordered w-full"
-								bind:value={memory}
-							/>
-						</div>
-					{:else if selectedTab === 'env'}
-						<div class="flex items-center">
-							<h1 class="font-normal">Environment variables</h1>
-						</div>
-						{#each envs as env}
-							<div class="mt-2 grid grid-cols-2 items-center">
-								<div class="flex">
-									<label for={env.key} class="font-bold">{env.key}</label>
-								</div>
-								<input
-									name="value"
-									id={env.key}
-									class="input input-bordered w-full"
-									bind:value={env.value}
-									required
-								/>
-							</div>
-						{/each}
-					{:else}
-						<h1 class="font-normal">Volumes to mount</h1>
-						{#each volumes as volume, index}
-							<div class="mt-2 grid grid-cols-3 gap-2 items-center">
-								<div class="form-control w-full max-w-xs">
-									<label for={`volume-path-${index}`} class="label">
-										<span class="label-text">Template volume</span>
-									</label>
-									<input
-										name={`volume-path-${index}`}
-										class="input input-bordered w-full"
-										bind:value={volume.path}
-										required
-									/>
-								</div>
-								<div class="form-control w-full max-w-xs">
-									<label for={`volume-size-${index}`} class="label">
-										<span class="label-text">Volume size (GB)</span>
-									</label>
-									<input
-										name={`volume-size-${index}`}
-										class="input input-bordered w-full"
-										type="number"
-										bind:value={volume.size}
-										required
-									/>
-								</div>
-							</div>
-						{/each}
-					{/if}
+						<FormDiv label="Memory" field={memory} />
+					</div>
+
+					<div class="divider" />
+
+					<h1 class="font-bold text-xl">Environment variables</h1>
+					{#each envs as env, index}
+						<Input label={env.key} field={envFields[index]} />
+					{/each}
+
+					<div class="divider" />
+
+					<h1 class="font-bold text-xl">Volumes</h1>
+					{#each volumes as volume, index}
+						<FormDiv
+							label="Size of volume (Mb)"
+							explainer={`Volume path <span class="font-bold italic">${volume.path}</span> to mount`}
+							type="number"
+							field={volumeFields[index]}
+						/>
+					{/each}
 				</div>
 			</form>
 		</div>

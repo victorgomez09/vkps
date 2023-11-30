@@ -1,22 +1,18 @@
 <script lang="ts">
-	import type { Template } from '$lib/models/template.model';
+	import { field, form, required } from 'ui';
 	import Explainer from '$lib/components/Explainer.svelte';
 
-	let template: Template = {
-		fancyName: '',
-		name: '',
-		description: '',
-		icon: '',
-		image: '',
-		versions: [],
-		type: {
-			type: 'DATABASE'
-		}
-	};
-	let versions: string = '';
+	const fancyName = field('name', '', [required()]);
+	const name = field('name', '');
+	const description = field('description', '');
+	const icon = field('icon', '', [required()]);
+	const image = field('image', '', [required()]);
+	const version = field('version', '', [required()]);
+	const type = field('type', 'DATABASE', [required()]);
+	const templateForm = form(fancyName, name, description, icon, image, version, type);
 
 	function handleSubmit() {
-		console.log('template', template);
+		console.log('submit');
 	}
 </script>
 
@@ -25,7 +21,9 @@
 		<div class="flex justify-between">
 			<h1 class="font-bold text-lg">New Template</h1>
 
-			<button class="btn btn-primary btn-sm">Save</button>
+			<button type="submit" class="btn btn-primary btn-sm" disabled={!$templateForm.valid}
+				>Save</button
+			>
 		</div>
 		<div class="card flex-1 bg-base-300 w-full overflow-auto mt-4">
 			<div class="card-body h-full max-h-0">
@@ -36,8 +34,13 @@
 							name="fancyName"
 							id="fancyName"
 							class="input input-bordered w-full"
-							bind:value={template.fancyName}
+							bind:value={$name.value}
 						/>
+						{#if $name.dirty && $name.invalid}
+							<div class="label">
+								<span class="label-text-error">{$name.errors}</span>
+							</div>
+						{/if}
 					</div>
 
 					<div class="mt-2 grid grid-cols-2 items-center">
@@ -46,7 +49,7 @@
 							name="name"
 							id="name"
 							class="input !bg-base-200 w-full"
-							value={template.fancyName.replace(/ /g, '-').toLowerCase()}
+							value={$fancyName.value.replace(/ /g, '-').toLowerCase()}
 							disabled
 						/>
 					</div>
@@ -57,7 +60,7 @@
 							name="image"
 							id="image"
 							class="input input-bordered w-full"
-							bind:value={template.image}
+							bind:value={$image.value}
 						/>
 					</div>
 
@@ -68,7 +71,7 @@
 								explanation="Add versions separeated bya a comma(,). Example: '1.0, 1.1, 2.4'"
 							/>
 						</div>
-						<input type="text" class="input input-bordered" bind:value={versions} />
+						<input type="text" class="input input-bordered" bind:value={$version.value} />
 					</div>
 
 					<div class="mt-2 grid grid-cols-2 items-center">
@@ -77,7 +80,7 @@
 							name="icon"
 							id="icon"
 							class="input input-bordered w-full"
-							bind:value={template.icon}
+							bind:value={$icon.value}
 						/>
 					</div>
 
@@ -87,7 +90,7 @@
 							name="description"
 							id="description"
 							class="textarea textarea-bordered w-full"
-							bind:value={template.description}
+							bind:value={$description.value}
 						/>
 					</div>
 
@@ -95,7 +98,7 @@
 						<label for="description" class="font-bold">Type</label>
 						<div class="dropdown w-full">
 							<div tabindex="0" role="button" class="btn w-full justify-start">
-								{template.type.type}
+								{$type.value}
 							</div>
 							<ul class="dropdown-content z-[1] menu p-2 shadow bg-base-100 w-full rounded-box">
 								<li><span class="p-2 hover:bg-base-200">DATABASE</span></li>

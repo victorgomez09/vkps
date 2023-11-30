@@ -16,6 +16,7 @@
 	<div class="mt-6 flex flex-col gap-2">
 		{#if deployments.length > 0}
 			{#each deployments as deployment}
+				{console.log('deployment', deployment)}
 				<div class="card w-full p-4 bg-base-300 text-base-content">
 					<div class="flex items-baseline gap-4">
 						<span class="font-bold text-lg">{deployment.name}</span>
@@ -26,7 +27,7 @@
 						<div class="flex items-center self-center gap-1">
 							<span
 								class:badge-success={deployment.workingReplicas === deployment.totalReplicas}
-								class:basge-error={deployment.workingReplicas !== deployment.totalReplicas}
+								class:badge-error={deployment.workingReplicas !== deployment.totalReplicas}
 								class="indicator-item badge badge-sm"
 							/>
 							<span
@@ -39,17 +40,20 @@
 					</div>
 
 					<div class="flex items-center flex-wrap gap-4 mt-2">
-						<a href={`/deployments/${deployment.name}/deploy`} class="link link-hover text-xs"
-							>Deploy</a
+						<a
+							href={`/deployments/${deployment.deploymentId}/deploy`}
+							class="link link-hover text-xs">Deploy</a
 						>
-						<a href={`/deployments/${deployment.name}/logs`} class="link link-hover text-xs">Logs</a
+						<a href={`/deployments/${deployment.deploymentId}/logs`} class="link link-hover text-xs"
+							>Logs</a
 						>
 						<a
-							href={`/deployments/${deployment.name}/configuration`}
+							href={`/deployments/${deployment.deploymentId}/configuration`}
 							class="link link-hover text-xs">Configuration</a
 						>
-						<a href={`/deployments/${deployment.name}/webhooks`} class="link link-hover text-xs"
-							>Webhooks</a
+						<a
+							href={`/deployments/${deployment.deploymentId}/webhooks`}
+							class="link link-hover text-xs">Webhooks</a
 						>
 					</div>
 				</div>

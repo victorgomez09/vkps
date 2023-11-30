@@ -31,7 +31,6 @@ export const getDeployments = async (): Promise<ApiResponse<DeploymentResponse[]
         });
 
         for await (const deploymentDb of deploymentsDb) {
-            console.log("loop iteration");
             const k8sDeployment = await getDeployment(deploymentDb.deploymentId, "default");
             if (k8sDeployment.statusCode !== 200 || !k8sDeployment.data) {
                 continue;
@@ -44,10 +43,48 @@ export const getDeployments = async (): Promise<ApiResponse<DeploymentResponse[]
             });
         }
 
-        console.log("deployments", deployments);
         return {
             statusCode: 200,
             data: deployments,
+        };
+    } catch (error) {
+        return {
+            statusCode: 500,
+            error: error.message,
+        };
+    }
+};
+
+export const getDeploymentById = async (id: string): Promise<ApiResponse<DeploymentResponse>> => {
+    try {
+        const deploymentDb = await prisma.deployment.findFirst({
+            where: {
+                deploymentId: id,
+            },
+            include: {
+                template: true,
+            },
+        });
+        const { statusCode, data } = await getDeployment(deploymentDb.deploymentId, "default");
+
+        if (statusCode !== 200 || !data) {
+            return {
+                statusCode: 404,
+                error: "Deployment not found",
+            };
+        }
+
+        console.log("data", data);
+
+        const deployment: DeploymentResponse = {
+            ...deploymentDb,
+            workingReplicas: data.status?.availableReplicas || 0,
+            totalReplicas: data.status?.replicas || 0,
+        };
+
+        return {
+            statusCode,
+            data: deployment,
         };
     } catch (error) {
         return {

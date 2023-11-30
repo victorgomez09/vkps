@@ -1,11 +1,23 @@
 import { Router, Request, Response } from "express";
 
-import { deployTemplate, getDeploymentByName, getDeploymentLogsByName, getDeployments } from "../services/deployment.service";
+import { deployTemplate, getDeploymentById, getDeploymentByName, getDeploymentLogsByName, getDeployments } from "../services/deployment.service";
 
 const router = Router();
 
 router.get("/", async (_req: Request, res: Response) => {
     const response = await getDeployments();
+
+    if (response.statusCode !== 200) {
+        return res.status(response.statusCode).json({ error: response.error });
+    }
+
+    return res.json({ data: response.data });
+});
+
+router.get("/:deploymentId", async (req: Request, res: Response) => {
+    const { deploymentId } = req.params;
+
+    const response = await getDeploymentById(deploymentId);
 
     if (response.statusCode !== 200) {
         return res.status(response.statusCode).json({ error: response.error });

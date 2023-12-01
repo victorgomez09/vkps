@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-const databaseTemplates = [
+const addons = [
     {
         namespace: "default",
         name: "mysql",
@@ -95,55 +95,55 @@ const databaseTemplates = [
 ];
 
 async function main() {
-    const databaseType = await prisma.templateType.create({
+    const databaseType = await prisma.addonType.create({
         data: {
             type: "DATABASE",
         },
     });
 
-    for await (const template of databaseTemplates) {
-        const templateCreated = await prisma.template.create({
+    for await (const addon of addons) {
+        const addonCreated = await prisma.addon.create({
             data: {
-                name: template.name,
-                fancyName: template.fancyName,
-                description: template.description,
-                icon: template.icon,
-                image: template.image,
+                name: addon.name,
+                fancyName: addon.fancyName,
+                description: addon.description,
+                icon: addon.icon,
+                image: addon.image,
                 type: {
                     connect: { id: databaseType?.id },
                 },
             },
         });
 
-        for await (const version of template.versions) {
-            await prisma.templateVersion.create({
+        for await (const version of addon.versions) {
+            await prisma.addonVersion.create({
                 data: {
                     version,
-                    template: {
-                        connect: { id: templateCreated.id },
+                    addon: {
+                        connect: { id: addonCreated.id },
                     },
                 },
             });
         }
 
-        for await (const [key, value] of Object.entries(template.env)) {
+        for await (const [key, value] of Object.entries(addon.env)) {
             await prisma.templateEnv.create({
                 data: {
                     key,
                     value,
                     template: {
-                        connect: { id: templateCreated.id },
+                        connect: { id: addonCreated.id },
                     },
                 },
             });
         }
 
-        for await (const volume of template.volumes) {
+        for await (const volume of addon.volumes) {
             await prisma.templateVolume.create({
                 data: {
                     path: volume.path,
                     template: {
-                        connect: { id: templateCreated.id },
+                        connect: { id: addonCreated.id },
                     },
                 },
             });

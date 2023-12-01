@@ -10,49 +10,49 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Template {
-  id             String            @id @default(uuid())
-  name           String            @unique
-  fancyName      String
-  description    String?
-  icon           String
-  image          String
-  versions       TemplateVersion[]
-  type           TemplateType      @relation(fields: [templateTypeId], references: [id])
-  templateTypeId String
-  env            TemplateEnv[]
-  volumes        TemplateVolume[]
-  Deployment     Deployment[]
+model Addon {
+  id          String         @id @default(uuid())
+  name        String         @unique
+  fancyName   String
+  description String?
+  icon        String
+  image       String
+  versions    AddonVersion[]
+  type        AddonType      @relation(fields: [addonTypeId], references: [id])
+  addonTypeId String
+  env         AddonEnv[]
+  volumes     AddonVolume[]
+  Deployment  Deployment[]
 }
 
-model TemplateType {
-  id       String     @id @default(uuid())
-  type     String
-  template Template[]
+model AddonType {
+  id    String  @id @default(uuid())
+  type  String
+  addon Addon[]
 }
 
-model TemplateVersion {
+model AddonVersion {
   id      String @id @default(uuid())
   version String
 
-  template   Template? @relation(fields: [templateId], references: [id])
-  templateId String?
+  addon   Addon?  @relation(fields: [addonId], references: [id])
+  addonId String?
 }
 
-model TemplateEnv {
-  id          String    @id @default(uuid())
+model AddonEnv {
+  id          String  @id @default(uuid())
   key         String
   value       String
   description String?
-  template    Template? @relation(fields: [templateId], references: [id])
-  templateId  String?
+  addon       Addon?  @relation(fields: [addonId], references: [id])
+  addonId     String?
 }
 
-model TemplateVolume {
-  id         String    @id @default(uuid())
-  path       String
-  template   Template? @relation(fields: [templateId], references: [id])
-  templateId String
+model AddonVolume {
+  id      String @id @default(uuid())
+  path    String
+  addon   Addon? @relation(fields: [addonId], references: [id])
+  addonId String
 }
 
 // DEPLOYMENT
@@ -65,8 +65,8 @@ model Deployment {
   memory       Int
   cpu          Int
 
-  template     Template? @relation(fields: [templateId], references: [id])
-  templateId   String
+  addon        Addon?   @relation(fields: [addonId], references: [id])
+  addonId      String
   creationDate DateTime
   updateTime   DateTime
 }

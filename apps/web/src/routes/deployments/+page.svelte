@@ -10,7 +10,7 @@
 	<div class="flex items-center justify-between w-full">
 		<h1 class="text-2xl font-bold">Deployments</h1>
 
-		<button class="btn btn-sm btn-primary">+ Add</button>
+		<a href="/deployments/new" role="button" class="btn btn-sm btn-primary">+ Add</a>
 	</div>
 
 	<div class="mt-6 flex flex-col gap-2">
@@ -40,10 +40,10 @@
 					</div>
 
 					<div class="flex items-center flex-wrap gap-4 mt-2">
-						<a
+						<!-- <a
 							href={`/deployments/${deployment.deploymentId}/deploy`}
 							class="link link-hover text-xs">Deploy</a
-						>
+						> -->
 						<a href={`/deployments/${deployment.deploymentId}/logs`} class="link link-hover text-xs"
 							>Logs</a
 						>

@@ -1,12 +1,12 @@
 import express, { Request, Response } from "express";
 
 import pingRoutes from "./ping.route";
-import templateRoutes from "./template.route";
+import addonsRoutes from "./addons.route";
 import deploymentRoutes from "./deployment.route";
 
 const router = express.Router();
 router.use("/ping", pingRoutes);
-router.use("/templates", templateRoutes);
+router.use("/addons", addonsRoutes);
 router.use("/deployments", deploymentRoutes);
 
 // Custom error handler

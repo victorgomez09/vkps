@@ -79,12 +79,12 @@
 				class="p-2 hover:bg-base-100 hover:text-secondary">Applications</a
 			>
 			<a
-				href="/templates"
-				class:bg-base-300={$page.url.pathname.includes('/templates')}
-				class:text-secondary={$page.url.pathname.includes('/templates')}
-				class:border-l-2={$page.url.pathname.includes('/templates')}
-				class:border-l-secondary={$page.url.pathname.includes('/templates')}
-				class="p-2 hover:bg-base-100 hover:text-secondary">Templates</a
+				href="/addons"
+				class:bg-base-300={$page.url.pathname.includes('/addons')}
+				class:text-secondary={$page.url.pathname.includes('/addons')}
+				class:border-l-2={$page.url.pathname.includes('/addons')}
+				class:border-l-secondary={$page.url.pathname.includes('/addons')}
+				class="p-2 hover:bg-base-100 hover:text-secondary">Addons</a
 			>
 		</div>
 

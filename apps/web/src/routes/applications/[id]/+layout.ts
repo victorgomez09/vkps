@@ -1,13 +1,13 @@
 import { env } from '$env/dynamic/public';
 import type { ApiResponse } from '$lib/models/api.model.js';
-import type { Deployment } from '$lib/models/deployment.model';
+import type { Application } from '$lib/models/application.model';
 import { deploymentStore } from '$lib/stores/deployment.store.js';
 
 export async function load({ params, fetch }) {
 	try {
-		const response = await fetch(`${env.PUBLIC_API_URL}/deployments/${params.id}`);
+		const response = await fetch(`${env.PUBLIC_API_URL}/applications/${params.id}`);
 
-		const deployment = (await response.json()) as ApiResponse<Deployment>;
+		const deployment = (await response.json()) as ApiResponse<Application>;
 
 		deploymentStore.set(deployment.data!);
 

@@ -1,17 +1,18 @@
 <script lang="ts">
 	import { env } from '$env/dynamic/public';
 	import { default as FormDiv, default as Input } from '$lib/components/FormDiv.svelte';
-	import type { Template, TemplateEnv, TemplateVolume } from '$lib/models/template.model';
+	import type { Addon, AddonEnv, AddonVolume } from '$lib/models/addon.model';
+	import type { PageDataResponse } from '$lib/models/api.model';
 	import { randomName } from '$lib/utils/name-generator';
 	import { get } from 'svelte/store';
 	import { field, form, min, required } from 'ui';
 
-	export let data: any;
+	export let data: PageDataResponse<Addon>;
 
 	// DATA
-	const template: Template = data.template.data.data;
-	const envs: TemplateEnv[] = template.env || [];
-	const volumes: TemplateVolume[] = template.volumes || [];
+	const { data: addon } = data;
+	const envs: AddonEnv[] = addon.env || [];
+	const volumes: AddonVolume[] = addon.volumes || [];
 
 	const name = field('name', randomName, [required()]);
 	const replicas = field('replicas', '1', [required(), min(1)], {
@@ -23,10 +24,10 @@
 	const cpu = field('cpu', '100', [required(), min(100)], {
 		checkOnInit: true
 	});
-	const envFields = (template.env || ([] as TemplateEnv[])).map((env) => {
+	const envFields = (addon.env || ([] as AddonEnv[])).map((env) => {
 		return field('env', env.value, [required()]);
 	});
-	const volumeFields = (template.volumes || ([] as TemplateVolume[])).map((volume) => {
+	const volumeFields = (addon.volumes || ([] as AddonVolume[])).map((volume) => {
 		return field('volume', '1024', [required(), min(100)]);
 	});
 
@@ -36,12 +37,12 @@
 	let selectedVersion: string = 'latest';
 
 	// FUNCTIONS
-	function selectTemplateVersion(version: string) {
+	function selectAddonVersion(version: string) {
 		selectedVersion = version;
 	}
 
 	async function handleSubmit() {
-		const updatedEnvs: TemplateEnv = {} as TemplateEnv;
+		const updatedEnvs: AddonEnv = {} as AddonEnv;
 		Object.values(envs).map(({ key }, index) => {
 			console.log('test', {
 				[key]: get(envFields[index]).value
@@ -49,7 +50,7 @@
 			updatedEnvs[key] = get(envFields[index]).value;
 		});
 
-		const updatedvolumes: TemplateVolume[] = [];
+		const updatedvolumes: AddonVolume[] = [];
 		Object.values(volumes).map(({ path }, index) => {
 			updatedvolumes.push({
 				path,
@@ -57,7 +58,7 @@
 				accessMode: ['ReadWriteOnce']
 			});
 		});
-		const result = await fetch(`${env.PUBLIC_API_URL}/deployments/template/${template.name}`, {
+		const result = await fetch(`${env.PUBLIC_API_URL}/applications/addons/${addon.name}`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
@@ -67,7 +68,7 @@
 				name: [...get(name).value]
 					.map((char, index) => (index === 0 ? char.toUpperCase() : char))
 					.join(''),
-				description: template.description,
+				description: addon.description,
 				replicas: Number(get(replicas).value),
 				cpu: Number(get(cpu).value),
 				memory: Number(get(memory).value),
@@ -87,8 +88,8 @@
 			<form on:submit|preventDefault={handleSubmit} class="w-full h-full">
 				<div class="card-title justify-between">
 					<span class="flex gap-2 items-center">
-						{template.fancyName}
-						<img src={template.icon} alt={`${template.fancyName} icon`} class="h-6 w-6" />
+						{addon.fancyName}
+						<img src={addon.icon} alt={`${addon.fancyName} icon`} class="h-6 w-6" />
 					</span>
 
 					<button
@@ -111,7 +112,7 @@
 								name="description"
 								id="description"
 								class="textarea !bg-base-300 w-full"
-								placeholder={template.description}
+								placeholder={addon.description}
 								disabled
 							/>
 						</div>
@@ -122,7 +123,7 @@
 								name="image"
 								id="image"
 								class="input !bg-base-300 w-full"
-								value={template.image}
+								value={addon.image}
 								disabled
 							/>
 						</div>
@@ -139,13 +140,13 @@
 									tabIndex={0}
 									class="dropdown-content bg-base-300 text-base-content rounded-box top-px h-[30vh] max-h-96 w-full overflow-y-auto shadow mt-16"
 								>
-									{#each template.versions as { version }}
+									{#each addon.versions as { version }}
 										<button
 											type="button"
 											class="w-full text-left p-4 hover:bg-base-200 hover:text-secondary hover:cursor-pointer"
 											class:bg-base-200={selectedVersion === version}
 											class:text-secondary={selectedVersion === version}
-											on:click={() => selectTemplateVersion(version)}
+											on:click={() => selectAddonVersion(version)}
 										>
 											{version}
 										</button>

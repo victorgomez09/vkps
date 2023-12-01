@@ -22,7 +22,7 @@ model Addon {
   addonTypeId String
   env         AddonEnv[]
   volumes     AddonVolume[]
-  Deployment  Deployment[]
+  application Application[]
 }
 
 model AddonType {
@@ -55,15 +55,15 @@ model AddonVolume {
   addonId String
 }
 
-// DEPLOYMENT
-model Deployment {
-  id           String @id @default(uuid())
-  deploymentId String @unique
-  name         String @unique
-  description  String
-  replicas     Int
-  memory       Int
-  cpu          Int
+// APPLICATION
+model Application {
+  id            String @id @default(uuid())
+  applicationId String @unique
+  name          String @unique
+  description   String
+  replicas      Int
+  memory        Int
+  cpu           Int
 
   addon        Addon?   @relation(fields: [addonId], references: [id])
   addonId      String
@@ -71,16 +71,16 @@ model Deployment {
   updateTime   DateTime
 }
 
-model DeploymentVolume {
-  id         String                       @id @default(uuid())
+model ApplicationVolume {
+  id         String                        @id @default(uuid())
   path       String
   size       Int
-  accessMode DeploymentVolumeAccessMode[]
+  accessMode ApplicationVolumeAccessMode[]
 }
 
-model DeploymentVolumeAccessMode {
-  id                 String            @id @default(uuid())
-  accessMode         String
-  DeploymentVolume   DeploymentVolume? @relation(fields: [deploymentVolumeId], references: [id])
-  deploymentVolumeId String?
+model ApplicationVolumeAccessMode {
+  id                  String             @id @default(uuid())
+  accessMode          String
+  applicationVolume   ApplicationVolume? @relation(fields: [applicationVolumeId], references: [id])
+  applicationVolumeId String?
 }

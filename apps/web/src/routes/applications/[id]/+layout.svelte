@@ -2,9 +2,9 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import type { PageDataResponse } from '$lib/models/api.model';
-	import type { Deployment } from '$lib/models/deployment.model';
+	import type { Application } from '$lib/models/application.model';
 
-	export let data: PageDataResponse<Deployment>;
+	export let data: PageDataResponse<Application>;
 
 	// DATA
 	const { data: deployment } = data;
@@ -21,8 +21,8 @@
 			role="tab"
 			class="tab"
 			aria-label="Deploy"
-			checked={$page.url.pathname === `/deployments/${deployment.id}/logs`}
-			on:click={() => goto(`/deployments/${deployment.deploymentId}/deploy`)}
+			checked={$page.url.pathname === `/applications/${deployment.id}/logs`}
+			on:click={() => goto(`/applications/${deployment.applicationId}/deploy`)}
 		/>
 		<div role="tabpanel" class="tab-content mt-2">
 			<slot {deployment} />
@@ -37,8 +37,8 @@
 			role="tab"
 			class="tab"
 			aria-label="Configuration"
-			checked={$page.url.pathname === `/deployments/${deployment.deploymentId}/configuration`}
-			on:click={() => goto(`/deployments/${deployment.deploymentId}/configuration`)}
+			checked={$page.url.pathname === `/applications/${deployment.applicationId}/configuration`}
+			on:click={() => goto(`/applications/${deployment.applicationId}/configuration`)}
 		/>
 		<div role="tabpanel" class="tab-content mt-2">
 			<slot />

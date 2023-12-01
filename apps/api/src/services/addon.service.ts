@@ -1,9 +1,9 @@
-import { Template } from "@prisma/client";
+import { Addon } from "@prisma/client";
 import { ApiResponse } from "../types";
 import { prisma } from "../config/database.config";
 
-export const listAddons = async (): Promise<ApiResponse<Template[]>> => {
-    const addon = await prisma.template.findMany({
+export const listAddons = async (): Promise<ApiResponse<Addon[]>> => {
+    const addons = await prisma.addon.findMany({
         include: {
             env: true,
             type: true,
@@ -14,12 +14,12 @@ export const listAddons = async (): Promise<ApiResponse<Template[]>> => {
 
     return {
         statusCode: 200,
-        data: addon,
+        data: addons,
     };
 };
 
-export const getAddon = async (name: string): Promise<ApiResponse<Template>> => {
-    const addon = await prisma.template.findFirst({
+export const getAddon = async (name: string): Promise<ApiResponse<Addon>> => {
+    const addon = await prisma.addon.findFirst({
         where: {
             name,
         },
@@ -30,18 +30,18 @@ export const getAddon = async (name: string): Promise<ApiResponse<Template>> => 
             volumes: true,
         },
     });
-    delete addon.templateTypeId;
+    delete addon.addonTypeId;
     addon.env.forEach((env) => {
         delete env.id;
-        delete env.templateId;
+        delete env.addonId;
     });
     addon.volumes.forEach((volume) => {
         delete volume.id;
-        delete volume.templateId;
+        delete volume.addonId;
     });
     addon.versions.forEach((version) => {
         delete version.id;
-        delete version.templateId;
+        delete version.addonId;
     });
     delete addon.type.id;
 

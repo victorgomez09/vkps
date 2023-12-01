@@ -1,16 +1,16 @@
 <script lang="ts">
-	import type { Deployment } from '$lib/models/deployment.model';
+	import type { Application } from '$lib/models/application.model.js';
 
 	export let data;
 
-	let deployments: Deployment[] = data.deployments?.data || [];
+	let deployments: Application[] = data.deployments?.data || [];
 </script>
 
 <div class="flex flex-col flex-1">
 	<div class="flex items-center justify-between w-full">
 		<h1 class="text-2xl font-bold">Deployments</h1>
 
-		<a href="/deployments/new" role="button" class="btn btn-sm btn-primary">+ Add</a>
+		<a href="/applications/new" role="button" class="btn btn-sm btn-primary">+ Add</a>
 	</div>
 
 	<div class="mt-6 flex flex-col gap-2">
@@ -21,7 +21,7 @@
 					<div class="flex items-baseline gap-4">
 						<span class="font-bold text-lg">{deployment.name}</span>
 						<span class="text-sm">
-							{deployment.template ? deployment.template.image : 'wip'}
+							{deployment.addon ? deployment.addon.image : 'wip'}
 						</span>
 
 						<div class="flex items-center self-center gap-1">
@@ -40,19 +40,16 @@
 					</div>
 
 					<div class="flex items-center flex-wrap gap-4 mt-2">
-						<!-- <a
-							href={`/deployments/${deployment.deploymentId}/deploy`}
-							class="link link-hover text-xs">Deploy</a
-						> -->
-						<a href={`/deployments/${deployment.deploymentId}/logs`} class="link link-hover text-xs"
-							>Logs</a
+						<a
+							href={`/applications/${deployment.applicationId}/logs`}
+							class="link link-hover text-xs">Logs</a
 						>
 						<a
-							href={`/deployments/${deployment.deploymentId}/configuration`}
+							href={`/applications/${deployment.applicationId}/configuration`}
 							class="link link-hover text-xs">Configuration</a
 						>
 						<a
-							href={`/deployments/${deployment.deploymentId}/webhooks`}
+							href={`/applications/${deployment.applicationId}/webhooks`}
 							class="link link-hover text-xs">Webhooks</a
 						>
 					</div>

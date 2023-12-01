@@ -1,4 +1,4 @@
-import type { Deployment } from '$lib/models/deployment.model';
+import type { Application } from '$lib/models/application.model';
 import { writable } from 'svelte/store';
 
-export const deploymentStore = writable<Deployment>();
+export const deploymentStore = writable<Application>();

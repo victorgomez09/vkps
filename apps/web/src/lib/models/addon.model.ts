@@ -1,29 +1,29 @@
-export type Template = {
+export type Addon = {
 	id?: string;
 	name: string;
 	fancyName: string;
 	description: string;
 	icon: string;
 	image: string;
-	env?: TemplateEnv[];
-	type: TemplateType;
-	versions: TemplateVersion[];
-	volumes?: TemplateVolume[];
+	env?: AddonEnv[];
+	type: AddonType;
+	versions: AddonVersion[];
+	volumes?: AddonVolume[];
 };
 
-export type TemplateEnv = {
+export type AddonEnv = {
 	[key: string]: string;
 };
 
-export type TemplateType = {
+export type AddonType = {
 	type: 'DATABASE';
 };
 
-export type TemplateVersion = {
+export type AddonVersion = {
 	version: string;
 };
 
-export type TemplateVolume = {
+export type AddonVolume = {
 	path: string;
 	accessMode: ['ReadWriteOnce'] | ['ReadWriteMany'];
 	size: number;

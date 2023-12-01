@@ -9,7 +9,7 @@
 	const image = field('image', '', [required()]);
 	const version = field('version', '', [required()]);
 	const type = field('type', 'DATABASE', [required()]);
-	const templateForm = form(fancyName, name, description, icon, image, version, type);
+	const addonForm = form(fancyName, name, description, icon, image, version, type);
 
 	function handleSubmit() {
 		console.log('submit');
@@ -19,17 +19,16 @@
 <div class="flex flex-1">
 	<form class="flex flex-col flex-1 w-full h-full" on:submit|preventDefault={handleSubmit}>
 		<div class="flex justify-between">
-			<h1 class="font-bold text-lg">New Template</h1>
+			<h1 class="font-bold text-lg">New Addon</h1>
 
-			<button type="submit" class="btn btn-primary btn-sm" disabled={!$templateForm.valid}
-				>Save</button
+			<button type="submit" class="btn btn-primary btn-sm" disabled={!$addonForm.valid}>Save</button
 			>
 		</div>
 		<div class="card flex-1 bg-base-300 w-full overflow-auto mt-4">
 			<div class="card-body h-full max-h-0">
 				<div class="flex flex-col gap-2">
 					<div class="mt-2 grid grid-cols-2 items-center">
-						<label for="fancyName" class="font-bold">Template name</label>
+						<label for="fancyName" class="font-bold">Addon name</label>
 						<input
 							name="fancyName"
 							id="fancyName"
@@ -55,7 +54,7 @@
 					</div>
 
 					<div class="mt-2 grid grid-cols-2 items-center">
-						<label for="template" class="font-bold">Image</label>
+						<label for="image" class="font-bold">Image</label>
 						<input
 							name="image"
 							id="image"

@@ -1,11 +1,11 @@
 import { Router, Request, Response } from "express";
 
-import { deployTemplate, getDeploymentById, getDeploymentByName, getDeploymentLogsByName, getDeployments } from "../services/deployment.service";
+import { deployAddon, getApplicationById, getApplicationByName, getApplicationLogs, getApplications } from "../services/application.service";
 
 const router = Router();
 
 router.get("/", async (_req: Request, res: Response) => {
-    const response = await getDeployments();
+    const response = await getApplications();
 
     if (response.statusCode !== 200) {
         return res.status(response.statusCode).json({ error: response.error });
@@ -14,10 +14,10 @@ router.get("/", async (_req: Request, res: Response) => {
     return res.json({ data: response.data });
 });
 
-router.get("/:deploymentId", async (req: Request, res: Response) => {
-    const { deploymentId } = req.params;
+router.get("/:applicationId", async (req: Request, res: Response) => {
+    const { applicationId } = req.params;
 
-    const response = await getDeploymentById(deploymentId);
+    const response = await getApplicationById(applicationId);
 
     if (response.statusCode !== 200) {
         return res.status(response.statusCode).json({ error: response.error });
@@ -29,7 +29,7 @@ router.get("/:deploymentId", async (req: Request, res: Response) => {
 router.get("/:name/logs", async (req: Request, res: Response) => {
     const { name } = req.query;
 
-    const response = await getDeploymentLogsByName(String(name));
+    const response = await getApplicationLogs(String(name));
 
     if (response.statusCode !== 200) {
         return res.status(response.statusCode).json({ error: response.error });
@@ -38,10 +38,10 @@ router.get("/:name/logs", async (req: Request, res: Response) => {
     return res.json({ data: response.data });
 });
 
-router.get("/template/:templateName", async (req: Request, res: Response) => {
-    const { templateName, namespace } = req.query;
+router.get("/addon/:addonName", async (req: Request, res: Response) => {
+    const { addonName, namespace } = req.query;
 
-    const response = await getDeploymentByName(String(templateName), String(namespace));
+    const response = await getApplicationByName(String(addonName), String(namespace));
 
     if (response.statusCode !== 200) {
         return res.status(response.statusCode).json({ error: response.error });
@@ -50,14 +50,14 @@ router.get("/template/:templateName", async (req: Request, res: Response) => {
     return res.json({ data: response.data });
 });
 
-router.post("/template/:templateName", async (req: Request, res: Response) => {
-    const { templateName } = req.params;
+router.post("/addon/:addonName", async (req: Request, res: Response) => {
+    const { addonName } = req.params;
     const { namespace, name, description, version, replicas, cpu, memory, env, volumes, ports } = req.body;
 
-    const response = await deployTemplate({
-        templateName,
+    const response = await deployAddon({
+        addonName,
         namespace: namespace,
-        deploymentName: name,
+        applicationName: name,
         description,
         version,
         replicas,

@@ -1,5 +1,5 @@
 import { V1ConfigMap, V1ContainerPort, V1PersistentVolumeClaim, V1VolumeMount } from "@kubernetes/client-node";
-import { Deployment } from "@prisma/client";
+import { Application } from "@prisma/client";
 import {
     Pod,
     createConfigMap,
@@ -16,28 +16,28 @@ import { prisma } from "../config/database.config";
 import { Queue } from "../queue/queue";
 import { ApiResponse } from "../types";
 
-type DeploymentResponse = Deployment & {
+type ApplicationResponse = Application & {
     workingReplicas: number;
     totalReplicas: number;
 };
 
-export const getDeployments = async (): Promise<ApiResponse<DeploymentResponse[]>> => {
+export const getApplications = async (): Promise<ApiResponse<ApplicationResponse[]>> => {
     try {
-        const deployments: DeploymentResponse[] = [];
-        const deploymentsDb = await prisma.deployment.findMany({
+        const applications: ApplicationResponse[] = [];
+        const applicationsDb = await prisma.application.findMany({
             include: {
-                template: true,
+                addon: true,
             },
         });
 
-        for await (const deploymentDb of deploymentsDb) {
-            const k8sDeployment = await getDeployment(deploymentDb.deploymentId, "default");
+        for await (const applicationDb of applicationsDb) {
+            const k8sDeployment = await getDeployment(applicationDb.applicationId, "default");
             if (k8sDeployment.statusCode !== 200 || !k8sDeployment.data) {
                 continue;
             }
 
-            deployments.push({
-                ...deploymentDb,
+            applications.push({
+                ...applicationDb,
                 workingReplicas: k8sDeployment.data.status?.availableReplicas || 0,
                 totalReplicas: k8sDeployment.data.status?.replicas || 0,
             });
@@ -45,7 +45,7 @@ export const getDeployments = async (): Promise<ApiResponse<DeploymentResponse[]
 
         return {
             statusCode: 200,
-            data: deployments,
+            data: applications,
         };
     } catch (error) {
         return {
@@ -55,17 +55,17 @@ export const getDeployments = async (): Promise<ApiResponse<DeploymentResponse[]
     }
 };
 
-export const getDeploymentById = async (id: string): Promise<ApiResponse<DeploymentResponse>> => {
+export const getApplicationById = async (id: string): Promise<ApiResponse<ApplicationResponse>> => {
     try {
-        const deploymentDb = await prisma.deployment.findFirst({
+        const applicationDb = await prisma.application.findFirst({
             where: {
-                deploymentId: id,
+                applicationId: id,
             },
             include: {
-                template: true,
+                addon: true,
             },
         });
-        const { statusCode, data } = await getDeployment(deploymentDb.deploymentId, "default");
+        const { statusCode, data } = await getDeployment(applicationDb.applicationId, "default");
 
         if (statusCode !== 200 || !data) {
             return {
@@ -74,17 +74,15 @@ export const getDeploymentById = async (id: string): Promise<ApiResponse<Deploym
             };
         }
 
-        console.log("data", data);
-
-        const deployment: DeploymentResponse = {
-            ...deploymentDb,
+        const application: ApplicationResponse = {
+            ...applicationDb,
             workingReplicas: data.status?.availableReplicas || 0,
             totalReplicas: data.status?.replicas || 0,
         };
 
         return {
             statusCode,
-            data: deployment,
+            data: application,
         };
     } catch (error) {
         return {
@@ -94,7 +92,7 @@ export const getDeploymentById = async (id: string): Promise<ApiResponse<Deploym
     }
 };
 
-export const getDeploymentLogsByName = async (name: string) => {
+export const getApplicationLogs = async (name: string) => {
     try {
         const { statusCode, data } = await getDeploymentLogs(name);
 
@@ -110,7 +108,7 @@ export const getDeploymentLogsByName = async (name: string) => {
     }
 };
 
-export const getDeploymentByName = async (
+export const getApplicationByName = async (
     name: string,
     namespace: string
 ): Promise<
@@ -123,7 +121,7 @@ export const getDeploymentByName = async (
     }>
 > => {
     try {
-        const deployment = await getDeployment(String(name), String(namespace));
+        const application = await getDeployment(String(name), String(namespace));
 
         const pods: Pod[] = [];
         const podsData = await getPodsFromDeployment(String(name));
@@ -145,10 +143,10 @@ export const getDeploymentByName = async (
         return {
             statusCode: 200,
             data: {
-                name: deployment.data.metadata.name,
-                namespace: deployment.data.metadata.namespace,
-                replicas: deployment.data.spec.replicas,
-                availableReplicas: deployment.data.status.availableReplicas,
+                name: application.data.metadata.name,
+                namespace: application.data.metadata.namespace,
+                replicas: application.data.spec.replicas,
+                availableReplicas: application.data.status.availableReplicas,
                 pods: pods,
             },
         };
@@ -160,10 +158,10 @@ export const getDeploymentByName = async (
     }
 };
 
-export const deployTemplate = async ({
-    templateName,
+export const deployAddon = async ({
+    addonName,
     namespace,
-    deploymentName,
+    applicationName: deploymentName,
     description,
     version,
     replicas,
@@ -173,9 +171,9 @@ export const deployTemplate = async ({
     volumes,
     ports,
 }: {
-    templateName: string;
+    addonName: string;
     namespace: string;
-    deploymentName: string;
+    applicationName: string;
     description: string;
     version: string;
     replicas: number;
@@ -192,8 +190,8 @@ export const deployTemplate = async ({
     }>
 > => {
     try {
-        const template = await prisma.template.findFirst({
-            where: { name: templateName },
+        const addon = await prisma.addon.findFirst({
+            where: { name: addonName },
             include: {
                 env: true,
                 versions: true,
@@ -201,10 +199,10 @@ export const deployTemplate = async ({
             },
         });
 
-        if (!template) {
+        if (!addon) {
             return {
                 statusCode: 404,
-                error: "Template not found",
+                error: "Addon not found",
             };
         }
         // Save on database
@@ -217,7 +215,7 @@ export const deployTemplate = async ({
         queue
             .add(async () => {
                 let configMap: V1ConfigMap;
-                if (template.env.length) {
+                if (addon.env.length) {
                     const result = await createConfigMap({
                         namespace: namespace,
                         name: parseName(deploymentName),
@@ -257,7 +255,6 @@ export const deployTemplate = async ({
                                 error: pvData.error,
                             };
                         }
-                        console.log("pvData", pvData.data.metadata.name);
 
                         const pvcData = await createPersistentVolumeClaim({
                             namespace: namespace,
@@ -289,7 +286,7 @@ export const deployTemplate = async ({
                     labels: {
                         app: parseName(deploymentName),
                     },
-                    image: `${template.image}:${!version ? "latest" : version}`,
+                    image: `${addon.image}:${!version ? "latest" : version}`,
                     replicas: replicas,
                     ports: ports,
                     configMapRefName: configMap.metadata.name,
@@ -311,9 +308,9 @@ export const deployTemplate = async ({
             });
 
         // Add to database
-        const deployment = await prisma.deployment.create({
+        const deployment = await prisma.application.create({
             data: {
-                deploymentId: parseName(deploymentName),
+                applicationId: parseName(deploymentName),
                 name: deploymentName,
                 description: description,
                 replicas: replicas,
@@ -321,9 +318,9 @@ export const deployTemplate = async ({
                 memory: memory,
                 creationDate: new Date(),
                 updateTime: new Date(),
-                template: {
+                addon: {
                     connect: {
-                        id: template.id,
+                        id: addon.id,
                     },
                 },
             },

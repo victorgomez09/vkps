@@ -1,8 +1,8 @@
-import type { Template } from './template.model';
+import type { Addon } from './template.model';
 
-export type Deployment = {
+export type Application = {
 	id: string;
-	deploymentId: string;
+	applicationId: string;
 	name: string;
 	description: string;
 	replicas: number;
@@ -10,22 +10,22 @@ export type Deployment = {
 	totalReplicas: number;
 	memory: number;
 	cpu: number;
-	template?: Template;
+	addon?: Addon;
 	creationDate: Date;
 	updateTime: Date;
 };
 
-export type DeploymentDetails = Deployment & {
+export type ApplicationDetails = Application & {
 	pods: [];
-	env: DeploymentEnv;
-	volumes: DeploymentVolume[];
+	env: ApplicationEnv;
+	volumes: ApplicationVolume[];
 };
 
-export type DeploymentEnv = {
+export type ApplicationEnv = {
 	[key: string]: string;
 };
 
-export type DeploymentVolume = {
+export type ApplicationVolume = {
 	path: string;
 	size: number;
 	accessMode: string[];

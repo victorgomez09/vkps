@@ -127,11 +127,11 @@ async function main() {
         }
 
         for await (const [key, value] of Object.entries(addon.env)) {
-            await prisma.templateEnv.create({
+            await prisma.addonEnv.create({
                 data: {
                     key,
                     value,
-                    template: {
+                    addon: {
                         connect: { id: addonCreated.id },
                     },
                 },
@@ -139,10 +139,10 @@ async function main() {
         }
 
         for await (const volume of addon.volumes) {
-            await prisma.templateVolume.create({
+            await prisma.addonVolume.create({
                 data: {
                     path: volume.path,
-                    template: {
+                    addon: {
                         connect: { id: addonCreated.id },
                     },
                 },

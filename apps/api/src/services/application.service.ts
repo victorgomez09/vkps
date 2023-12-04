@@ -15,6 +15,7 @@ import { parseName } from "engine/lib/utils.engine";
 import { prisma } from "../config/database.config";
 import { Queue } from "../queue/queue";
 import { ApiResponse } from "../types";
+import { NAMESPACE } from "../constants/k8s.constant";
 
 type ApplicationResponse = Application & {
     workingReplicas: number;
@@ -36,8 +37,8 @@ export const getApplications = async (): Promise<ApiResponse<ApplicationResponse
                 applications.push({
                     ...applicationDb,
                     workingReplicas: 0,
-                    totalReplicas: 0
-                })
+                    totalReplicas: 0,
+                });
                 continue;
             }
 
@@ -70,7 +71,7 @@ export const getApplicationById = async (id: string): Promise<ApiResponse<Applic
                 addon: true,
                 deployments: true,
                 env: true,
-                volumes: true
+                volumes: true,
             },
         });
         const { statusCode, data } = await getDeployment(applicationDb.applicationId, "default");
@@ -82,7 +83,7 @@ export const getApplicationById = async (id: string): Promise<ApiResponse<Applic
                     ...applicationDb,
                     workingReplicas: 0,
                     totalReplicas: 0,
-                }
+                },
             };
         }
 
@@ -190,13 +191,13 @@ export const createApp = async ({
     env: { [key: string]: string };
     volumes: { path: string; size: string; accessMode: string[] }[];
     ports: V1ContainerPort[];
-}): Promise<
-    ApiResponse<Application>
-> => {
+}): Promise<ApiResponse<Application>> => {
     try {
-        if (await prisma.application.findFirst({
-            where: {name}
-        })) {
+        if (
+            await prisma.application.findFirst({
+                where: { name },
+            })
+        ) {
             return {
                 statusCode: 409,
                 error: `Application ${name} already exists`,
@@ -230,12 +231,12 @@ export const createApp = async ({
                         size: Number(volume.size),
                         application: {
                             connect: {
-                                id: application.id
-                            }
-                        }
-                    }
-                })
-            })
+                                id: application.id,
+                            },
+                        },
+                    },
+                });
+            });
         }
 
         if (Object.keys(env).length > 0) {
@@ -246,19 +247,174 @@ export const createApp = async ({
                         value,
                         application: {
                             connect: {
-                                id: application.id
-                            }
-                        }
-                    }
-                })
-            })
+                                id: application.id,
+                            },
+                        },
+                    },
+                });
+            });
         }
-
 
         return {
             statusCode: 200,
             data: {
-                ...application
+                ...application,
+            },
+        };
+    } catch (error) {
+        console.log(error);
+        return {
+            error: error.message,
+            statusCode: error.statusCode,
+        };
+    }
+};
+
+export const deployApplication = async (
+    applicationId: string
+): Promise<
+    ApiResponse<{
+        status: string;
+    }>
+> => {
+    try {
+        const application = await prisma.application.findFirst({
+            where: { applicationId },
+            include: {
+                deployments: true,
+                env: true,
+                volumes: true,
+            },
+        });
+
+        if (!application) {
+            return {
+                statusCode: 404,
+                error: "Addon not found",
+            };
+        }
+        // Save on database
+        const queue = Queue({
+            queueTimeout: 500,
+            executionTimeout: 250,
+            concurrency: 1,
+            maxTaskCount: 1,
+        });
+        queue
+            .add(async () => {
+                let configMap: V1ConfigMap;
+                if (application.env.length) {
+                    const env = {} as {
+                        [key: string]: string;
+                    };
+                    application.env.map((appEnv) => {
+                        env[appEnv.key] = appEnv.value;
+                    });
+                    const result = await createConfigMap({
+                        namespace: NAMESPACE,
+                        name: parseName(application.name),
+                        labels: {
+                            app: parseName(application.name),
+                        },
+                        data: env,
+                    });
+
+                    if (result.statusCode !== 201) {
+                        return {
+                            statusCode: result.statusCode,
+                            error: result.error,
+                        };
+                    }
+
+                    configMap = result.data;
+                }
+
+                let pvc: V1PersistentVolumeClaim;
+                const volumeMounts: V1VolumeMount[] = [];
+                if (application.volumes.length > 0) {
+                    for await (const volume of application.volumes) {
+                        const pvData = await createPersistentVolume({
+                            namespace: NAMESPACE,
+                            name: parseName(application.name),
+                            labels: {
+                                app: parseName(application.name),
+                            },
+                            accessModes: ["ReadWriteOnce"],
+                            storage: volume.size.toString(),
+                            path: volume.path,
+                        });
+                        if (pvData.statusCode !== 201) {
+                            return {
+                                statusCode: pvData.statusCode,
+                                error: pvData.error,
+                            };
+                        }
+
+                        const pvcData = await createPersistentVolumeClaim({
+                            namespace: NAMESPACE,
+                            name: parseName(application.name),
+                            labels: {
+                                app: parseName(application.name),
+                            },
+                            accessModes: ["ReadWriteOnce"],
+                            storage: volume.size.toString(),
+                        });
+                        if (pvcData.statusCode !== 201) {
+                            return {
+                                statusCode: pvcData.statusCode,
+                                error: pvcData.error,
+                            };
+                        }
+                        pvc = pvcData.data;
+
+                        volumeMounts.push({
+                            name: pvcData.data.metadata.name,
+                            mountPath: volume.path,
+                        });
+                    }
+                }
+
+                const result = await createDeployment({
+                    namespace: NAMESPACE,
+                    name: parseName(application.name),
+                    labels: {
+                        app: parseName(application.name),
+                    },
+                    image: `${application.image}:latest`,
+                    replicas: application.replicas,
+                    ports: [],
+                    configMapRefName: configMap.metadata.name,
+                    persistentVolumeClaimRefName: pvc.metadata.name,
+                    volumeMounts,
+                });
+
+                return result;
+            })
+            .then(async (result) => {
+                await prisma.applicationDeployments.create({
+                    data: {
+                        application: {
+                            connect: {
+                                id: application.id,
+                            },
+                        },
+                    },
+                });
+
+                return {
+                    statusCode: 201,
+                    data: {
+                        name: result.data.metadata.name,
+                        namespace: result.data.metadata.namespace,
+                        replicas: result.data.spec.replicas,
+                    },
+                };
+            });
+
+        return {
+            statusCode: 200,
+            data: {
+                status: "Deploying application",
             },
         };
     } catch (error) {

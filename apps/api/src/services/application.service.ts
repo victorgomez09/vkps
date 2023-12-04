@@ -33,6 +33,11 @@ export const getApplications = async (): Promise<ApiResponse<ApplicationResponse
         for await (const applicationDb of applicationsDb) {
             const k8sDeployment = await getDeployment(applicationDb.applicationId, "default");
             if (k8sDeployment.statusCode !== 200 || !k8sDeployment.data) {
+                applications.push({
+                    ...applicationDb,
+                    workingReplicas: 0,
+                    totalReplicas: 0
+                })
                 continue;
             }
 
@@ -63,14 +68,21 @@ export const getApplicationById = async (id: string): Promise<ApiResponse<Applic
             },
             include: {
                 addon: true,
+                deployments: true,
+                env: true,
+                volumes: true
             },
         });
         const { statusCode, data } = await getDeployment(applicationDb.applicationId, "default");
 
-        if (statusCode !== 200 || !data) {
+        if (!data) {
             return {
-                statusCode: 404,
-                error: "Deployment not found",
+                statusCode: 200,
+                data: {
+                    ...applicationDb,
+                    workingReplicas: 0,
+                    totalReplicas: 0,
+                }
             };
         }
 
@@ -154,6 +166,106 @@ export const getApplicationByName = async (
         return {
             statusCode: error.statusCode,
             error: error.body.message,
+        };
+    }
+};
+
+export const createApp = async ({
+    name,
+    description,
+    image,
+    replicas,
+    cpu,
+    memory,
+    env,
+    volumes,
+    ports,
+}: {
+    name: string;
+    description: string;
+    image: string;
+    replicas: number;
+    cpu: number;
+    memory: number;
+    env: { [key: string]: string };
+    volumes: { path: string; size: string; accessMode: string[] }[];
+    ports: V1ContainerPort[];
+}): Promise<
+    ApiResponse<Application>
+> => {
+    try {
+        if (await prisma.application.findFirst({
+            where: {name}
+        })) {
+            return {
+                statusCode: 409,
+                error: `Application ${name} already exists`,
+            };
+        }
+
+        const application = await prisma.application.create({
+            data: {
+                applicationId: parseName(name),
+                name,
+                description,
+                image,
+                replicas,
+                cpu,
+                memory,
+                creationDate: new Date(),
+                updateTime: new Date(),
+                // addon: {
+                //     connect: {
+                //         id: addon.id,
+                //     },
+                // },
+            },
+        });
+
+        if (volumes.length > 0) {
+            volumes.map(async (volume) => {
+                await prisma.applicationVolume.create({
+                    data: {
+                        path: volume.path,
+                        size: Number(volume.size),
+                        application: {
+                            connect: {
+                                id: application.id
+                            }
+                        }
+                    }
+                })
+            })
+        }
+
+        if (Object.keys(env).length > 0) {
+            Object.entries(env).map(async ([key, value]) => {
+                await prisma.applicationEnv.create({
+                    data: {
+                        key,
+                        value,
+                        application: {
+                            connect: {
+                                id: application.id
+                            }
+                        }
+                    }
+                })
+            })
+        }
+
+
+        return {
+            statusCode: 200,
+            data: {
+                ...application
+            },
+        };
+    } catch (error) {
+        console.log(error);
+        return {
+            error: error.message,
+            statusCode: error.statusCode,
         };
     }
 };
@@ -313,6 +425,7 @@ export const deployAddon = async ({
                 applicationId: parseName(deploymentName),
                 name: deploymentName,
                 description: description,
+                image: addon.image,
                 replicas: replicas,
                 cpu: cpu,
                 memory: memory,

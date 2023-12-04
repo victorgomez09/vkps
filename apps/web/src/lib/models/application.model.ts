@@ -1,15 +1,19 @@
-import type { Addon } from './template.model';
+import type { Addon } from './addon.model';
 
 export type Application = {
 	id: string;
 	applicationId: string;
 	name: string;
 	description: string;
+	image: string;
 	replicas: number;
 	workingReplicas: number;
 	totalReplicas: number;
 	memory: number;
 	cpu: number;
+	env: ApplicationEnv;
+	volumes: ApplicationVolume[];
+	deployments: ApplicationDeployments[]
 	addon?: Addon;
 	creationDate: Date;
 	updateTime: Date;
@@ -17,8 +21,6 @@ export type Application = {
 
 export type ApplicationDetails = Application & {
 	pods: [];
-	env: ApplicationEnv;
-	volumes: ApplicationVolume[];
 };
 
 export type ApplicationEnv = {
@@ -30,3 +32,8 @@ export type ApplicationVolume = {
 	size: number;
 	accessMode: string[];
 };
+
+export type ApplicationDeployments = {
+	id: string;
+	creationDate: Date;
+}

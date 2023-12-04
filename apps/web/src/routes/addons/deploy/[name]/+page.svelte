@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
 	import { env } from '$env/dynamic/public';
 	import { default as FormDiv, default as Input } from '$lib/components/FormDiv.svelte';
 	import type { Addon, AddonEnv, AddonVolume } from '$lib/models/addon.model';
@@ -128,7 +128,7 @@
 							/>
 						</div>
 
-						<!-- <FormDiv label="Type" field={type} /> -->
+						<FormDiv label="Type" field={type} />
 
 						<div class="mt-2 grid grid-cols-2 items-center">
 							<label for="version" class="font-bold">Version</label>
@@ -184,4 +184,4 @@
 			</form>
 		</div>
 	</div>
-</div>
+</div> -->

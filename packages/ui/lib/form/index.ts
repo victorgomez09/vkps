@@ -1,5 +1,3 @@
-export { field } from './field';
-export { form } from './form';
-export { defaultFieldOptions as defaultFieldOptions } from './types';
-export * from './validators';
-export { style } from './style';
+export { forms } from './form';
+export { email, emailWithTld, maxLength, minLength, number, pattern, required, url } from './validators';
+export * from './actions';

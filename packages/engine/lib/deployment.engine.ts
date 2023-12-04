@@ -107,7 +107,7 @@ export const getDeployment = async (
   } catch (error) {
     return {
       statusCode: error.statusCode,
-      error: error.body.message
+      error: error.body ? error.body.message : error
     };
   }
 };

@@ -1,9 +1,10 @@
 <script lang="ts">
+	import type { PageDataResponse } from '$lib/models/api.model';
 	import type { Application } from '$lib/models/application.model.js';
 
-	export let data;
+	export let data: PageDataResponse<Application[]>;
 
-	let deployments: Application[] = data.deployments?.data || [];
+	const { data: applications } = data;
 </script>
 
 <div class="flex flex-col flex-1">
@@ -14,42 +15,48 @@
 	</div>
 
 	<div class="mt-6 flex flex-col gap-2">
-		{#if deployments.length > 0}
-			{#each deployments as deployment}
-				{console.log('deployment', deployment)}
-				<div class="card w-full p-4 bg-base-300 text-base-content">
+		{#if applications.length > 0}
+			{#each applications as application}
+				<div class="card w-full p-4 shadow bg-base-300 text-base-content">
 					<div class="flex items-baseline gap-4">
-						<span class="font-bold text-lg">{deployment.name}</span>
+						<a href={`/applications/${application.applicationId}/configuration`} class="font-bold text-lg">{application.name}</a>
 						<span class="text-sm">
-							{deployment.addon ? deployment.addon.image : 'wip'}
+							{application.addon ? application.addon.image : application.image}
 						</span>
 
 						<div class="flex items-center self-center gap-1">
 							<span
-								class:badge-success={deployment.workingReplicas === deployment.totalReplicas}
-								class:badge-error={deployment.workingReplicas !== deployment.totalReplicas}
+								class:badge-success={application.workingReplicas === application.totalReplicas && application.workingReplicas !== 0 && application.totalReplicas !== 0}
+								class:badge-error={application.workingReplicas !== application.totalReplicas || application.workingReplicas === 0 || application.totalReplicas === 0}
 								class="indicator-item badge badge-sm"
 							/>
 							<span
-								class:text-success={deployment.workingReplicas === deployment.totalReplicas}
-								class:text-error={deployment.workingReplicas !== deployment.totalReplicas}
+							class:text-success={application.workingReplicas === application.totalReplicas && application.workingReplicas !== 0 && application.totalReplicas !== 0}
+							class:text-error={application.workingReplicas !== application.totalReplicas || application.workingReplicas === 0 || application.totalReplicas === 0}
 							>
-								{deployment.workingReplicas}/{deployment.totalReplicas}
+								{application.workingReplicas}/{application.totalReplicas}
+								{#if application.totalReplicas === 0}
+									Shutdown
+								{/if}
 							</span>
 						</div>
 					</div>
 
 					<div class="flex items-center flex-wrap gap-4 mt-2">
 						<a
-							href={`/applications/${deployment.applicationId}/logs`}
+							href={`/applications/${application.applicationId}/deploy`}
+							class="link link-hover text-xs">Deploy</a
+						>
+						<a
+							href={`/applications/${application.applicationId}/logs`}
 							class="link link-hover text-xs">Logs</a
 						>
 						<a
-							href={`/applications/${deployment.applicationId}/configuration`}
+							href={`/applications/${application.applicationId}/configuration`}
 							class="link link-hover text-xs">Configuration</a
 						>
 						<a
-							href={`/applications/${deployment.applicationId}/webhooks`}
+							href={`/applications/${application.applicationId}/webhooks`}
 							class="link link-hover text-xs">Webhooks</a
 						>
 					</div>

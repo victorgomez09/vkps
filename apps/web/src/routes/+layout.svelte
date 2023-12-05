@@ -1,4 +1,7 @@
 <script lang="ts">
+	import 'flowbite';
+	import { onMount } from 'svelte';
+	import { initFlowbite } from 'flowbite';
 	import { page } from '$app/stores';
 	import { themes } from '$lib/data/themes';
 	import '../app.css';
@@ -6,6 +9,10 @@
 	function changeTheme(theme: string) {
 		localStorage.setItem('theme', theme);
 	}
+
+	onMount(() => {
+		initFlowbite();
+	});
 </script>
 
 <div class="flex flex-1 h-full">

@@ -75,7 +75,7 @@
 <div class="flex flex-col w-full h-full">
 	<div class="h-full">
 		<form use:form on:submit|preventDefault={handleForm} class="overflow-auto">
-			<div class="card bg-base-200 shadow mt-4 w-full">
+			<!-- <div class="card bg-base-200 shadow mt-4 w-full">
 				<div class="card-body px-4 py-4">
 					<h1 class="card-title text-base">Name</h1>
 
@@ -107,59 +107,138 @@
 						</label>
 					</div>
 				</div>
+			</div> -->
+
+			<div
+				class="w-full p-4 rounded-md shadow bg-gray-200 border border-gray-200 dark:bg-gray-800 dark:border-gray-700"
+			>
+				<h5 class="text-xl font-medium text-gray-900 dark:text-white">Name</h5>
+				<div class="mt-2">
+					<input
+						name="name"
+						type="text"
+						id="name"
+						class:ring-red-500={$form.name?.touched && Object.keys($form.name?.errors).length > 0}
+						class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+						placeholder="name@company.com"
+						required
+					/>
+				</div>
+				{#if $form.name?.touched && Object.keys($form.name?.errors).length > 0}
+					<span class="mt-2 text-sm font-medium text-red-500 dark:text-red-300">
+						{#if $form.name?.errors.required}
+							Name is required
+						{:else}
+							Name max lenght is 30 characters
+						{/if}
+					</span>
+				{/if}
+				<div class="mt-2 text-xs font-medium text-gray-500 dark:text-gray-300">
+					Choose a descriptive name for this application. Must be between 1-30 characters and
+					consist of alphabets (A-Z a-z), numbers (0-9) and spaces ( ).
+				</div>
 			</div>
 
-			<div class="card bg-base-200 shadow mt-4 w-full">
-				<div class="card-body px-4 py-4">
-					<h1 class="card-title text-base">Image registry</h1>
+			<div
+				class="mt-4 w-full p-4 rounded-md shadow bg-gray-200 border border-gray-200 dark:bg-gray-800 dark:border-gray-700"
+			>
+				<h5 class="text-xl font-medium text-gray-900 dark:text-white">Image registry</h5>
 
-					<div class="flex flex-col w-full">
-						<div class="form-control w-full">
-							<div class="dropdown">
-								<div tabIndex={0} role="button" class="btn bg-base-100 m-1">Docker Hub</div>
-								<ul
-									tabIndex={0}
-									class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
-								>
-									<li class="hover:bg-base-200"><div class="p-2">Docker Hub</div></li>
-								</ul>
-							</div>
-							<div class="label">
-								<span class="label-text-alt font-thin"
-									>Application image will be pulled from this registry. Currently only Docker
-									registry is supported.</span
-								>
-							</div>
-						</div>
-					</div>
-
-					<div class="divider" />
-
-					<h1 class="card-title text-base">Image name</h1>
-					<div class="flex flex-col w-full">
-						<label class="form-control w-full">
-							<input
-								name="image"
-								type="text"
-								placeholder="Type here"
-								class="input input-bordered w-full"
-								class:input-error={$form.image?.touched &&
-									Object.keys($form.image?.errors).length > 0}
+				<div class="flex flex-col">
+					<button
+						id="dropdownDefaultButton"
+						data-dropdown-toggle="dropdown"
+						class="w-32 mt-2 text-white bg-white hover:bg-gray-100 focus:ring-2 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+						type="button"
+						>Dropdown button <svg
+							class="w-2.5 h-2.5 ms-3"
+							aria-hidden="true"
+							xmlns="http://www.w3.org/2000/svg"
+							fill="none"
+							viewBox="0 0 10 6"
+						>
+							<path
+								stroke="currentColor"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="m1 1 4 4 4-4"
 							/>
-							<div class="label flex-col text-left">
-								{#if $form.image?.touched && Object.keys($form.image?.errors).length > 0}
-									<span class="label-text-alt font-thin text-error w-full">
-										{#if $form.image?.errors.required}
-											Image name is required
-										{/if}
-									</span>
-								{/if}
-								<span class="label-text-alt font-thin w-full"
-									>Name of the image to pull. Tag will be selected later when making a deployment.</span
+						</svg>
+					</button>
+
+					<!-- Dropdown menu -->
+					<div
+						id="dropdown"
+						class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700"
+					>
+						<ul
+							class="py-2 text-sm text-gray-700 dark:text-gray-200"
+							aria-labelledby="dropdownDefaultButton"
+						>
+							<li>
+								<a
+									href="#"
+									class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+									>Dashboard</a
 								>
-							</div>
-						</label>
+							</li>
+							<li>
+								<a
+									href="#"
+									class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+									>Settings</a
+								>
+							</li>
+							<li>
+								<a
+									href="#"
+									class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+									>Earnings</a
+								>
+							</li>
+							<li>
+								<a
+									href="#"
+									class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+									>Sign out</a
+								>
+							</li>
+						</ul>
 					</div>
+
+					<div class="mt-2 text-xs font-medium text-gray-500 dark:text-gray-300">
+						Application image will be pulled from this registry. Currently only Docker registry is
+						supported.
+					</div>
+				</div>
+
+				<div class="divider" />
+
+				<h1 class="card-title text-base">Image name</h1>
+				<div class="flex flex-col w-full">
+					<label class="form-control w-full">
+						<input
+							name="image"
+							type="text"
+							placeholder="Type here"
+							class="input input-bordered w-full"
+							class:input-error={$form.image?.touched &&
+								Object.keys($form.image?.errors).length > 0}
+						/>
+						<div class="label flex-col text-left">
+							{#if $form.image?.touched && Object.keys($form.image?.errors).length > 0}
+								<span class="label-text-alt font-thin text-error w-full">
+									{#if $form.image?.errors.required}
+										Image name is required
+									{/if}
+								</span>
+							{/if}
+							<span class="label-text-alt font-thin w-full"
+								>Name of the image to pull. Tag will be selected later when making a deployment.</span
+							>
+						</div>
+					</label>
 				</div>
 			</div>
 

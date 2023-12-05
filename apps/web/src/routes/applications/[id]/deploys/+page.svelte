@@ -1,5 +1,22 @@
 <script lang="ts">
+	import { env } from '$env/dynamic/public';
 	import { applicationStore } from '$lib/stores/application.store';
+
+	// FUNCTIONS
+	async function deployApplication() {
+		const response = await fetch(
+			`${env.PUBLIC_API_URL}/applications/deploy/${$applicationStore.applicationId}`,
+			{
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			}
+		);
+
+		const result = await response.json();
+		console.log('result', result);
+	}
 </script>
 
 <div class="flex flex-col flex-1">

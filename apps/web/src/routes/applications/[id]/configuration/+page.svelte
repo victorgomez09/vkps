@@ -76,6 +76,10 @@
 	<div class="h-full">
 		<form use:form on:submit|preventDefault={handleForm} class="overflow-auto">
 			<!-- <div class="card bg-base-200 shadow mt-4 w-full">
+<div class="flex flex-col w-full h-full overflow-auto">
+	<div class="max-h-0">
+		<form use:form on:submit|preventDefault={handleForm}>
+			<div class="card bg-base-200 shadow w-full">
 				<div class="card-body px-4 py-4">
 					<h1 class="card-title text-base">Name</h1>
 
@@ -85,11 +89,11 @@
 								name="name"
 								type="text"
 								placeholder="Type here"
-								class="input input-bordered w-full"
+								class="input input-sm input-bordered w-full"
 								class:input-error={$form.name?.touched &&
 									Object.keys($form.name?.errors).length > 0}
 							/>
-							<div class="label flex-col">
+							<div class="label flex-col text-start">
 								{#if $form.name?.touched && Object.keys($form.name?.errors).length > 0}
 									<span class="label-text-alt font-thin text-error w-full">
 										{#if $form.name?.errors.required}
@@ -99,7 +103,7 @@
 										{/if}
 									</span>
 								{/if}
-								<span class="label-text-alt font-thin"
+								<span class="label-text-alt font-thin w-full"
 									>Choose a descriptive name for this application. Must be between 1-30 characters
 									and consist of alphabets (A-Z a-z), numbers (0-9) and spaces ( ).</span
 								>
@@ -250,7 +254,7 @@
 						<button
 							on:click={addEnvInput}
 							type="button"
-							class="btn btn-ghost bg-base-100 border border-base-300"
+							class="btn btn-sm btn-ghost bg-base-100 border border-base-300"
 							>Add environment variable</button
 						>
 					</div>
@@ -260,7 +264,7 @@
 								<input
 									name={`env-key-${index}`}
 									type="text"
-									class="input input-bordered"
+									class="input input-sm input-bordered"
 									class:input-error={$form[`env-key-${index}`]?.touched &&
 										Object.keys($form[`env-key-${index}`]?.errors || []).length > 0}
 									use:validators={[required]}
@@ -269,15 +273,17 @@
 								<input
 									name={`env-value-${index}`}
 									type="text"
-									class="input input-bordered"
+									class="input input-sm input-bordered"
 									class:input-error={$form[`env-value-${index}`]?.touched &&
 										Object.keys($form[`env-value-${index}`]?.errors || []).length > 0}
 									use:validators={[required]}
 									bind:value={envInput.value}
 								/>
 
-								<button on:click={() => removeEnvInput(index)} type="button" class="btn bg-base-100"
-									>X</button
+								<button
+									on:click={() => removeEnvInput(index)}
+									type="button"
+									class="btn btn-sm bg-base-100">X</button
 								>
 							</div>
 						{/each}
@@ -293,7 +299,7 @@
 						<button
 							on:click={addVolumeInput}
 							type="button"
-							class="btn btn-ghost bg-base-100 border border-base-300">Add volume</button
+							class="btn btn-sm btn-ghost bg-base-100 border border-base-300">Add volume</button
 						>
 					</div>
 					<div class="flex flex-col gap-2 w-full">
@@ -302,7 +308,7 @@
 								<input
 									name={`volume-key-${index}`}
 									type="text"
-									class="input input-bordered"
+									class="input input-sm input-bordered"
 									placeholder="Container volume"
 									class:input-error={$form[`volume-key-${index}`]?.touched &&
 										Object.keys($form[`env-key-${index}`]?.errors || []).length > 0}
@@ -313,7 +319,7 @@
 								<input
 									name={`volume-size-${index}`}
 									type="number"
-									class="input input-bordered"
+									class="input input-sm input-bordered"
 									placeholder="Size(Mb)"
 									class:input-error={$form[`volume-size-${index}`]?.touched &&
 										Object.keys($form[`volume-size-${index}`]?.errors || []).length > 0}
@@ -324,7 +330,7 @@
 								<button
 									on:click={() => removeVolumeInput(index)}
 									type="button"
-									class="btn bg-base-100">X</button
+									class="btn btn-sm bg-base-100">X</button
 								>
 							</div>
 						{/each}
@@ -340,7 +346,7 @@
 						<input
 							name="replicas"
 							type="number"
-							class="input input-bordered w-24"
+							class="input input-sm input-bordered w-24"
 							use:validators={[required]}
 							bind:value={$form.replicas.value}
 						/>
@@ -349,37 +355,37 @@
 							<button
 								on:click={() => ($form.replicas.value = '1')}
 								type="button"
-								class="btn bg-base-100 join-item"
+								class="btn btn-sm bg-base-100 join-item"
 								class:bg-info={$form.replicas.value === '1'}>1</button
 							>
 							<button
 								on:click={() => ($form.replicas.value = '2')}
 								type="button"
-								class="btn bg-base-100 join-item"
+								class="btn btn-sm bg-base-100 join-item"
 								class:bg-info={$form.replicas.value === '2'}>2</button
 							>
 							<button
 								on:click={() => ($form.replicas.value = '3')}
 								type="button"
-								class="btn bg-base-100 join-item"
+								class="btn btn-sm bg-base-100 join-item"
 								class:bg-info={$form.replicas.value === '3'}>3</button
 							>
 							<button
 								on:click={() => ($form.replicas.value = '4')}
 								type="button"
-								class="btn bg-base-100 join-item"
+								class="btn btn-sm bg-base-100 join-item"
 								class:bg-info={$form.replicas.value === '4'}>4</button
 							>
 							<button
 								on:click={() => ($form.replicas.value = '5')}
 								type="button"
-								class="btn bg-base-100 join-item"
+								class="btn btn-sm bg-base-100 join-item"
 								class:bg-info={$form.replicas.value === '5'}>5</button
 							>
 							<button
 								on:click={() => ($form.replicas.value = '10')}
 								type="button"
-								class="btn bg-base-100 join-item"
+								class="btn btn-sm bg-base-100 join-item"
 								class:bg-info={$form.replicas.value === '10'}>10</button
 							>
 						</div>
@@ -387,55 +393,52 @@
 
 					<div class="divider" />
 
-					<h1 class="card-title text-base">Memory</h1>
+					<h1 class="card-title text-base">Memory (mb)</h1>
 
 					<div class="flex items-center gap-2">
-						<div class="join">
-							<input
-								name="memory"
-								type="number"
-								class="input input-bordered w-24"
-								use:validators={[required]}
-								bind:value={$form.memory.value}
-							/>
-							<div class="flex items-center justify-center bg-base-300 p-2 join-item">Mb</div>
-						</div>
+						<input
+							name="memory"
+							type="number"
+							class="input input-sm input-bordered w-24"
+							use:validators={[required]}
+							bind:value={$form.memory.value}
+						/>
 
 						<div class="join join-horizontal">
 							<button
 								on:click={() => ($form.memory.value = '128')}
 								type="button"
-								class="btn bg-base-100 join-item"
+								class="btn btn-sm bg-base-100 join-item"
 								class:bg-info={$form.memory.value === '128'}>128</button
 							>
 							<button
 								on:click={() => ($form.memory.value = '256')}
 								type="button"
-								class="btn bg-base-100 join-item"
+								class="btn btn-sm bg-base-100 join-item"
 								class:bg-info={$form.memory.value === '256'}>256</button
 							>
 							<button
 								on:click={() => ($form.memory.value = '512')}
 								type="button"
-								class="btn bg-base-100 join-item"
+								class="btn btn-sm bg-base-100 join-item"
 								class:bg-info={$form.memory.value === '512'}>512</button
 							>
 							<button
 								on:click={() => ($form.memory.value = '768')}
 								type="button"
-								class="btn bg-base-100 join-item"
+								class="btn btn-sm bg-base-100 join-item"
 								class:bg-info={$form.memory.value === '768'}>768</button
 							>
 							<button
 								on:click={() => ($form.memory.value = '1024')}
 								type="button"
-								class="btn bg-base-100 join-item"
+								class="btn btn-sm bg-base-100 join-item"
 								class:bg-info={$form.memory.value === '1024'}>1024</button
 							>
 							<button
 								on:click={() => ($form.memory.value = '2048')}
 								type="button"
-								class="btn bg-base-100 join-item"
+								class="btn btn-sm bg-base-100 join-item"
 								class:bg-info={$form.memory.value === '2048'}>2048</button
 							>
 						</div>
@@ -443,55 +446,52 @@
 
 					<div class="divider" />
 
-					<h1 class="card-title text-base">Cpu</h1>
+					<h1 class="card-title text-base">Cpu (mcpu)</h1>
 
 					<div class="flex items-center gap-2">
-						<div class="join">
-							<input
-								name="cpu"
-								type="number"
-								class="input input-bordered w-24"
-								use:validators={[required]}
-								bind:value={$form.cpu.value}
-							/>
-							<div class="flex items-center justify-center bg-base-300 p-2 join-item">mcpu</div>
-						</div>
+						<input
+							name="cpu"
+							type="number"
+							class="input input-sm input-bordered w-24"
+							use:validators={[required]}
+							bind:value={$form.cpu.value}
+						/>
 
 						<div class="join join-horizontal">
 							<button
 								on:click={() => ($form.cpu.value = '100')}
 								type="button"
-								class="btn bg-base-100 join-item"
+								class="btn btn-sm bg-base-100 join-item"
 								class:bg-info={$form.cpu.value === '100'}>100</button
 							>
 							<button
 								on:click={() => ($form.cpu.value = '250')}
 								type="button"
-								class="btn bg-base-100 join-item"
+								class="btn btn-sm bg-base-100 join-item"
 								class:bg-info={$form.cpu.value === '250'}>250</button
 							>
 							<button
 								on:click={() => ($form.cpu.value = '500')}
 								type="button"
-								class="btn bg-base-100 join-item"
+								class="btn btn-sm bg-base-100 join-item"
 								class:bg-info={$form.cpu.value === '500'}>500</button
 							>
 							<button
 								on:click={() => ($form.cpu.value = '750')}
 								type="button"
-								class="btn bg-base-100 join-item"
+								class="btn btn-sm bg-base-100 join-item"
 								class:bg-info={$form.cpu.value === '750'}>750</button
 							>
 							<button
 								on:click={() => ($form.cpu.value = '1000')}
 								type="button"
-								class="btn bg-base-100 join-item"
+								class="btn btn-sm bg-base-100 join-item"
 								class:bg-info={$form.cpu.value === '1000'}>1000</button
 							>
 							<button
 								on:click={() => ($form.cpu.value = '2000')}
 								type="button"
-								class="btn bg-base-100 join-item"
+								class="btn btn-sm bg-base-100 join-item"
 								class:bg-info={$form.cpu.value === '2000'}>2000</button
 							>
 						</div>
@@ -499,9 +499,9 @@
 				</div>
 			</div>
 
-			<button type="submit" class="btn btn-primary mt-4" disabled={!$form.valid}
-				>Create application</button
-			>
+			<button type="submit" class="btn btn-sm btn-primary mt-4" disabled={!$form.valid}>
+				Update application
+			</button>
 		</form>
 	</div>
 </div>

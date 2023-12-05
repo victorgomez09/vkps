@@ -22,7 +22,7 @@
 					href={`/applications/${$applicationStore.applicationId}/deploys`}
 					class:text-green-600={$page.url.pathname ===
 						`/applications/${application.applicationId}/deploys`}
-					class:border-green-600={$page.url.pathname ===
+					class:!border-green-600={$page.url.pathname ===
 						`/applications/${application.applicationId}/deploys`}
 					class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
 				>
@@ -34,7 +34,7 @@
 					href={`/applications/${$applicationStore.applicationId}/logs`}
 					class:text-green-600={$page.url.pathname ===
 						`/applications/${application.applicationId}/logs`}
-					class:border-green-600={$page.url.pathname ===
+					class:!border-green-600={$page.url.pathname ===
 						`/applications/${application.applicationId}/logs`}
 					class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
 					aria-current="page"
@@ -47,7 +47,7 @@
 					href={`/applications/${$applicationStore.applicationId}/configuration`}
 					class:text-green-600={$page.url.pathname ===
 						`/applications/${application.applicationId}/configuration`}
-					class:border-green-600={$page.url.pathname ===
+					class:!border-green-600={$page.url.pathname ===
 						`/applications/${application.applicationId}/configuration`}
 					class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
 					>Configuration</a
@@ -58,7 +58,7 @@
 					href={`/applications/${$applicationStore.applicationId}/webhooks`}
 					class:text-green-600={$page.url.pathname ===
 						`/applications/${application.applicationId}/webhooks`}
-					class:border-green-600={$page.url.pathname ===
+					class:!border-green-600={$page.url.pathname ===
 						`/applications/${application.applicationId}/webhooks`}
 					class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
 				>
@@ -68,7 +68,7 @@
 		</ul>
 	</div>
 
-	<div class="mt-4">
+	<div class="mt-4 pb-6 h-full">
 		<slot />
 	</div>
 </div>

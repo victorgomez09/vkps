@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { env } from '$env/dynamic/public';
 	import { applicationStore } from '$lib/stores/application.store';
+	import { parseDate } from '$lib/utils/parse-date';
 
 	// FUNCTIONS
 	async function deployApplication() {
@@ -21,15 +22,24 @@
 
 <div class="flex flex-col flex-1">
 	<div
-		class="block p-6 bg-gray-200 border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700"
+		class="block p-4 bg-gray-200 border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700"
 	>
 		<div class="font-normal text-gray-700 dark:text-gray-400">
 			{#if $applicationStore.deployments.length === 0}
 				<h3 class="text-abse-300">This application has no deployments yet.</h3>
 			{:else}
-				{#each $applicationStore.deployments as deployment}
-					<div class="text-base-200">{deployment.creationDate}</div>
-				{/each}
+				<dl
+					class="w-full text-gray-900 divide-y divide-gray-300 dark:text-white dark:divide-gray-700"
+				>
+					{#each $applicationStore.deployments as deployment}
+						<div class="flex flex-col p-2">
+							<dt class="mb-1 text-gray-500 md:text-lg dark:text-gray-400">
+								{parseDate(deployment.creationDate)}
+							</dt>
+							<!-- <dd class="text-lg font-semibold">yourname@flowbite.com</dd> -->
+						</div>
+					{/each}
+				</dl>
 			{/if}
 
 			<div class="mt-4">

@@ -16,8 +16,9 @@
 			on:click={() => goto('/applications/new')}
 			type="button"
 			class="font-medium rounded-md text-sm px-4 py-2 text-white bg-green-700 focus:outline-none hover:bg-green-800 focus:ring-1 focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
-			>+ Add</button
 		>
+			+ Add
+		</button>
 	</div>
 
 	<div class="mt-6 flex flex-col gap-2">

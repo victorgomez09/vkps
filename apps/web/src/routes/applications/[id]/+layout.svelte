@@ -10,7 +10,7 @@
 	const { data: application } = data;
 </script>
 
-<div class="flex flex-col m-4 w-full h-full">
+<div class="flex flex-col w-full h-full">
 	<h1 class="font-bold text-2xl">{application.name}</h1>
 
 	<div
@@ -68,7 +68,7 @@
 		</ul>
 	</div>
 
-	<div class="mt-4 pb-6 h-full">
+	<div class="mt-4 h-full">
 		<slot />
 	</div>
 </div>

@@ -76,7 +76,7 @@
 	<div class="max-h-0">
 		<form use:form on:submit|preventDefault={handleForm} class="h-full">
 			<div
-				class="w-full p-4 rounded-md shadow bg-gray-200 border border-gray-200 dark:bg-gray-800 dark:border-gray-700"
+				class="w-full p-4 rounded-md shadow bg-white border border-gray-200 dark:bg-gray-800 dark:border-gray-700"
 			>
 				<h5 class="text-xl font-medium text-gray-900 dark:text-white">Name</h5>
 				<div class="mt-2">
@@ -106,7 +106,7 @@
 			</div>
 
 			<div
-				class="mt-4 w-full p-4 rounded-md shadow bg-gray-200 border border-gray-200 dark:bg-gray-800 dark:border-gray-700"
+				class="mt-4 w-full p-4 rounded-md shadow bg-white border border-gray-200 dark:bg-gray-800 dark:border-gray-700"
 			>
 				<h5 class="text-xl font-medium text-gray-900 dark:text-white">Image registry</h5>
 
@@ -186,7 +186,7 @@
 			</div>
 
 			<div
-				class="mt-4 w-full p-4 rounded-md shadow bg-gray-200 border border-gray-200 dark:bg-gray-800 dark:border-gray-700"
+				class="mt-4 w-full p-4 rounded-md shadow bg-white border border-gray-200 dark:bg-gray-800 dark:border-gray-700"
 			>
 				<h5 class="text-xl font-medium text-gray-900 dark:text-white">Environment variables</h5>
 
@@ -236,7 +236,7 @@
 			</div>
 
 			<div
-				class="mt-4 w-full p-4 rounded-md shadow bg-gray-200 border border-gray-200 dark:bg-gray-800 dark:border-gray-700"
+				class="mt-4 w-full p-4 rounded-md shadow bg-white border border-gray-200 dark:bg-gray-800 dark:border-gray-700"
 			>
 				<h5 class="text-xl font-medium text-gray-900 dark:text-white">Name</h5>
 
@@ -287,7 +287,7 @@
 			</div>
 
 			<div
-				class="mt-4 w-full p-4 rounded-md shadow bg-gray-200 border border-gray-200 dark:bg-gray-800 dark:border-gray-700"
+				class="mt-4 w-full p-4 rounded-md shadow bg-white border border-gray-200 dark:bg-gray-800 dark:border-gray-700"
 			>
 				<h5 class="text-xl font-medium text-gray-900 dark:text-white">Replicas</h5>
 

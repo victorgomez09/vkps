@@ -32,11 +32,11 @@ router.get("/:applicationId", async (req: Request, res: Response) => {
         return res.status(response.statusCode).json({ error: response.error });
     }
 
-    return res.json({ data: response.data });
+    return res.json(response.data);
 });
 
 router.get("/:name/logs", async (req: Request, res: Response) => {
-    const { name } = req.query;
+    const { name } = req.params;
 
     const response = await getApplicationLogs(String(name));
 
@@ -44,7 +44,7 @@ router.get("/:name/logs", async (req: Request, res: Response) => {
         return res.status(response.statusCode).json({ error: response.error });
     }
 
-    return res.json({ data: response.data });
+    return res.json(response.data);
 });
 
 router.get("/addon/:addonName", async (req: Request, res: Response) => {

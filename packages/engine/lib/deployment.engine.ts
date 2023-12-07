@@ -1,8 +1,15 @@
-import { V1ContainerPort, V1Deployment, V1Status, V1VolumeMount } from '@kubernetes/client-node';
+import stream from 'stream';
+import {
+  V1ContainerPort,
+  V1Deployment,
+  V1Pod,
+  V1Status,
+  V1VolumeMount
+} from '@kubernetes/client-node';
 
 import { getPodLogs, getPodsFromDeployment } from './pod.engine';
-import { EngineData } from './types';
-import { k8sAppsApi } from './utils.engine';
+import { EngineData, LogLines } from './types';
+import { k8sAppsApi, k8sCoreApi, k8sLogsApi, logcolor } from './utils.engine';
 
 export type Deployment = {
   namespace: string;
@@ -17,60 +24,72 @@ export type Deployment = {
   persistentVolumeClaimRefName?: string;
 };
 
+export type DeploymentResponse = V1Deployment & {
+  pods: V1Pod[];
+};
+
 export const createDeployment = async (
   deployment: Deployment
 ): Promise<EngineData<V1Deployment>> => {
   try {
-    const { response, body: deploymentData } = await k8sAppsApi.createNamespacedDeployment(
-      deployment.namespace,
-      {
-        apiVersion: 'apps/v1',
-        kind: 'Deployment',
-        metadata: {
-          name: deployment.name,
-          labels: deployment.labels
+    const object = {
+      apiVersion: 'apps/v1',
+      kind: 'Deployment',
+      metadata: {
+        name: deployment.name,
+        labels: deployment.labels
+      },
+      spec: {
+        replicas: deployment.replicas,
+        selector: {
+          matchLabels: deployment.labels
         },
-        spec: {
-          replicas: deployment.replicas,
-          selector: {
-            matchLabels: deployment.labels
+        template: {
+          metadata: {
+            labels: deployment.labels
           },
-          template: {
-            metadata: {
-              labels: deployment.labels
-            },
-            spec: {
-              containers: [
-                {
-                  name: deployment.name,
-                  image: deployment.image,
-                  ports: deployment.ports,
-                  envFrom: [
-                    {
-                      configMapRef: {
-                        name: deployment.configMapRefName
-                      }
-                    }
-                  ],
-                  volumeMounts: deployment.volumeMounts
-                }
-              ],
-              volumes: [
-                {
-                  name: deployment.name,
-                  persistentVolumeClaim: {
-                    claimName: deployment.persistentVolumeClaimRefName
-                  }
-                }
-              ]
-            }
+          spec: {
+            containers: [
+              {
+                name: deployment.name,
+                image: deployment.image,
+                ports: deployment.ports
+              }
+            ]
           }
         }
       }
+    };
+    if (deployment.configMapRefName) {
+      object.spec.template.spec.containers[0]['envFrom'] = [
+        {
+          configMapRef: {
+            name: deployment.configMapRefName || ''
+          }
+        }
+      ];
+    }
+    if (deployment.volumeMounts) {
+      object.spec.template.spec.containers[0]['volumeMounts'] = deployment.volumeMounts;
+    }
+    if (deployment.persistentVolumeClaimRefName) {
+      object.spec.template.spec['volumes'] = [
+        {
+          name: deployment.name,
+          persistentVolumeClaim: {
+            claimName: deployment.persistentVolumeClaimRefName || ''
+          }
+        }
+      ];
+    }
+
+    const { response, body: deploymentData } = await k8sAppsApi.createNamespacedDeployment(
+      deployment.namespace,
+      object
     );
 
     return {
-      statusCode: response.statusCode,
+      statusCode: response.statusCode || 200,
       data: deploymentData
     };
   } catch (error) {
@@ -91,7 +110,7 @@ export const getDeployment = async (
       [name: string]: string;
     };
   }
-): Promise<EngineData<V1Deployment>> => {
+): Promise<EngineData<DeploymentResponse>> => {
   try {
     const { response, body: deploymentData } = await k8sAppsApi.readNamespacedDeployment(
       name,
@@ -100,9 +119,13 @@ export const getDeployment = async (
       options
     );
 
+    const { data: pods } = await getPodsFromDeployment(name);
+
+    const object = { ...deploymentData, pods: pods.items };
+
     return {
-      statusCode: response.statusCode,
-      data: deploymentData
+      statusCode: response.statusCode || 200,
+      data: object
     };
   } catch (error) {
     return {
@@ -114,40 +137,67 @@ export const getDeployment = async (
 
 export const getDeploymentLogs = async (
   deploymentName: string,
-  podName: string = 'all',
   namespace: string = 'default'
-): Promise<EngineData<string>> => {
+): Promise<EngineData<LogLines[]>> => {
   try {
-    const logs: string[] = [];
+    let loglines: LogLines[] = [];
 
-    if (podName === 'all') {
-      const { data } = await getPodsFromDeployment(deploymentName);
+    let logs: string = '';
+    const logStream = new stream.PassThrough();
+    logStream.on('data', (chunk: any) => {
+      logs += chunk.toString();
+    });
 
-      if (!data) {
-        return {
-          statusCode: 404,
-          error: 'Deployment not found'
-        };
-      }
+    const { body } = await k8sAppsApi.readNamespacedDeployment(deploymentName, namespace);
 
-      const logs: string[] = [];
-      data.items.forEach(async (pod) => {
-        const { statusCode, data } = await getPodLogs(pod.metadata.name, namespace);
-        if (statusCode === 200) {
-          logs.push(data);
+    const { data } = await getPodsFromDeployment(deploymentName);
+
+    if (!data) {
+      return {
+        statusCode: 404,
+        error: 'Deployment not found'
+      };
+    }
+
+    for await (const pod of data.items) {
+      await k8sLogsApi.log(
+        namespace,
+        pod.metadata?.name || '',
+        pod.spec?.containers[0]?.name || '',
+        logStream,
+        { follow: false, tailLines: 80, pretty: false, timestamps: true }
+      );
+
+      // sleep for 1 second to wait for all logs to be collected
+      await new Promise((r) => setTimeout(r, 300));
+
+      // split loglines into array
+      const loglinesArray = logs.split('\n').reverse();
+      for (const logline of loglinesArray) {
+        if (logline.length > 0) {
+          // split after first whitespace
+          const loglineArray = logline.split(/(?<=^\S+)\s/);
+          const loglineDate = new Date(loglineArray[0]);
+          const loglineText = loglineArray[1];
+
+          loglines.push({
+            id: '',
+            time: loglineDate.getTime(),
+            app: body.metadata?.name || '',
+            pod: pod.metadata?.name || '',
+            podID:
+              pod.metadata?.name || ''.split('-')[3] + '-' + pod.metadata?.name || ''.split('-')[4],
+            container: pod.spec?.containers[0]?.name || '',
+            color: logcolor(pod.metadata?.name || ''),
+            log: loglineText
+          });
         }
-      });
-    } else {
-      const { statusCode, data } = await getPodLogs(podName, namespace);
-
-      if (statusCode === 200) {
-        logs.push(data);
       }
     }
 
     return {
       statusCode: 200,
-      data: logs.join('\n')
+      data: loglines
     };
   } catch (error) {
     return {
@@ -165,7 +215,7 @@ export const deleteDeployment = async (
     const { response, body } = await k8sAppsApi.deleteNamespacedDeployment(name, namespace);
 
     return {
-      statusCode: response.statusCode,
+      statusCode: response.statusCode || 200,
       data: body
     };
   } catch (error) {

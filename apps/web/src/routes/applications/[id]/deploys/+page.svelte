@@ -21,9 +21,7 @@
 </script>
 
 <div class="flex flex-col flex-1">
-	<div
-		class="block p-4 bg-gray-200 border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700"
-	>
+	<div class="block p-4 bg-white rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
 		<div class="font-normal text-gray-700 dark:text-gray-400">
 			{#if $applicationStore.deployments.length === 0}
 				<h3 class="text-abse-300">This application has no deployments yet.</h3>
@@ -44,6 +42,7 @@
 
 			<div class="mt-4">
 				<button
+					on:click={deployApplication}
 					type="button"
 					class="font-medium rounded-md text-sm px-4 py-2 text-white bg-green-700 focus:outline-none hover:bg-green-800 focus:ring-1 focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
 				>

@@ -13,13 +13,14 @@ import {
 import { parseName } from "engine/lib/utils.engine";
 
 import { prisma } from "../config/database.config";
+import { NAMESPACE } from "../constants/k8s.constant";
 import { Queue } from "../queue/queue";
 import { ApiResponse } from "../types";
-import { NAMESPACE } from "../constants/k8s.constant";
 
 type ApplicationResponse = Application & {
     workingReplicas: number;
     totalReplicas: number;
+    pods: any[];
 };
 
 export const getApplications = async (): Promise<ApiResponse<ApplicationResponse[]>> => {
@@ -38,6 +39,7 @@ export const getApplications = async (): Promise<ApiResponse<ApplicationResponse
                     ...applicationDb,
                     workingReplicas: 0,
                     totalReplicas: 0,
+                    pods: [],
                 });
                 continue;
             }
@@ -46,6 +48,7 @@ export const getApplications = async (): Promise<ApiResponse<ApplicationResponse
                 ...applicationDb,
                 workingReplicas: k8sDeployment.data.status?.availableReplicas || 0,
                 totalReplicas: k8sDeployment.data.status?.replicas || 0,
+                pods: k8sDeployment.data.pods || [],
             });
         }
 
@@ -83,6 +86,7 @@ export const getApplicationById = async (id: string): Promise<ApiResponse<Applic
                     ...applicationDb,
                     workingReplicas: 0,
                     totalReplicas: 0,
+                    pods: [],
                 },
             };
         }
@@ -91,6 +95,7 @@ export const getApplicationById = async (id: string): Promise<ApiResponse<Applic
             ...applicationDb,
             workingReplicas: data.status?.availableReplicas || 0,
             totalReplicas: data.status?.replicas || 0,
+            pods: data.pods,
         };
 
         return {
@@ -107,7 +112,7 @@ export const getApplicationById = async (id: string): Promise<ApiResponse<Applic
 
 export const getApplicationLogs = async (name: string) => {
     try {
-        const { statusCode, data } = await getDeploymentLogs(name);
+        const { statusCode, data } = await getDeploymentLogs(parseName(name));
 
         return {
             statusCode,
@@ -180,7 +185,6 @@ export const createApp = async ({
     memory,
     env,
     volumes,
-    ports,
 }: {
     name: string;
     description: string;
@@ -290,126 +294,133 @@ export const deployApplication = async (
         if (!application) {
             return {
                 statusCode: 404,
-                error: "Addon not found",
+                error: "Application not found",
             };
         }
-        // Save on database
+
+        const { data: appDeployment } = await getDeployment(parseName(application.name), NAMESPACE);
+
         const queue = Queue({
             queueTimeout: 500,
             executionTimeout: 250,
             concurrency: 1,
             maxTaskCount: 1,
         });
-        queue
-            .add(async () => {
-                let configMap: V1ConfigMap;
-                if (application.env.length) {
-                    const env = {} as {
-                        [key: string]: string;
-                    };
-                    application.env.map((appEnv) => {
-                        env[appEnv.key] = appEnv.value;
-                    });
-                    const result = await createConfigMap({
+
+        if (!appDeployment) {
+            queue
+                .add(async () => {
+                    let configMap: V1ConfigMap;
+                    if (application.env.length) {
+                        const env = {} as {
+                            [key: string]: string;
+                        };
+                        application.env.map((appEnv) => {
+                            env[appEnv.key] = appEnv.value;
+                        });
+                        const result = await createConfigMap({
+                            namespace: NAMESPACE,
+                            name: parseName(application.name),
+                            labels: {
+                                app: parseName(application.name),
+                            },
+                            data: env,
+                        });
+
+                        if (result.statusCode !== 201) {
+                            return {
+                                statusCode: result.statusCode,
+                                error: result.error,
+                            };
+                        }
+
+                        configMap = result.data;
+                    }
+
+                    let pvc: V1PersistentVolumeClaim;
+                    const volumeMounts: V1VolumeMount[] = [];
+                    if (application.volumes.length > 0) {
+                        for await (const volume of application.volumes) {
+                            const pvData = await createPersistentVolume({
+                                namespace: NAMESPACE,
+                                name: parseName(application.name),
+                                labels: {
+                                    app: parseName(application.name),
+                                },
+                                accessModes: ["ReadWriteOnce"],
+                                storage: volume.size.toString(),
+                                path: volume.path,
+                            });
+                            if (pvData.statusCode !== 201) {
+                                return {
+                                    statusCode: pvData.statusCode,
+                                    error: pvData.error,
+                                };
+                            }
+
+                            const pvcData = await createPersistentVolumeClaim({
+                                namespace: NAMESPACE,
+                                name: parseName(application.name),
+                                labels: {
+                                    app: parseName(application.name),
+                                },
+                                accessModes: ["ReadWriteOnce"],
+                                storage: volume.size.toString(),
+                            });
+                            if (pvcData.statusCode !== 201) {
+                                return {
+                                    statusCode: pvcData.statusCode,
+                                    error: pvcData.error,
+                                };
+                            }
+                            pvc = pvcData.data;
+
+                            volumeMounts.push({
+                                name: pvcData.data.metadata.name,
+                                mountPath: volume.path,
+                            });
+                        }
+                    }
+
+                    const object = {
                         namespace: NAMESPACE,
                         name: parseName(application.name),
                         labels: {
                             app: parseName(application.name),
                         },
-                        data: env,
-                    });
+                        image: `${application.image}:latest`,
+                        replicas: application.replicas,
+                        ports: [],
+                    };
+                    if (configMap) object["configMapRefName"] = configMap.metadata.name;
+                    if (pvc) object["persistentVolumeClaimRefName"] = pvc.metadata.name;
+                    if (volumeMounts.length > 0) object["volumeMounts"] = volumeMounts;
 
-                    if (result.statusCode !== 201) {
-                        return {
-                            statusCode: result.statusCode,
-                            error: result.error,
-                        };
-                    }
+                    const result = await createDeployment(object);
 
-                    configMap = result.data;
-                }
-
-                let pvc: V1PersistentVolumeClaim;
-                const volumeMounts: V1VolumeMount[] = [];
-                if (application.volumes.length > 0) {
-                    for await (const volume of application.volumes) {
-                        const pvData = await createPersistentVolume({
-                            namespace: NAMESPACE,
-                            name: parseName(application.name),
-                            labels: {
-                                app: parseName(application.name),
-                            },
-                            accessModes: ["ReadWriteOnce"],
-                            storage: volume.size.toString(),
-                            path: volume.path,
-                        });
-                        if (pvData.statusCode !== 201) {
-                            return {
-                                statusCode: pvData.statusCode,
-                                error: pvData.error,
-                            };
-                        }
-
-                        const pvcData = await createPersistentVolumeClaim({
-                            namespace: NAMESPACE,
-                            name: parseName(application.name),
-                            labels: {
-                                app: parseName(application.name),
-                            },
-                            accessModes: ["ReadWriteOnce"],
-                            storage: volume.size.toString(),
-                        });
-                        if (pvcData.statusCode !== 201) {
-                            return {
-                                statusCode: pvcData.statusCode,
-                                error: pvcData.error,
-                            };
-                        }
-                        pvc = pvcData.data;
-
-                        volumeMounts.push({
-                            name: pvcData.data.metadata.name,
-                            mountPath: volume.path,
-                        });
-                    }
-                }
-
-                const result = await createDeployment({
-                    namespace: NAMESPACE,
-                    name: parseName(application.name),
-                    labels: {
-                        app: parseName(application.name),
-                    },
-                    image: `${application.image}:latest`,
-                    replicas: application.replicas,
-                    ports: [],
-                    configMapRefName: configMap.metadata.name,
-                    persistentVolumeClaimRefName: pvc.metadata.name,
-                    volumeMounts,
-                });
-
-                return result;
-            })
-            .then(async (result) => {
-                await prisma.applicationDeployments.create({
-                    data: {
-                        application: {
-                            connect: {
-                                id: application.id,
+                    return result;
+                })
+                .then(async (result) => {
+                    await prisma.applicationDeployments.create({
+                        data: {
+                            application: {
+                                connect: {
+                                    id: application.id,
+                                },
                             },
                         },
-                    },
-                });
+                    });
 
-                return {
-                    statusCode: 201,
-                    data: {
-                        name: result.data.metadata.name,
-                        namespace: result.data.metadata.namespace,
-                        replicas: result.data.spec.replicas,
-                    },
-                };
-            });
+                    return {
+                        statusCode: 201,
+                        data: {
+                            name: result.data.metadata.name,
+                            namespace: result.data.metadata.namespace,
+                            replicas: result.data.spec.replicas,
+                        },
+                    };
+                });
+        }
 
         return {
             statusCode: 200,

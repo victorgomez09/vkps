@@ -24,9 +24,7 @@
 	<div class="mt-6 flex flex-col gap-2">
 		{#if applications.length > 0}
 			{#each applications as application}
-				<div
-					class="block p-6 rounded-md shadow w-full bg-white border border-gray-200 dark:bg-gray-800 dark:border-gray-700"
-				>
+				<div class="block p-6 rounded-md shadow w-full bg-white dark:bg-gray-800">
 					<div class="flex items-center mb-2 gap-3">
 						<h5 class="text-lg font-bold tracking-tight text-gray-900 dark:text-white">
 							{application.name}
@@ -69,7 +67,7 @@
 						class="flex items-center gap-3 text-sm mt-4 font-light text-gray-600 dark:text-gray-400"
 					>
 						<a
-							href={`/applications/${application.applicationId}/deploy`}
+							href={`/applications/${application.applicationId}/deploys`}
 							class="font-medium hover:underline"
 						>
 							Deploys

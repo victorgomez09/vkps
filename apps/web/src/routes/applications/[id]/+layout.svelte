@@ -19,14 +19,14 @@
 		<ul class="flex flex-wrap -mb-px">
 			<li class="me-2">
 				<a
-					href={`/applications/${$applicationStore.applicationId}/deploys`}
+					href={`/applications/${$applicationStore.applicationId}/pods`}
 					class:text-green-600={$page.url.pathname ===
-						`/applications/${application.applicationId}/deploys`}
+						`/applications/${application.applicationId}/pods`}
 					class:!border-green-600={$page.url.pathname ===
-						`/applications/${application.applicationId}/deploys`}
+						`/applications/${application.applicationId}/pods`}
 					class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
 				>
-					Deploys
+					Pods
 				</a>
 			</li>
 			<li class="me-2">

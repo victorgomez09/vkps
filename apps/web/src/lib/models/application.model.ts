@@ -1,4 +1,5 @@
 import type { Addon } from './addon.model';
+import type { Pod } from './pod.model';
 
 export type Application = {
 	id: string;
@@ -13,14 +14,11 @@ export type Application = {
 	cpu: number;
 	env: ApplicationEnv;
 	volumes: ApplicationVolume[];
-	deployments: ApplicationDeployments[]
+	deployments: ApplicationDeployments[];
 	addon?: Addon;
+	pods: Pod[];
 	creationDate: Date;
 	updateTime: Date;
-};
-
-export type ApplicationDetails = Application & {
-	pods: [];
 };
 
 export type ApplicationEnv = {
@@ -36,4 +34,4 @@ export type ApplicationVolume = {
 export type ApplicationDeployments = {
 	id: string;
 	creationDate: Date;
-}
+};

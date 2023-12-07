@@ -67,10 +67,10 @@
 						class="flex items-center gap-3 text-sm mt-4 font-light text-gray-600 dark:text-gray-400"
 					>
 						<a
-							href={`/applications/${application.applicationId}/deploys`}
+							href={`/applications/${application.applicationId}/pods`}
 							class="font-medium hover:underline"
 						>
-							Deploys
+							Pods
 						</a>
 
 						<a

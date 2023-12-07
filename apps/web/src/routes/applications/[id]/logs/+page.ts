@@ -6,7 +6,6 @@ export async function load({ params, fetch }) {
 		const response = await fetch(`${env.PUBLIC_API_URL}/applications/${params.id}/logs`);
 
 		const logs = (await response.json()) as LogLines[];
-		console.log('application', logs);
 
 		return {
 			data: logs

@@ -1,5 +1,5 @@
 {
-  "name": "ui",
+  "name": "ui-package",
   "version": "0.0.1",
   "description": "Ui library",
   "module": "index.ts",

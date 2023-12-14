@@ -3,13 +3,16 @@
   "version": "0.0.1",
   "description": "K8S engine for vkps",
   "module": "index.ts",
+  "main": "./dist/index.js",
   "license": "MIT",
   "scripts": {
+    "build": "npx tsc",
     "lint": "prettier --check --ignore-path=../../.prettierignore . && eslint \".\"",
     "format": "prettier --write --ignore-path=../../.prettierignore ."
   },
   "devDependencies": {
-    "eslint-config-custom": "workspace:*"
+    "eslint-config-custom": "workspace:*",
+    "typescript": "^5.3.3"
   },
   "dependencies": {
     "@kubernetes/client-node": "^0.20.0"

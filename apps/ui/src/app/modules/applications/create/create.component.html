@@ -1,67 +1,90 @@
 <div class="w-full h-full">
-    <div tuiCard tuiSurface class="!w-full !h-full !justify-normal">
-        <h2 tuiTitle>
-            New application
-        </h2>
+  <div tuiCard tuiSurface class="!w-full !h-full !justify-normal overflow-auto">
+    <h2 tuiTitle>General</h2>
 
-        <form [formGroup]="form" class="flex flex-col gap-4 w-full mt-2">
-            <tui-input formControlName="name" class="w-full">
-                Application name
-                <input
-                    tuiTextfield
-                    type="text"
-                />
-            </tui-input>
+    <form [formGroup]="form" class="flex flex-col gap-4 w-full mt-2" (ngSubmit)="handleSubmit()">
+      <tui-input formControlName="name" class="w-full">
+        Application name
+        <input tuiTextfield type="text" />
+      </tui-input>
 
-            <tui-textarea
-                formControlName="description"
+      <tui-textarea formControlName="description"> Description </tui-textarea>
+
+      <div class="grid grid-cols-2 gap-2">
+        <tui-input formControlName="image" class="w-full">
+          Docker image
+          <input tuiTextfield type="text" />
+        </tui-input>
+
+        <tui-input formControlName="version" class="w-full">
+          Image version
+          <input tuiTextfield type="text" />
+        </tui-input>
+      </div>
+
+      <div class="grid grid-cols-3 gap-2">
+        <tui-input-number class="b-form" [step]="1" [min]="1" formControlName="replicas">
+          Replicas
+        </tui-input-number>
+
+        <tui-input-number class="b-form" [step]="50" [min]="256" formControlName="memory">
+          Memory (Mb)
+        </tui-input-number>
+
+        <tui-input-number class="b-form" [step]="10" [min]="250" formControlName="cpu">
+          Cpu (mcpu)
+        </tui-input-number>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <h2 tuiTitle>Environment variables</h2>
+        <div formArrayName="env" class="flex flex-col gap-2">
+          @for (envField of env.controls; track envField; let indx = $index) {
+          <div [formGroupName]="indx" class="grid grid-cols-7 gap-2">
+            <tui-input formControlName="key" class="col-span-3" id="env-key-{{ indx }}"
+              >ENV_VARIABLE_KEY</tui-input
             >
-                Description
-            </tui-textarea>
 
-            <div class="grid grid-cols-2 gap-2">
-                <tui-input formControlName="image" class="w-full">
-                    Docker image
-                    <input
-                        tuiTextfield
-                        type="text"
-                    />
-                </tui-input>
+            <tui-input formControlName="value" class="col-span-3" id="env-value-{{ indx }}"
+              >ENV_VARIABLE_VALUE</tui-input
+            >
+            <button tuiButton type="button" (click)="removeEnvField(indx)">
+              <tui-icon icon="tuiIconTrash" class="text"></tui-icon>
+            </button>
+          </div>
+          }
+        </div>
+        <button tuiButton class="w-10" type="button" (click)="addEnvField()">
+          <tui-icon icon="tuiIconPlus" class="text"></tui-icon>
+        </button>
+      </div>
 
-                <tui-input formControlName="version" class="w-full">
-                    Image version
-                    <input
-                        tuiTextfield
-                        type="text"
-                    />
-                </tui-input>
-            </div>
+      <div class="flex flex-col gap-2 mt-2">
+        <h2 tuiTitle class="mt-4">Volumes</h2>
+        <div formArrayName="env" class="flex flex-col gap-2">
+          @for (envField of env.controls; track envField; let indx = $index) {
+          <div [formGroupName]="indx" class="grid grid-cols-7 gap-2">
+            <tui-input formControlName="key" class="col-span-3" id="env-key-{{ indx }}"
+              >ENV_VARIABLE_KEY</tui-input
+            >
 
-            <div class="grid grid-cols-3 gap-2">
-                <tui-input-number
-                    class="b-form"
-                    [step]="1"
-                    formControlName="replicas"
-                >
-                    Replicas
-                </tui-input-number>
+            <tui-input formControlName="value" class="col-span-3" id="env-value-{{ indx }}"
+              >ENV_VARIABLE_VALUE</tui-input
+            >
+            <button tuiButton type="button" (click)="removeEnvField(indx)">
+              <tui-icon icon="tuiIconTrash" class="text"></tui-icon>
+            </button>
+          </div>
+          }
+        </div>
+        <button tuiButton class="w-10" type="button" (click)="addEnvField()">
+          <tui-icon icon="tuiIconPlus" class="text"></tui-icon>
+        </button>
+      </div>
 
-                <tui-input-number
-                    class="b-form"
-                    [step]="50"
-                    formControlName="memory"
-                >
-                    Memory (Mb)
-                </tui-input-number>
-
-                <tui-input-number
-                    class="b-form"
-                    [step]="10"
-                    formControlName="cpu"
-                >
-                    Cpu (mcpu)
-                </tui-input-number>
-            </div>
-        </form>
-    </div>
+      <button tuiButton class="mt-4 justify-self-end" type="submit" [disabled]="form.invalid">
+        Create
+      </button>
+    </form>
+  </div>
 </div>

@@ -12,19 +12,8 @@ export class ApplicationController {
     constructor(private service: ApplicationService) { }
 
     @Get()
-    async findAll(): Promise<ApiResponse<ApplicationResponse[]>> {
-        try {
-            return {
-                statusCode: 200,
-                data: await this.service.findAll()
-            }
-        } catch (error) {
-            return {
-                statusCode: 500,
-                error: error
-            }
-        }
-
+    async findAll(): Promise<ApplicationResponse[]> {
+        return await this.service.findAll();
     }
 
     @Get(':id')

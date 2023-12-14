@@ -1,0 +1,16 @@
+<div>
+    <h2 tuiTitle class="text-xl font-semibold">
+        Applications
+    </h2>
+
+    <div class="mt-4">
+        @for (application of applications(); track application.name) {
+        <div tuiCard>
+            <h2 tuiTitle [style.margin-top]="'auto'">
+                {{application.name}}
+                <span tuiSubtitle>{{application.image}}</span>
+            </h2>
+        </div>
+        }
+    </div>
+</div>

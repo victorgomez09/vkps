@@ -1,0 +1,67 @@
+<div class="w-full h-full">
+    <div tuiCard tuiSurface class="!w-full !h-full !justify-normal">
+        <h2 tuiTitle>
+            New application
+        </h2>
+
+        <form [formGroup]="form" class="flex flex-col gap-4 w-full mt-2">
+            <tui-input formControlName="name" class="w-full">
+                Application name
+                <input
+                    tuiTextfield
+                    type="text"
+                />
+            </tui-input>
+
+            <tui-textarea
+                formControlName="description"
+            >
+                Description
+            </tui-textarea>
+
+            <div class="grid grid-cols-2 gap-2">
+                <tui-input formControlName="image" class="w-full">
+                    Docker image
+                    <input
+                        tuiTextfield
+                        type="text"
+                    />
+                </tui-input>
+
+                <tui-input formControlName="version" class="w-full">
+                    Image version
+                    <input
+                        tuiTextfield
+                        type="text"
+                    />
+                </tui-input>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2">
+                <tui-input-number
+                    class="b-form"
+                    [step]="1"
+                    formControlName="replicas"
+                >
+                    Replicas
+                </tui-input-number>
+
+                <tui-input-number
+                    class="b-form"
+                    [step]="50"
+                    formControlName="memory"
+                >
+                    Memory (Mb)
+                </tui-input-number>
+
+                <tui-input-number
+                    class="b-form"
+                    [step]="10"
+                    formControlName="cpu"
+                >
+                    Cpu (mcpu)
+                </tui-input-number>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { MenuModule } from 'primeng/menu';
 import { MenuItem } from 'primeng/api';
-import { Router } from '@angular/router';
+
+import { ThemeService } from '../../../core/services/theme.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -13,7 +14,7 @@ import { Router } from '@angular/router';
 export class SidebarComponent implements OnInit {
   public items!: MenuItem[];
 
-  constructor(private router: Router) {}
+  constructor(private themeService: ThemeService) {}
 
   ngOnInit() {
     this.items = [

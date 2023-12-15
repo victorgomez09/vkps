@@ -1,32 +1,23 @@
-import { Component, OnInit, Signal, WritableSignal, signal } from '@angular/core';
-import {
-  FormArray,
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators
-} from '@angular/forms';
-import { TuiButtonModule, TuiLabelModule } from '@taiga-ui/core';
-import { TuiCardModule, TuiIconModule, TuiTitleModule } from '@taiga-ui/experimental';
-import { TuiInputModule, TuiInputNumberModule, TuiTextareaModule } from '@taiga-ui/kit';
+import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { CardModule } from 'primeng/card';
+import { ButtonModule } from 'primeng/button';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { InputTextModule } from 'primeng/inputtext';
+import { InputTextareaModule } from 'primeng/inputtextarea';
 
 import { ApplicationService } from '../../../core/services/application.service';
-import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-create',
   standalone: true,
   imports: [
-    TuiCardModule,
-    TuiLabelModule,
-    TuiInputModule,
-    TuiTextareaModule,
-    TuiInputNumberModule,
-    TuiButtonModule,
-    TuiTitleModule,
-    TuiIconModule,
-
+    CardModule,
+    ButtonModule,
+    InputTextModule,
+    InputTextareaModule,
+    InputNumberModule,
     CommonModule,
     ReactiveFormsModule
   ],
@@ -36,7 +27,10 @@ import { CommonModule } from '@angular/common';
 export class CreateComponent implements OnInit {
   public form!: FormGroup;
 
-  constructor(private service: ApplicationService, private fb: FormBuilder) {
+  constructor(
+    private service: ApplicationService,
+    private fb: FormBuilder
+  ) {
     this.form = this.fb.group({
       name: ['', [Validators.required]],
       description: '',

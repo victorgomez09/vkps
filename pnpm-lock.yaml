@@ -244,6 +244,12 @@ importers:
       dompurify:
         specifier: 2.2.9
         version: 2.2.9
+      primeicons:
+        specifier: ^6.0.1
+        version: 6.0.1
+      primeng:
+        specifier: ^17.1.0
+        version: 17.1.0(@angular/common@17.0.6)(@angular/core@17.0.6)(@angular/forms@17.0.6)(rxjs@7.8.1)(zone.js@0.14.2)
       rxjs:
         specifier: ~7.8.0
         version: 7.8.1
@@ -10419,6 +10425,27 @@ packages:
       ansi-styles: 5.2.0
       react-is: 18.2.0
     dev: true
+
+  /primeicons@6.0.1:
+    resolution: {integrity: sha512-KDeO94CbWI4pKsPnYpA1FPjo79EsY9I+M8ywoPBSf9XMXoe/0crjbUK7jcQEDHuc0ZMRIZsxH3TYLv4TUtHmAA==}
+    dev: false
+
+  /primeng@17.1.0(@angular/common@17.0.6)(@angular/core@17.0.6)(@angular/forms@17.0.6)(rxjs@7.8.1)(zone.js@0.14.2):
+    resolution: {integrity: sha512-LpilMBPiTXLiaNADLLlhHTinGNzfD4FjQZQ/uEdE6ATQz/JeSzVGjvspFkQjknTrVbQxPfFMc846aILuS0enDg==}
+    peerDependencies:
+      '@angular/common': ^17.0.0
+      '@angular/core': ^17.0.0
+      '@angular/forms': ^17.0.0
+      rxjs: ^6.0.0 || ^7.8.1
+      zone.js: ~0.14.0
+    dependencies:
+      '@angular/common': 17.0.6(@angular/core@17.0.6)(rxjs@7.8.1)
+      '@angular/core': 17.0.6(rxjs@7.8.1)(zone.js@0.14.2)
+      '@angular/forms': 17.0.6(@angular/common@17.0.6)(@angular/core@17.0.6)(@angular/platform-browser@17.0.6)(rxjs@7.8.1)
+      rxjs: 7.8.1
+      tslib: 2.6.2
+      zone.js: 0.14.2
+    dev: false
 
   /prisma@5.6.0:
     resolution: {integrity: sha512-EEaccku4ZGshdr2cthYHhf7iyvCcXqwJDvnoQRAJg5ge2Tzpv0e2BaMCp+CbbDUwoVTzwgOap9Zp+d4jFa2O9A==}

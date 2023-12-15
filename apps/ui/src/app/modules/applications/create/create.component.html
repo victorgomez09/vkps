@@ -1,90 +1,160 @@
-<div class="w-full h-full">
-  <div tuiCard tuiSurface class="!w-full !h-full !justify-normal overflow-auto">
-    <h2 tuiTitle>General</h2>
+<p-card class="shadow">
+  <h2 class="text-xl font-semibold">General</h2>
 
-    <form [formGroup]="form" class="flex flex-col gap-4 w-full mt-2" (ngSubmit)="handleSubmit()">
-      <tui-input formControlName="name" class="w-full">
-        Application name
-        <input tuiTextfield type="text" />
-      </tui-input>
+  <form [formGroup]="form" class="flex flex-col gap-4 w-full mt-2" (ngSubmit)="handleSubmit()">
+    <div class="field">
+      <label for="username1" class="block">Username</label>
+      <input
+        id="username1"
+        type="username"
+        aria-describedby="username1-help"
+        pInputText
+        formControlName="name"
+        class="w-full"
+      />
+      <small id="username1-help" class="block">Enter your username to reset your password.</small>
+    </div>
 
-      <tui-textarea formControlName="description"> Description </tui-textarea>
+    <div class="field">
+      <label for="description" class="block">Description</label>
+      <textarea pInputTextarea formControlName="description" class="w-full"></textarea>
+      <small id="username1-help" class="block">Enter your username to reset your password.</small>
+    </div>
 
-      <div class="grid grid-cols-2 gap-2">
-        <tui-input formControlName="image" class="w-full">
-          Docker image
-          <input tuiTextfield type="text" />
-        </tui-input>
-
-        <tui-input formControlName="version" class="w-full">
-          Image version
-          <input tuiTextfield type="text" />
-        </tui-input>
+    <div class="grid grid-cols-2 gap-2">
+      <div class="field">
+        <label for="image" class="block">Docker image</label>
+        <input
+          id="image"
+          type="text"
+          aria-describedby="image-help"
+          pInputText
+          formControlName="image"
+          class="w-full"
+        />
       </div>
 
-      <div class="grid grid-cols-3 gap-2">
-        <tui-input-number class="b-form" [step]="1" [min]="1" formControlName="replicas">
-          Replicas
-        </tui-input-number>
+      <div class="field">
+        <label for="version" class="block">Image version</label>
+        <input
+          id="version"
+          type="text"
+          aria-describedby="version"
+          pInputText
+          formControlName="version"
+          class="w-full"
+        />
+      </div>
+    </div>
 
-        <tui-input-number class="b-form" [step]="50" [min]="256" formControlName="memory">
-          Memory (Mb)
-        </tui-input-number>
-
-        <tui-input-number class="b-form" [step]="10" [min]="250" formControlName="cpu">
-          Cpu (mcpu)
-        </tui-input-number>
+    <div class="flex flex-col gap-2">
+      <div class="field">
+        <label for="version" class="block">Replicas</label>
+        <p-inputNumber
+          formControlName="replicas"
+          [showButtons]="true"
+          [step]="1"
+          [min]="1"
+        ></p-inputNumber>
       </div>
 
-      <div class="flex flex-col gap-2">
-        <h2 tuiTitle>Environment variables</h2>
-        <div formArrayName="env" class="flex flex-col gap-2">
-          @for (envField of env.controls; track envField; let indx = $index) {
-          <div [formGroupName]="indx" class="grid grid-cols-7 gap-2">
-            <tui-input formControlName="key" class="col-span-3" id="env-key-{{ indx }}"
-              >ENV_VARIABLE_KEY</tui-input
-            >
+      <div class="field">
+        <label for="version" class="block">Memory (Mb)</label>
+        <p-inputNumber
+          formControlName="memory"
+          [showButtons]="true"
+          [step]="256"
+          [min]="256"
+        ></p-inputNumber>
+      </div>
 
-            <tui-input formControlName="value" class="col-span-3" id="env-value-{{ indx }}"
-              >ENV_VARIABLE_VALUE</tui-input
-            >
-            <button tuiButton type="button" (click)="removeEnvField(indx)">
-              <tui-icon icon="tuiIconTrash" class="text"></tui-icon>
-            </button>
+      <div class="field">
+        <label for="version" class="block">Cpu (mcpu)</label>
+        <p-inputNumber
+          formControlName="cpu"
+          [showButtons]="true"
+          [step]="150"
+          [min]="150"
+        ></p-inputNumber>
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <h2 class="text-xl font-semibold">Environment variables</h2>
+      <div formArrayName="env" class="flex flex-col gap-2">
+        @for (envField of env.controls; track envField; let indx = $index) {
+          <div [formGroupName]="indx" class="grid grid-cols-7 items-end gap-2">
+            <div class="field col-span-3">
+              <label for="key" class="block">ENV_VARIABLE_KEY</label>
+              <input
+                id="key"
+                type="text"
+                aria-describedby="key"
+                pInputText
+                formControlName="key"
+                class="w-full"
+              />
+            </div>
+
+            <div class="field" class="field col-span-3">
+              <label for="value" class="block">ENV_VARIABLE_VALUE</label>
+              <input
+                id="value"
+                type="text"
+                aria-describedby="value"
+                pInputText
+                formControlName="value"
+                class="w-full"
+              />
+            </div>
+
+            <p-button
+              label="Remove"
+              icon="pi pi-trash"
+              iconPos="left"
+              (click)="removeEnvField(indx)"
+            ></p-button>
           </div>
-          }
-        </div>
-        <button tuiButton class="w-10" type="button" (click)="addEnvField()">
-          <tui-icon icon="tuiIconPlus" class="text"></tui-icon>
-        </button>
+        }
       </div>
 
-      <div class="flex flex-col gap-2 mt-2">
-        <h2 tuiTitle class="mt-4">Volumes</h2>
-        <div formArrayName="env" class="flex flex-col gap-2">
-          @for (envField of env.controls; track envField; let indx = $index) {
+      <p-button label="Add" icon="pi pi-check" iconPos="left" (click)="addEnvField()"></p-button>
+    </div>
+
+    <div class="flex flex-col gap-2 mt-2">
+      <h2 class="text-xl font-semibold">Volumes</h2>
+      <div formArrayName="env" class="flex flex-col gap-2">
+        @for (envField of env.controls; track envField; let indx = $index) {
           <div [formGroupName]="indx" class="grid grid-cols-7 gap-2">
-            <tui-input formControlName="key" class="col-span-3" id="env-key-{{ indx }}"
-              >ENV_VARIABLE_KEY</tui-input
-            >
+            <div class="field">
+              <label for="key" class="block">ENV_VARIABLE_KEY</label>
+              <input id="key" type="text" aria-describedby="key" pInputText formControlName="key" />
+            </div>
 
-            <tui-input formControlName="value" class="col-span-3" id="env-value-{{ indx }}"
-              >ENV_VARIABLE_VALUE</tui-input
-            >
-            <button tuiButton type="button" (click)="removeEnvField(indx)">
-              <tui-icon icon="tuiIconTrash" class="text"></tui-icon>
-            </button>
+            <div class="field">
+              <label for="value" class="block">ENV_VARIABLE_VALUE</label>
+              <input
+                id="value"
+                type="text"
+                aria-describedby="value"
+                pInputText
+                formControlName="value"
+              />
+            </div>
+
+            <p-button
+              label="Add"
+              icon="pi pi-check"
+              iconPos="left"
+              (click)="removeEnvField(indx)"
+            ></p-button>
           </div>
-          }
-        </div>
-        <button tuiButton class="w-10" type="button" (click)="addEnvField()">
-          <tui-icon icon="tuiIconPlus" class="text"></tui-icon>
-        </button>
+        }
       </div>
 
-      <button tuiButton class="mt-4 justify-self-end" type="submit" [disabled]="form.invalid">
-        Create
-      </button>
-    </form>
-  </div>
-</div>
+      <p-button label="Click" icon="pi pi-check" iconPos="left" (click)="addEnvField()"></p-button>
+    </div>
+
+    <p-button label="Create" class="p-button-lg"></p-button>
+  </form>
+</p-card>

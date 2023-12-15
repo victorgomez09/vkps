@@ -1,16 +1,32 @@
-<div>
-    <h2 tuiTitle class="text-xl font-semibold">
-        Applications
-    </h2>
+<div class="w-full h-full">
+  <div class="flex flex-1 items-center justify-between">
+    <h2 class="text-xl font-semibold">Applications</h2>
 
-    <div class="mt-4">
-        @for (application of applications(); track application.name) {
-        <div tuiCard>
-            <h2 tuiTitle [style.margin-top]="'auto'">
-                {{application.name}}
-                <span tuiSubtitle>{{application.image}}</span>
-            </h2>
+    <p-button icon="pi pi-plus" iconPos="left" routerLink="/applications/create"></p-button>
+  </div>
+
+  <div class="mt-4">
+    <p-dataView [value]="applications()" [paginator]="true" [rows]="10" styleClass="shadow">
+      <ng-template pTemplate="header">
+        <p-dataViewLayoutOptions></p-dataViewLayoutOptions>
+      </ng-template>
+      <ng-template let-application pTemplate="listItem">
+        <div>
+          {{ application.name }}
         </div>
-        }
-    </div>
+      </ng-template>
+      <ng-template let-application pTemplate="gridItem">
+        <div class="col-12 md:col-3">
+          {{ application.creationDate }}
+        </div>
+      </ng-template>
+
+      <ng-template pTemplate="paginatorleft" let-state> {{ state.first }} page</ng-template>
+      <ng-template pTemplate="paginatorright"> </ng-template>
+
+      <ng-template let-item pTemplate="paginatordropdownitem">
+        {{ item.value }} - per page
+      </ng-template>
+    </p-dataView>
+  </div>
 </div>

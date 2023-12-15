@@ -1,20 +1,26 @@
 import { Component, Injector, OnInit, Signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { DataViewModule } from 'primeng/dataview';
+import { ButtonModule } from 'primeng/button';
 
 import { ApplicationService } from '../../core/services/application.service';
 import { Application } from '../../shared/types/application.type';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-applications',
   standalone: true,
-  imports: [],
+  imports: [DataViewModule, ButtonModule, RouterModule],
   templateUrl: './applications.component.html',
   styleUrl: './applications.component.css'
 })
 export class ApplicationsComponent implements OnInit {
   public applications!: Signal<Application[]>;
 
-  constructor(private service: ApplicationService, private injector: Injector) { }
+  constructor(
+    private service: ApplicationService,
+    private injector: Injector
+  ) {}
 
   ngOnInit(): void {
     this.applications = toSignal(this.service.findAll(), {
@@ -22,5 +28,4 @@ export class ApplicationsComponent implements OnInit {
       injector: this.injector
     });
   }
-
 }

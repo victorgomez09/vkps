@@ -6,6 +6,7 @@ import { ButtonModule } from 'primeng/button';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputTextareaModule } from 'primeng/inputtextarea';
+import { InputSwitchModule } from 'primeng/inputswitch';
 
 import { ApplicationService } from '../../../core/services/application.service';
 
@@ -18,6 +19,7 @@ import { ApplicationService } from '../../../core/services/application.service';
     InputTextModule,
     InputTextareaModule,
     InputNumberModule,
+    InputSwitchModule,
     CommonModule,
     ReactiveFormsModule
   ],
@@ -54,6 +56,14 @@ export class CreateComponent implements OnInit {
     (<FormArray>this.form.get('env')).removeAt(index);
   }
 
+  addVolumeField(): void {
+    this.volumes.push(this.createVolumeField());
+  }
+
+  removeVolumeField(index: number): void {
+    (<FormArray>this.form.get('volumes')).removeAt(index);
+  }
+
   handleSubmit() {
     const envValues: { [key: string]: string } = {};
     Object.values(this.env.value).forEach((e: any) => {
@@ -69,8 +79,19 @@ export class CreateComponent implements OnInit {
     return <FormArray>this.form.get('env');
   }
 
+  get volumes(): FormArray {
+    return <FormArray>this.form.get('volumes');
+  }
+
   /* private methods */
   private createEnvField(): FormGroup {
+    return this.fb.group({
+      key: [null, Validators.required],
+      value: [null, Validators.required]
+    });
+  }
+
+  private createVolumeField(): FormGroup {
     return this.fb.group({
       key: [null, Validators.required],
       value: [null, Validators.required]

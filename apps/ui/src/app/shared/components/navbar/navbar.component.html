@@ -1,13 +1,21 @@
-<p-menubar styleClass="rounded-none shadow p-4">
+<p-menubar styleClass="rounded-none shadow-sm p-4">
   <ng-template pTemplate="start">
     <span class="font-bold mr-4">VKPS</span>
   </ng-template>
 
   <ng-template pTemplate="end">
-    <p-dropdown
+    <!-- <p-dropdown
       [options]="themes"
       (onChange)="changeTheme($event.value)"
       optionLabel="name"
-    ></p-dropdown>
+    ></p-dropdown> -->
+    <div class="flex items-center gap-4 cursor-pointer" (click)="changeTheme()">
+      @if (isDark) {
+        <i class="pi pi-sun"></i>
+      } @else {
+        <i class="pi pi-moon"></i>
+      }
+    </div>
+    <!-- <p-inputSwitch [(ngModel)]="isDark" (onChange)="changeTheme()"></p-inputSwitch> -->
   </ng-template>
 </p-menubar>

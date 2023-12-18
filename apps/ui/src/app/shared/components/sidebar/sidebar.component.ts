@@ -13,23 +13,25 @@ import { ThemeService } from '../../../core/services/theme.service';
 })
 export class SidebarComponent implements OnInit {
   public items!: MenuItem[];
+  public activeItem!: MenuItem;
 
   constructor(private themeService: ThemeService) {}
 
   ngOnInit() {
     this.items = [
       {
-        label: 'VKPS',
+        // label: 'VKPS',
         items: [
           {
             label: 'Applications',
             icon: 'pi pi-th-large',
-            routerLink: '/applications'
+            routerLink: ['/applications'],
+            routerLinkActiveOptions: { expanded: true }
           },
           {
             label: 'Databases',
             icon: 'pi pi-database',
-            routerLink: '/addons'
+            routerLink: ['/databases']
           }
         ]
       }

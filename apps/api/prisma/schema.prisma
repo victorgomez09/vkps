@@ -10,49 +10,41 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Addon {
-  id          String         @id @default(uuid())
-  name        String         @unique
+model Database {
+  id          String            @id @default(uuid())
+  name        String            @unique
   fancyName   String
   description String?
   icon        String
   image       String
-  versions    AddonVersion[]
-  type        AddonType      @relation(fields: [addonTypeId], references: [id])
-  addonTypeId String
-  env         AddonEnv[]
-  volumes     AddonVolume[]
+  versions    DatabaseVersion[]
+  env         DatabaseEnv[]
+  volumes     DatabaseVolume[]
   application Application[]
 }
 
-model AddonType {
-  id    String  @id @default(uuid())
-  type  String
-  addon Addon[]
-}
-
-model AddonVersion {
+model DatabaseVersion {
   id      String @id @default(uuid())
   version String
 
-  addon   Addon?  @relation(fields: [addonId], references: [id])
-  addonId String?
+  database   Database? @relation(fields: [databaseId], references: [id])
+  databaseId String?
 }
 
-model AddonEnv {
-  id          String  @id @default(uuid())
+model DatabaseEnv {
+  id          String    @id @default(uuid())
   key         String
   value       String
   description String?
-  addon       Addon?  @relation(fields: [addonId], references: [id])
-  addonId     String?
+  database    Database? @relation(fields: [databaseId], references: [id])
+  databaseId  String?
 }
 
-model AddonVolume {
-  id      String @id @default(uuid())
-  path    String
-  addon   Addon? @relation(fields: [addonId], references: [id])
-  addonId String
+model DatabaseVolume {
+  id         String    @id @default(uuid())
+  path       String
+  database   Database? @relation(fields: [databaseId], references: [id])
+  databaseId String
 }
 
 // APPLICATION
@@ -68,8 +60,8 @@ model Application {
   volumes       ApplicationVolume[]
   env           ApplicationEnv[]
   deployments   ApplicationDeployments[]
-  addon         Addon?                   @relation(fields: [addonId], references: [id])
-  addonId       String?
+  database      Database?                @relation(fields: [databaseId], references: [id])
+  databaseId    String?
   creationDate  DateTime
   updateTime    DateTime
 }

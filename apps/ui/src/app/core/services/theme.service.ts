@@ -7,11 +7,32 @@ import { DOCUMENT } from '@angular/common';
 export class ThemeService {
   constructor(@Inject(DOCUMENT) private document: Document) {}
 
-  switchTheme(theme: string) {
-    let themeLink = this.document.getElementById('app-theme') as HTMLLinkElement;
+  loadTheme() {
+    const href = `${
+      localStorage.getItem('theme') === 'dark' ? 'lara-dark-purple' : 'lara-light-purple'
+    }.css`;
+    this.getLinkElementForKey('app-theme').setAttribute('href', href);
+  }
 
-    if (themeLink) {
-      themeLink.href = theme + '.css';
-    }
+  switchTheme(isDark: boolean) {
+    const href = `${isDark ? 'lara-dark-purple' : 'lara-light-purple'}.css`;
+    this.getLinkElementForKey('app-theme').setAttribute('href', href);
+  }
+
+  private getLinkElementForKey(key: string) {
+    return this.getExistingLinkElementByKey(key) || this.createLinkElementWithKey(key);
+  }
+
+  private getExistingLinkElementByKey(key: string) {
+    return this.document.getElementById('app-theme') as HTMLLinkElement;
+  }
+
+  private createLinkElementWithKey(key: string) {
+    const linkEl: HTMLLinkElement = this.document.createElement('link');
+    linkEl.setAttribute('rel', 'stylesheet');
+    linkEl.id = 'app-theme';
+    document.head.appendChild(linkEl);
+
+    return linkEl;
   }
 }

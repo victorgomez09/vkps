@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 
 import appLogger from "./middlewares/logger";
-import router, { defaultRoute, errorHandler } from "./routes/";
+import router, { defaultRoute, errorHandler } from "./routes";
 
 export const app = express();
 

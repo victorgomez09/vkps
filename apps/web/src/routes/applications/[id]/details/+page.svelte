@@ -21,20 +21,24 @@
 </script>
 
 <div class="flex flex-col flex-1">
-	<div class="block p-4 bg-white rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-		<div class="font-normal text-gray-700 dark:text-gray-400">
+	<div class="card bg-base-300">
+		<div class="card-body">
 			{#if $applicationStore.deployments.length === 0}
-				<h3 class="text-abse-300">This application has no deployments yet.</h3>
+				<h3 class="text-base-content">This application has no deployments yet.</h3>
+
+				<div class="mt-4">
+					<button on:click={deployApplication} type="button" class="btn btn-secondary">
+						Deploy
+					</button>
+				</div>
 			{:else}
-				<dl
-					class="w-full text-gray-900 divide-y divide-gray-300 dark:text-white dark:divide-gray-700"
-				>
+				<dl class="text-base-content">
 					<ul class="divide-y divide-gray-200 dark:divide-gray-700">
 						{#each $applicationStore.pods as pod}
 							<li class="pb-3 sm:pb-4">
 								<div class="flex items-center space-x-4 rtl:space-x-reverse">
 									<div class="flex-1 min-w-0">
-										<p class="text-sm font-medium text-gray-900 truncate dark:text-white">
+										<p class="text-sm font-medium truncate">
 											{pod.metadata.name}
 										</p>
 
@@ -62,15 +66,9 @@
 										class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white"
 									>
 										{#if pod.status.phase === 'Running'}
-											<span
-												class="bg-green-100 text-green-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300"
-												>{pod.status.phase}</span
-											>
+											<span class="badge badge-success">{pod.status.phase}</span>
 										{:else}
-											<span
-												class="bg-yellow-100 text-yellow-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-yellow-900 dark:text-yellow-300"
-												>{pod.status.phase}</span
-											>
+											<span class="badge badge-error">{pod.status.phase}</span>
 										{/if}
 									</div>
 								</div>
@@ -87,16 +85,6 @@
 					{/each} -->
 				</dl>
 			{/if}
-
-			<!-- <div class="mt-4">
-				<button
-					on:click={deployApplication}
-					type="button"
-					class="font-medium rounded-md text-sm px-4 py-2 text-white bg-green-700 focus:outline-none hover:bg-green-800 focus:ring-1 focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
-				>
-					Deploy
-				</button>
-			</div> -->
 		</div>
 	</div>
 </div>

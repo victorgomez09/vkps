@@ -1,4 +1,3 @@
-import stream from 'stream';
 import {
   V1ContainerPort,
   V1Deployment,
@@ -6,10 +5,11 @@ import {
   V1Status,
   V1VolumeMount
 } from '@kubernetes/client-node';
+import * as stream from 'stream';
 
-import { getPodLogs, getPodsFromDeployment } from './pod.engine';
+import { getPodsFromDeployment } from './pod.engine';
 import { EngineData, LogLines } from './types';
-import { k8sAppsApi, k8sCoreApi, k8sLogsApi, logcolor } from './utils.engine';
+import { k8sAppsApi, k8sLogsApi, logcolor } from './utils.engine';
 
 export type Deployment = {
   namespace: string;
@@ -140,7 +140,7 @@ export const getDeploymentLogs = async (
   namespace: string = 'default'
 ): Promise<EngineData<LogLines[]>> => {
   try {
-    let loglines: LogLines[] = [];
+    const loglines: LogLines[] = [];
 
     let logs: string = '';
     const logStream = new stream.PassThrough();
@@ -200,9 +200,10 @@ export const getDeploymentLogs = async (
       data: loglines
     };
   } catch (error) {
+    console.log('error', error);
     return {
       statusCode: error.statusCode,
-      error: error.body.message
+      error: error.body ? error.body.message : error
     };
   }
 };

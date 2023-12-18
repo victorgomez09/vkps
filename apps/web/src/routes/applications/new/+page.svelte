@@ -30,10 +30,9 @@
 		size: string;
 	}[] = [];
 
-
 	// FUNCTIONS
 	function addEnvInput() {
-		envInputs = [...envInputs, { key: "", value: "" }];
+		envInputs = [...envInputs, { key: '', value: '' }];
 	}
 
 	function removeEnvInput(index: number) {
@@ -42,7 +41,7 @@
 	}
 
 	function addVolumeInput() {
-		volumeInputs = [...volumeInputs, { key: "", size: "" }];
+		volumeInputs = [...volumeInputs, { key: '', size: '' }];
 	}
 
 	function removeVolumeInput(index: number) {
@@ -59,14 +58,14 @@
 		});
 
 		const updatedvolumes: ApplicationVolume[] = [];
-		let currentKeyVolume: string; 
+		let currentKeyVolume: string;
 		Object.entries($form.values).map(([key, value]) => {
 			if (key.includes('volume-key-')) currentKeyVolume = value!;
 			if (key.includes('volume-size-')) {
 				updatedvolumes.push({
 					path: currentKeyVolume,
 					size: Number(value!),
-					accessMode: ["ReadWriteOnce"]
+					accessMode: ['ReadWriteOnce']
 				});
 			}
 		});
@@ -79,7 +78,7 @@
 			body: JSON.stringify({
 				namespace: 'default',
 				name: $form.name.value,
-				description: "",
+				description: '',
 				image: $form.image.value,
 				replicas: $form.replicas.value,
 				cpu: $form.cpu.value,
@@ -98,7 +97,7 @@
 		<h1 class="font-semibold text-xl">New application</h1>
 
 		<form use:form on:submit|preventDefault={handleForm}>
-			<div class="card bg-base-200 shadow mt-4 w-full">
+			<div class="card bg-base-300 shadow mt-4 w-full">
 				<div class="card-body px-4 py-4">
 					<h1 class="card-title text-base">Name</h1>
 
@@ -122,7 +121,7 @@
 										{/if}
 									</span>
 								{/if}
-								<span class="label-text-alt font-thin"
+								<span class="label-text-alt font-thin self-baseline"
 									>Choose a descriptive name for this application. Must be between 1-30 characters
 									and consist of alphabets (A-Z a-z), numbers (0-9) and spaces ( ).</span
 								>
@@ -132,7 +131,7 @@
 				</div>
 			</div>
 
-			<div class="card bg-base-200 shadow mt-4 w-full">
+			<div class="card bg-base-300 shadow mt-4 w-full">
 				<div class="card-body px-4 py-4">
 					<h1 class="card-title text-base">Image registry</h1>
 
@@ -144,7 +143,7 @@
 									tabIndex={0}
 									class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
 								>
-									<li class="hover:bg-base-200"><div class="p-2">Docker Hub</div></li>
+									<li class="hover:bg-base-300"><div class="p-2">Docker Hub</div></li>
 								</ul>
 							</div>
 							<div class="label">
@@ -186,7 +185,7 @@
 				</div>
 			</div>
 
-			<div class="card bg-base-200 shadow mt-4 w-full">
+			<div class="card bg-base-300 shadow mt-4 w-full">
 				<div class="card-body px-4 py-4">
 					<h1 class="card-title text-base">Environment variables</h1>
 
@@ -220,10 +219,8 @@
 									bind:value={envInput.value}
 								/>
 
-								<button
-									on:click={() => removeEnvInput(index)}
-									type="button"
-									class="btn bg-base-100">X</button
+								<button on:click={() => removeEnvInput(index)} type="button" class="btn bg-base-100"
+									>X</button
 								>
 							</div>
 						{/each}
@@ -231,7 +228,7 @@
 				</div>
 			</div>
 
-			<div class="card bg-base-200 shadow mt-4 w-full">
+			<div class="card bg-base-300 shadow mt-4 w-full">
 				<div class="card-body px-4 py-4">
 					<h1 class="card-title text-base">Volumes</h1>
 
@@ -239,8 +236,7 @@
 						<button
 							on:click={addVolumeInput}
 							type="button"
-							class="btn btn-ghost bg-base-100 border border-base-300"
-							>Add volume</button
+							class="btn btn-ghost bg-base-100 border border-base-300">Add volume</button
 						>
 					</div>
 					<div class="flex flex-col gap-2 w-full">
@@ -279,7 +275,7 @@
 				</div>
 			</div>
 
-			<div class="card bg-base-200 shadow mt-4 w-full">
+			<div class="card bg-base-300 shadow mt-4 w-full">
 				<div class="card-body px-4 py-4">
 					<h1 class="card-title text-base">Replicas</h1>
 
@@ -446,7 +442,7 @@
 				</div>
 			</div>
 
-			<button type="submit" class="btn btn-primary mt-4" disabled={!$form.valid}
+			<button type="submit" class="btn btn-block btn-secondary mt-4" disabled={!$form.valid}
 				>Create application</button
 			>
 		</form>

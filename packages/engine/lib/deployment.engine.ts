@@ -17,6 +17,8 @@ export type Deployment = {
   labels: { [key: string]: string };
   image: string;
   replicas: number;
+  memory: string;
+  cpu: string;
 
   ports: V1ContainerPort[];
   configMapRefName?: string;
@@ -32,7 +34,7 @@ export const createDeployment = async (
   deployment: Deployment
 ): Promise<EngineData<V1Deployment>> => {
   try {
-    const object = {
+    const object: V1Deployment = {
       apiVersion: 'apps/v1',
       kind: 'Deployment',
       metadata: {
@@ -53,7 +55,17 @@ export const createDeployment = async (
               {
                 name: deployment.name,
                 image: deployment.image,
-                ports: deployment.ports
+                ports: deployment.ports,
+                resources: {
+                  requests: {
+                    cpu: deployment.cpu,
+                    memory: deployment.memory
+                  },
+                  limits: {
+                    cpu: deployment.cpu,
+                    memory: deployment.memory
+                  }
+                }
               }
             ]
           }
@@ -207,6 +219,113 @@ export const getDeploymentLogs = async (
     };
   }
 };
+
+export async function updateDeploymentReplicas(
+  name: string,
+  namespace: string,
+  replicas: number
+): Promise<EngineData<V1Deployment>> {
+  try {
+    const { response, body: deployment } = await k8sAppsApi.readNamespacedDeployment(
+      name,
+      namespace
+    );
+    if (response.statusCode !== 200) {
+      return {
+        statusCode: response.statusCode,
+        error: 'Deployment not found'
+      };
+    }
+
+    // edit
+    deployment.spec.replicas = replicas;
+
+    // replace
+    await k8sAppsApi.replaceNamespacedDeployment(name, namespace, deployment);
+
+    return {
+      statusCode: response.statusCode || 200,
+      data: deployment
+    };
+  } catch (error) {
+    return {
+      statusCode: error.statusCode,
+      error: error.body ? error.body.message : error
+    };
+  }
+}
+
+export async function updateDeploymentMemory(
+  name: string,
+  namespace: string,
+  memory: string
+): Promise<EngineData<V1Deployment>> {
+  try {
+    const { response, body: deployment } = await k8sAppsApi.readNamespacedDeployment(
+      name,
+      namespace
+    );
+    if (response.statusCode !== 200) {
+      return {
+        statusCode: response.statusCode,
+        error: 'Deployment not found'
+      };
+    }
+
+    // edit
+    deployment.spec.template.spec.containers[0].resources.requests.memory = memory;
+    deployment.spec.template.spec.containers[0].resources.limits.memory = memory;
+
+    // replace
+    await k8sAppsApi.replaceNamespacedDeployment(name, namespace, deployment);
+
+    return {
+      statusCode: response.statusCode || 200,
+      data: deployment
+    };
+  } catch (error) {
+    return {
+      statusCode: error.statusCode,
+      error: error.body ? error.body.message : error
+    };
+  }
+}
+
+export async function updateDeploymentCpu(
+  name: string,
+  namespace: string,
+  cpu: string
+): Promise<EngineData<V1Deployment>> {
+  try {
+    const { response, body: deployment } = await k8sAppsApi.readNamespacedDeployment(
+      name,
+      namespace
+    );
+    if (response.statusCode !== 200) {
+      return {
+        statusCode: response.statusCode,
+        error: 'Deployment not found'
+      };
+    }
+
+    // edit
+    deployment.spec.template.spec.containers[0].resources.requests.cpu = cpu;
+    deployment.spec.template.spec.containers[0].resources.limits.cpu = cpu;
+
+    // replace
+    await k8sAppsApi.replaceNamespacedDeployment(name, namespace, deployment);
+
+    return {
+      statusCode: response.statusCode || 200,
+      data: deployment
+    };
+  } catch (error) {
+    return {
+      statusCode: error.statusCode,
+      error: error.body ? error.body.message : error
+    };
+  }
+}
 
 export const deleteDeployment = async (
   name: string,

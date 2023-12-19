@@ -442,6 +442,15 @@
 				</div>
 			</div>
 
+			<!-- input with buttons -->
+			<!-- 🚩 Needs JS to change number -->
+
+			<div class="relative w-40">
+				<button class="absolute left-0 top-0 rounded-r-none btn btn-square">-</button>
+				<input type="text" class="w-full text-center px-12 input input-bordered" value="5" />
+				<button class="absolute right-0 top-0 rounded-l-none btn btn-square">+</button>
+			</div>
+
 			<button type="submit" class="btn btn-block btn-secondary mt-4" disabled={!$form.valid}
 				>Create application</button
 			>

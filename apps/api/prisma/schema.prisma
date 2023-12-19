@@ -63,8 +63,8 @@ model Application {
   description   String
   image         String
   replicas      Int
-  memory        Int
-  cpu           Int
+  memory        String
+  cpu           String
   volumes       ApplicationVolume[]
   env           ApplicationEnv[]
   deployments   ApplicationDeployments[]

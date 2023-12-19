@@ -9,6 +9,9 @@ import {
     getDeployment,
     getDeploymentLogs,
     getPodsFromDeployment,
+    updateDeploymentCpu,
+    updateDeploymentMemory,
+    updateDeploymentReplicas,
 } from "engine";
 import { parseName } from "engine/lib/utils.engine";
 
@@ -190,8 +193,8 @@ export const createApp = async ({
     description: string;
     image: string;
     replicas: number;
-    cpu: number;
-    memory: number;
+    cpu: string;
+    memory: string;
     env: { [key: string]: string };
     volumes: { path: string; size: string; accessMode: string[] }[];
     ports: V1ContainerPort[];
@@ -390,6 +393,8 @@ export const deployApplication = async (
                         },
                         image: `${application.image}:latest`,
                         replicas: application.replicas,
+                        memory: application.memory,
+                        cpu: application.cpu,
                         ports: [],
                     };
                     if (configMap) object["configMapRefName"] = configMap.metadata.name;
@@ -437,185 +442,64 @@ export const deployApplication = async (
     }
 };
 
-export const deployAddon = async ({
-    addonName,
-    namespace,
-    applicationName: deploymentName,
-    description,
-    version,
-    replicas,
-    cpu,
-    memory,
-    env,
-    volumes,
-    ports,
-}: {
-    addonName: string;
-    namespace: string;
-    applicationName: string;
-    description: string;
-    version: string;
-    replicas: number;
-    cpu: number;
-    memory: number;
-    env: { [key: string]: string };
-    volumes: { path: string; size: string; accessMode: string[] }[];
-    ports: V1ContainerPort[];
-}): Promise<
-    ApiResponse<{
+export const updateApplication = async (
+    applicationId: string,
+    data: {
         name: string;
-        namespace: string;
+        description: string;
+        image: string;
         replicas: number;
-    }>
-> => {
+        cpu: string;
+        memory: string;
+        env: { key: string; value: string }[];
+    }
+) => {
     try {
-        const addon = await prisma.addon.findFirst({
-            where: { name: addonName },
+        const applicationDb = await prisma.application.findFirst({
+            where: {
+                applicationId,
+            },
             include: {
+                deployments: true,
                 env: true,
-                versions: true,
                 volumes: true,
             },
         });
 
-        if (!addon) {
-            return {
-                statusCode: 404,
-                error: "Addon not found",
-            };
+        if (applicationDb.replicas !== data.replicas) {
+            await updateDeploymentReplicas(applicationDb.applicationId, NAMESPACE, data.replicas);
         }
-        // Save on database
-        const queue = Queue({
-            queueTimeout: 500,
-            executionTimeout: 250,
-            concurrency: 1,
-            maxTaskCount: 1,
-        });
-        queue
-            .add(async () => {
-                let configMap: V1ConfigMap;
-                if (addon.env.length) {
-                    const result = await createConfigMap({
-                        namespace: namespace,
-                        name: parseName(deploymentName),
-                        labels: {
-                            app: parseName(deploymentName),
-                        },
-                        data: env,
-                    });
 
-                    if (result.statusCode !== 201) {
-                        return {
-                            statusCode: result.statusCode,
-                            error: result.error,
-                        };
-                    }
+        if (applicationDb.memory !== data.memory) {
+            await updateDeploymentMemory(applicationDb.applicationId, NAMESPACE, data.memory);
+        }
 
-                    configMap = result.data;
-                }
+        if (applicationDb.cpu !== data.cpu) {
+            await updateDeploymentCpu(applicationDb.applicationId, NAMESPACE, data.cpu);
+        }
 
-                let pvc: V1PersistentVolumeClaim;
-                const volumeMounts: V1VolumeMount[] = [];
-                if (volumes.length > 0) {
-                    for await (const volume of volumes) {
-                        const pvData = await createPersistentVolume({
-                            namespace: namespace,
-                            name: parseName(deploymentName),
-                            labels: {
-                                app: parseName(deploymentName),
-                            },
-                            accessModes: volume.accessMode || ["ReadWriteOnce"],
-                            storage: volume.size,
-                            path: volume.path,
-                        });
-                        if (pvData.statusCode !== 201) {
-                            return {
-                                statusCode: pvData.statusCode,
-                                error: pvData.error,
-                            };
-                        }
-
-                        const pvcData = await createPersistentVolumeClaim({
-                            namespace: namespace,
-                            name: parseName(deploymentName),
-                            labels: {
-                                app: parseName(deploymentName),
-                            },
-                            accessModes: volume.accessMode || ["ReadWriteOnce"],
-                            storage: volume.size,
-                        });
-                        if (pvcData.statusCode !== 201) {
-                            return {
-                                statusCode: pvcData.statusCode,
-                                error: pvcData.error,
-                            };
-                        }
-                        pvc = pvcData.data;
-
-                        volumeMounts.push({
-                            name: pvcData.data.metadata.name,
-                            mountPath: volume.path,
-                        });
-                    }
-                }
-
-                const result = await createDeployment({
-                    namespace: namespace,
-                    name: parseName(deploymentName),
-                    labels: {
-                        app: parseName(deploymentName),
-                    },
-                    image: `${addon.image}:${!version ? "latest" : version}`,
-                    replicas: replicas,
-                    ports: ports,
-                    configMapRefName: configMap.metadata.name,
-                    persistentVolumeClaimRefName: pvc.metadata.name,
-                    volumeMounts,
-                });
-
-                return result;
-            })
-            .then((result) => {
-                return {
-                    statusCode: 201,
-                    data: {
-                        name: result.data.metadata.name,
-                        namespace: result.data.metadata.namespace,
-                        replicas: result.data.spec.replicas,
-                    },
-                };
-            });
-
-        // Add to database
-        const deployment = await prisma.application.create({
+        const application = await prisma.application.update({
+            where: {
+                applicationId,
+            },
             data: {
-                applicationId: parseName(deploymentName),
-                name: deploymentName,
-                description: description,
-                image: addon.image,
-                replicas: replicas,
-                cpu: cpu,
-                memory: memory,
-                creationDate: new Date(),
-                updateTime: new Date(),
-                addon: {
-                    connect: {
-                        id: addon.id,
-                    },
+                name: data.name,
+                description: data.description,
+                image: data.image,
+                cpu: data.cpu,
+                memory: data.memory,
+                env: {
+                    deleteMany: {},
+                    create: data.env,
                 },
             },
         });
 
         return {
             statusCode: 200,
-            data: {
-                name: deployment.name,
-                namespace: namespace,
-                replicas: replicas,
-            },
+            data: application,
         };
     } catch (error) {
-        console.log(error);
         return {
             error: error.message,
             statusCode: error.statusCode,

@@ -41,7 +41,7 @@
 					</div>
 					<div
 						tabIndex={0}
-						class="dropdown-content rounded-btn bg-base-200 text-base-content top-px h-[28.6rem] max-h-[calc(100vh-10rem)] w-56 overflow-y-auto"
+						class="dropdown-content rounded-btn bg-base-200 text-base-content top-px h-[28.6rem] max-h-[calc(100vh-10rem)] w-56 overflow-y-auto z-[999]"
 					>
 						<div class="grid grid-cols-1 p-3">
 							{#each themes as theme}

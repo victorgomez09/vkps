@@ -292,45 +292,45 @@
 							<button
 								on:click={() => ($form.replicas.value = '1')}
 								type="button"
-								class="btn bg-base-100 join-item"
-								class:bg-info={$form.replicas.value === '1'}>1</button
+								class="btn btn-secondary join-item"
+								class:bg-primary={$form.replicas.value === '1'}>1</button
 							>
 							<button
 								on:click={() => ($form.replicas.value = '2')}
 								type="button"
-								class="btn bg-base-100 join-item"
-								class:bg-info={$form.replicas.value === '2'}>2</button
+								class="btn btn-secondary join-item"
+								class:bg-primary={$form.replicas.value === '2'}>2</button
 							>
 							<button
 								on:click={() => ($form.replicas.value = '3')}
 								type="button"
-								class="btn bg-base-100 join-item"
-								class:bg-info={$form.replicas.value === '3'}>3</button
+								class="btn btn-secondary join-item"
+								class:bg-primary={$form.replicas.value === '3'}>3</button
 							>
 							<button
 								on:click={() => ($form.replicas.value = '4')}
 								type="button"
-								class="btn bg-base-100 join-item"
-								class:bg-info={$form.replicas.value === '4'}>4</button
+								class="btn btn-secondary join-item"
+								class:bg-primary={$form.replicas.value === '4'}>4</button
 							>
 							<button
 								on:click={() => ($form.replicas.value = '5')}
 								type="button"
-								class="btn bg-base-100 join-item"
-								class:bg-info={$form.replicas.value === '5'}>5</button
+								class="btn btn-secondary join-item"
+								class:bg-primary={$form.replicas.value === '5'}>5</button
 							>
 							<button
 								on:click={() => ($form.replicas.value = '10')}
 								type="button"
-								class="btn bg-base-100 join-item"
-								class:bg-info={$form.replicas.value === '10'}>10</button
+								class="btn btn-secondary join-item"
+								class:bg-primary={$form.replicas.value === '10'}>10</button
 							>
 						</div>
 					</div>
 
 					<div class="divider" />
 
-					<h1 class="card-title text-base">Memory</h1>
+					<h1 class="card-title text-base">Memory (mb)</h1>
 
 					<div class="flex items-center gap-2">
 						<div class="join">
@@ -341,52 +341,52 @@
 								use:validators={[required]}
 								bind:value={$form.memory.value}
 							/>
-							<div class="flex items-center justify-center bg-base-300 p-2 join-item">Mb</div>
+							<!-- <div class="flex items-center justify-center bg-base-300 p-2 join-item">Mb</div> -->
 						</div>
 
 						<div class="join join-horizontal">
 							<button
 								on:click={() => ($form.memory.value = '128')}
 								type="button"
-								class="btn bg-base-100 join-item"
-								class:bg-info={$form.memory.value === '128'}>128</button
+								class="btn btn-secondary join-item"
+								class:bg-primary={$form.memory.value === '128'}>128</button
 							>
 							<button
 								on:click={() => ($form.memory.value = '256')}
 								type="button"
-								class="btn bg-base-100 join-item"
-								class:bg-info={$form.memory.value === '256'}>256</button
+								class="btn btn-secondary join-item"
+								class:bg-primary={$form.memory.value === '256'}>256</button
 							>
 							<button
 								on:click={() => ($form.memory.value = '512')}
 								type="button"
-								class="btn bg-base-100 join-item"
-								class:bg-info={$form.memory.value === '512'}>512</button
+								class="btn btn-secondary join-item"
+								class:bg-primary={$form.memory.value === '512'}>512</button
 							>
 							<button
 								on:click={() => ($form.memory.value = '768')}
 								type="button"
-								class="btn bg-base-100 join-item"
-								class:bg-info={$form.memory.value === '768'}>768</button
+								class="btn btn-secondary join-item"
+								class:bg-primary={$form.memory.value === '768'}>768</button
 							>
 							<button
 								on:click={() => ($form.memory.value = '1024')}
 								type="button"
-								class="btn bg-base-100 join-item"
-								class:bg-info={$form.memory.value === '1024'}>1024</button
+								class="btn btn-secondary join-item"
+								class:bg-primary={$form.memory.value === '1024'}>1024</button
 							>
 							<button
 								on:click={() => ($form.memory.value = '2048')}
 								type="button"
-								class="btn bg-base-100 join-item"
-								class:bg-info={$form.memory.value === '2048'}>2048</button
+								class="btn btn-secondary join-item"
+								class:bg-primary={$form.memory.value === '2048'}>2048</button
 							>
 						</div>
 					</div>
 
 					<div class="divider" />
 
-					<h1 class="card-title text-base">Cpu</h1>
+					<h1 class="card-title text-base">Cpu (mcpu)</h1>
 
 					<div class="flex items-center gap-2">
 						<div class="join">
@@ -397,58 +397,49 @@
 								use:validators={[required]}
 								bind:value={$form.cpu.value}
 							/>
-							<div class="flex items-center justify-center bg-base-300 p-2 join-item">mcpu</div>
+							<!-- <div class="flex items-center justify-center bg-base-300 p-2 join-item">mcpu</div> -->
 						</div>
 
 						<div class="join join-horizontal">
 							<button
 								on:click={() => ($form.cpu.value = '100')}
 								type="button"
-								class="btn bg-base-100 join-item"
-								class:bg-info={$form.cpu.value === '100'}>100</button
+								class="btn btn-secondary join-item"
+								class:bg-primary={$form.cpu.value === '100'}>100</button
 							>
 							<button
 								on:click={() => ($form.cpu.value = '250')}
 								type="button"
-								class="btn bg-base-100 join-item"
-								class:bg-info={$form.cpu.value === '250'}>250</button
+								class="btn btn-secondary join-item"
+								class:bg-primary={$form.cpu.value === '250'}>250</button
 							>
 							<button
 								on:click={() => ($form.cpu.value = '500')}
 								type="button"
-								class="btn bg-base-100 join-item"
-								class:bg-info={$form.cpu.value === '500'}>500</button
+								class="btn btn-secondary join-item"
+								class:bg-primary={$form.cpu.value === '500'}>500</button
 							>
 							<button
 								on:click={() => ($form.cpu.value = '750')}
 								type="button"
-								class="btn bg-base-100 join-item"
-								class:bg-info={$form.cpu.value === '750'}>750</button
+								class="btn btn-secondary join-item"
+								class:bg-primary={$form.cpu.value === '750'}>750</button
 							>
 							<button
 								on:click={() => ($form.cpu.value = '1000')}
 								type="button"
-								class="btn bg-base-100 join-item"
-								class:bg-info={$form.cpu.value === '1000'}>1000</button
+								class="btn btn-secondary join-item"
+								class:bg-primary={$form.cpu.value === '1000'}>1000</button
 							>
 							<button
 								on:click={() => ($form.cpu.value = '2000')}
 								type="button"
-								class="btn bg-base-100 join-item"
-								class:bg-info={$form.cpu.value === '2000'}>2000</button
+								class="btn btn-secondary join-item"
+								class:bg-primary={$form.cpu.value === '2000'}>2000</button
 							>
 						</div>
 					</div>
 				</div>
-			</div>
-
-			<!-- input with buttons -->
-			<!-- 🚩 Needs JS to change number -->
-
-			<div class="relative w-40">
-				<button class="absolute left-0 top-0 rounded-r-none btn btn-square">-</button>
-				<input type="text" class="w-full text-center px-12 input input-bordered" value="5" />
-				<button class="absolute right-0 top-0 rounded-l-none btn btn-square">+</button>
 			</div>
 
 			<button type="submit" class="btn btn-block btn-secondary mt-4" disabled={!$form.valid}

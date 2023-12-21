@@ -99,6 +99,7 @@ router.post("/deploy/:applicationId", async (req: Request, res: Response) => {
 router.put("/update/:applicationId", async (req: Request, res: Response) => {
     const { applicationId } = req.params;
     const { name, description, image, replicas, cpu, memory, env } = req.body;
+    console.log("body", req.body);
 
     const { statusCode, data, error } = await updateApplication(applicationId, {
         name,

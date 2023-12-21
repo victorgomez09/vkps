@@ -475,6 +475,7 @@ export const updateApplication = async (
         }
 
         if (applicationDb.cpu !== data.cpu) {
+            console.log("updating application cpu", data.cpu);
             await updateDeploymentCpu(applicationDb.applicationId, NAMESPACE, data.cpu);
         }
 

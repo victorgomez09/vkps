@@ -8,7 +8,7 @@
 	const { data: applications } = data;
 </script>
 
-<div class="flex flex-col flex-1">
+<div class="flex flex-col flex-1 overflow-auto">
 	<div class="flex items-center justify-between w-full">
 		<h1 class="text-2xl font-bold">Deployments</h1>
 
@@ -17,7 +17,7 @@
 		</button>
 	</div>
 
-	<div class="mt-6 flex flex-col gap-2">
+	<div class="mt-6 flex flex-col gap-2 max-h-0">
 		{#if applications.length > 0}
 			{#each applications as application}
 				<div class="card w-full p-4 shadow bg-base-300 text-base-content">

@@ -20,7 +20,7 @@
 			{#each addons as addon}
 				<a
 					href={`/addons/deploy/${addon.name}`}
-					class="card shadow bg-base-200 text-base-content hover:scale-105"
+					class="card shadow bg-base-300 text-base-content hover:scale-105"
 				>
 					<div class="card-body p-4">
 						<div class="flex flex-col items-center">

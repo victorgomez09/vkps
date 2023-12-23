@@ -1,9 +1,9 @@
+import { V1ConfigMap, V1PersistentVolumeClaim, V1VolumeMount } from "@kubernetes/client-node";
 import { Addon } from "@prisma/client";
-import { ApiResponse } from "../types";
-import { prisma } from "../config/database.config";
 import { createConfigMap, createDeployment, createPersistentVolume, createPersistentVolumeClaim, parseName } from "engine";
-import { V1ConfigMap, V1ContainerPort, V1PersistentVolumeClaim, V1VolumeMount } from "@kubernetes/client-node";
+import { prisma } from "../config/database.config";
 import { Queue } from "../queue/queue";
+import { ApiResponse } from "../types";
 
 export const listAddons = async (): Promise<ApiResponse<Addon[]>> => {
     const addons = await prisma.addon.findMany({
@@ -65,7 +65,7 @@ export const deployAddon = async ({
     memory,
     env,
     volumes,
-    ports,
+    port,
 }: {
     addonName: string;
     namespace: string;
@@ -77,7 +77,7 @@ export const deployAddon = async ({
     memory: string;
     env: { [key: string]: string };
     volumes: { path: string; size: string; accessMode: string[] }[];
-    ports: V1ContainerPort[];
+    port: number;
 }): Promise<
     ApiResponse<{
         name: string;
@@ -186,7 +186,7 @@ export const deployAddon = async ({
                     replicas: replicas,
                     cpu: cpu,
                     memory: memory,
-                    ports: ports,
+                    port,
                     configMapRefName: configMap.metadata.name,
                     persistentVolumeClaimRefName: pvc.metadata.name,
                     volumeMounts,

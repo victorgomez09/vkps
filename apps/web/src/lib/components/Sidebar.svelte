@@ -26,7 +26,7 @@
 					>
 				</li>
 				<li>
-					<a class:active={$page.url.pathname.includes('databases')} href="/databases">Databases</a>
+					<a class:active={$page.url.pathname.includes('addons')} href="/addons">Addons</a>
 				</li>
 			</ul>
 

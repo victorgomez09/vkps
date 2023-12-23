@@ -17,6 +17,10 @@
 		cpu: {
 			initial: '100',
 			validators: [required, number]
+		},
+		port: {
+			initial: '80',
+			validators: [required]
 		}
 	});
 
@@ -84,7 +88,8 @@
 				cpu: $form.cpu.value,
 				memory: $form.memory.value,
 				env: updatedEnvs,
-				volumes: updatedvolumes
+				volumes: updatedvolumes,
+				port: $form.port.value
 			})
 		});
 		const data = await result.json();
@@ -438,6 +443,26 @@
 								class:bg-primary={$form.cpu.value === '2000'}>2000</button
 							>
 						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="card bg-base-300 shadow mt-4">
+				<div class="card-body px-4 py-4">
+					<h1 class="card-title text-base">Ports</h1>
+
+					<div class="form-control">
+						<input
+							name="port"
+							id="port"
+							type="text"
+							class="input input-bordered w-full"
+							bind:value={$form.port.value}
+						/>
+
+						<span class="label">
+							<span class="label-text-alt">Application port</span>
+						</span>
 					</div>
 				</div>
 			</div>

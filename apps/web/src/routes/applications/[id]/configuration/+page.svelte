@@ -18,6 +18,9 @@
 		cpu: {
 			initial: $applicationStore.cpu.toString(),
 			validators: [required, number]
+		},
+		network: {
+			initial: String($applicationStore.network || false)
 		}
 	});
 
@@ -71,8 +74,6 @@
 			}
 		});
 
-		console.log('$form.values.cpu', $form.values.cpu);
-
 		const result = await fetch(
 			`${env.PUBLIC_API_URL}/applications/update/${$applicationStore.applicationId}`,
 			{
@@ -87,7 +88,8 @@
 					memory: $form.values.memory,
 					cpu: $form.values.cpu,
 					envs: updatedEnvs,
-					volumes: updatedvolumes
+					volumes: updatedvolumes,
+					exposedNetwork: $form.values.network === 'checked'
 				})
 			}
 		);
@@ -96,6 +98,8 @@
 			console.log('data', await result.json());
 		}
 	}
+
+	console.log($applicationStore);
 </script>
 
 <div class="flex flex-col w-full h-full overflow-auto">
@@ -477,9 +481,28 @@
 				</div>
 			</div>
 
-			<button type="submit" class="btn btn-secondary btn-block mt-4" disabled={!$form.valid}>
-				Update application
-			</button>
+			<div class="card bg-base-300 shadow mt-4 w-full">
+				<div class="card-body px-4 py-4">
+					<h5 class="card-title text-base">Network</h5>
+
+					<div class="form-control">
+						<input
+							name="network"
+							id="network"
+							type="checkbox"
+							class="toggle toggle-secondary"
+							bind:value={$form.network.value}
+						/>
+						<span class="label">
+							<span class="label-text-alt">Expose the application to the internet.</span>
+						</span>
+					</div>
+				</div>
+
+				<button type="submit" class="btn btn-primary btn-block mt-4" disabled={!$form.valid}>
+					Update application
+				</button>
+			</div>
 		</form>
 	</div>
 </div>

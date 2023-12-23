@@ -57,21 +57,23 @@ model AddonVolume {
 
 // APPLICATION
 model Application {
-  id            String                   @id @default(uuid())
-  applicationId String                   @unique
-  name          String                   @unique
-  description   String
-  image         String
-  replicas      Int
-  memory        String
-  cpu           String
-  volumes       ApplicationVolume[]
-  env           ApplicationEnv[]
-  deployments   ApplicationDeployments[]
-  addon         Addon?                   @relation(fields: [addonId], references: [id])
-  addonId       String?
-  creationDate  DateTime
-  updateTime    DateTime
+  id             String                   @id @default(uuid())
+  applicationId  String                   @unique
+  name           String                   @unique
+  description    String
+  image          String
+  replicas       Int
+  memory         String
+  cpu            String
+  exposedNetwork Boolean                  @default(false)
+  port           Int                      @default(8080)
+  volumes        ApplicationVolume[]
+  env            ApplicationEnv[]
+  deployments    ApplicationDeployments[]
+  addon          Addon?                   @relation(fields: [addonId], references: [id])
+  addonId        String?
+  creationDate   DateTime
+  updateTime     DateTime
 }
 
 model ApplicationVolume {

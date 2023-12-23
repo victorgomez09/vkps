@@ -1,1 +1,1 @@
-export const NAMESPACE = "default";
+export const NAMESPACE = "vkps";

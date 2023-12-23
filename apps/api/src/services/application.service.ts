@@ -1,15 +1,19 @@
-import { V1ConfigMap, V1ContainerPort, V1PersistentVolumeClaim, V1VolumeMount } from "@kubernetes/client-node";
+import { V1ConfigMap, V1PersistentVolumeClaim, V1Pod, V1VolumeMount } from "@kubernetes/client-node";
 import { Application } from "@prisma/client";
 import {
     Pod,
+    createClusterIpService,
     createConfigMap,
     createDeployment,
+    createNodePortService,
     createPersistentVolume,
     createPersistentVolumeClaim,
     getDeployment,
     getDeploymentLogs,
     getPodsFromDeployment,
+    getServiceByName,
     updateDeploymentCpu,
+    updateDeploymentImage,
     updateDeploymentMemory,
     updateDeploymentReplicas,
 } from "engine";
@@ -19,11 +23,13 @@ import { prisma } from "../config/database.config";
 import { NAMESPACE } from "../constants/k8s.constant";
 import { Queue } from "../queue/queue";
 import { ApiResponse } from "../types";
+import { Service } from "../types/service.type";
 
 type ApplicationResponse = Application & {
     workingReplicas: number;
     totalReplicas: number;
-    pods: any[];
+    pods: V1Pod[];
+    service?: Service;
 };
 
 export const getApplications = async (): Promise<ApiResponse<ApplicationResponse[]>> => {
@@ -36,7 +42,7 @@ export const getApplications = async (): Promise<ApiResponse<ApplicationResponse
         });
 
         for await (const applicationDb of applicationsDb) {
-            const k8sDeployment = await getDeployment(applicationDb.applicationId, "default");
+            const k8sDeployment = await getDeployment(applicationDb.applicationId, NAMESPACE);
             if (k8sDeployment.statusCode !== 200 || !k8sDeployment.data) {
                 applications.push({
                     ...applicationDb,
@@ -80,7 +86,7 @@ export const getApplicationById = async (id: string): Promise<ApiResponse<Applic
                 volumes: true,
             },
         });
-        const { statusCode, data } = await getDeployment(applicationDb.applicationId, "default");
+        const { statusCode, data } = await getDeployment(applicationDb.applicationId, NAMESPACE);
 
         if (!data) {
             return {
@@ -90,7 +96,16 @@ export const getApplicationById = async (id: string): Promise<ApiResponse<Applic
                     workingReplicas: 0,
                     totalReplicas: 0,
                     pods: [],
+                    service: undefined,
                 },
+            };
+        }
+
+        const { statusCode: serviceCode, data: service } = await getServiceByName(`${parseName(applicationDb.applicationId)}-service`, NAMESPACE);
+        if (serviceCode !== 200) {
+            return {
+                statusCode: serviceCode,
+                error: "Service not found",
             };
         }
 
@@ -99,6 +114,7 @@ export const getApplicationById = async (id: string): Promise<ApiResponse<Applic
             workingReplicas: data.status?.availableReplicas || 0,
             totalReplicas: data.status?.replicas || 0,
             pods: data.pods,
+            service,
         };
 
         return {
@@ -115,7 +131,7 @@ export const getApplicationById = async (id: string): Promise<ApiResponse<Applic
 
 export const getApplicationLogs = async (name: string) => {
     try {
-        const { statusCode, data } = await getDeploymentLogs(parseName(name));
+        const { statusCode, data } = await getDeploymentLogs(parseName(name), NAMESPACE);
 
         return {
             statusCode,
@@ -131,7 +147,7 @@ export const getApplicationLogs = async (name: string) => {
 
 export const getApplicationByName = async (
     name: string,
-    namespace: string
+    namespace: string = NAMESPACE
 ): Promise<
     ApiResponse<{
         name: string;
@@ -139,6 +155,7 @@ export const getApplicationByName = async (
         replicas: number;
         availableReplicas: number;
         pods: Pod[];
+        service: Service;
     }>
 > => {
     try {
@@ -161,6 +178,15 @@ export const getApplicationByName = async (
             });
         });
 
+        // TODO: get service
+        const { statusCode, data: service } = await getServiceByName(`${String(name)}-service`, String(namespace));
+        if (statusCode !== 200) {
+            return {
+                statusCode,
+                error: "Service not found",
+            };
+        }
+
         return {
             statusCode: 200,
             data: {
@@ -169,6 +195,7 @@ export const getApplicationByName = async (
                 replicas: application.data.spec.replicas,
                 availableReplicas: application.data.status.availableReplicas,
                 pods: pods,
+                service,
             },
         };
     } catch (error) {
@@ -188,6 +215,8 @@ export const createApp = async ({
     memory,
     env,
     volumes,
+    exposedNetwork,
+    port,
 }: {
     name: string;
     description: string;
@@ -197,7 +226,8 @@ export const createApp = async ({
     memory: string;
     env: { [key: string]: string };
     volumes: { path: string; size: string; accessMode: string[] }[];
-    ports: V1ContainerPort[];
+    exposedNetwork: boolean;
+    port: number;
 }): Promise<ApiResponse<Application>> => {
     try {
         if (
@@ -220,6 +250,8 @@ export const createApp = async ({
                 replicas,
                 cpu,
                 memory,
+                exposedNetwork,
+                port: Number(port),
                 creationDate: new Date(),
                 updateTime: new Date(),
                 // addon: {
@@ -248,6 +280,7 @@ export const createApp = async ({
 
         if (Object.keys(env).length > 0) {
             Object.entries(env).map(async ([key, value]) => {
+                console.log("key", key, "value", value);
                 await prisma.applicationEnv.create({
                     data: {
                         key,
@@ -391,17 +424,24 @@ export const deployApplication = async (
                         labels: {
                             app: parseName(application.name),
                         },
-                        image: `${application.image}:latest`,
+                        image: application.image,
                         replicas: application.replicas,
                         memory: application.memory,
                         cpu: application.cpu,
-                        ports: [],
+                        port: application.port,
                     };
+                    console.log("object", object);
                     if (configMap) object["configMapRefName"] = configMap.metadata.name;
                     if (pvc) object["persistentVolumeClaimRefName"] = pvc.metadata.name;
                     if (volumeMounts.length > 0) object["volumeMounts"] = volumeMounts;
 
                     const result = await createDeployment(object);
+
+                    if (application.exposedNetwork) {
+                        createNodePortService(application.applicationId, NAMESPACE);
+                    } else {
+                        createClusterIpService(application.applicationId, NAMESPACE);
+                    }
 
                     return result;
                 })
@@ -452,6 +492,8 @@ export const updateApplication = async (
         cpu: string;
         memory: string;
         env: { key: string; value: string }[];
+        volumes: { path: string; size: number }[];
+        exposedNetwork: boolean;
     }
 ) => {
     try {
@@ -475,8 +517,19 @@ export const updateApplication = async (
         }
 
         if (applicationDb.cpu !== data.cpu) {
-            console.log("updating application cpu", data.cpu);
             await updateDeploymentCpu(applicationDb.applicationId, NAMESPACE, data.cpu);
+        }
+
+        if (applicationDb.image !== data.image) {
+            await updateDeploymentImage(applicationDb.applicationId, NAMESPACE, data.image);
+        }
+
+        if (applicationDb.exposedNetwork !== data.exposedNetwork) {
+            if (data.exposedNetwork) {
+                await createNodePortService(applicationDb.applicationId, NAMESPACE);
+            } else {
+                await createClusterIpService(applicationDb.applicationId, NAMESPACE);
+            }
         }
 
         const application = await prisma.application.update({
@@ -489,6 +542,8 @@ export const updateApplication = async (
                 image: data.image,
                 cpu: data.cpu,
                 memory: data.memory,
+                replicas: data.replicas,
+                exposedNetwork: data.exposedNetwork,
                 env: {
                     deleteMany: {},
                     create: data.env,

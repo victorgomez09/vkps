@@ -62,7 +62,7 @@ router.get("/addon/:addonName", async (req: Request, res: Response) => {
 
 /* POST ROUTES */
 router.post("/create", async (req: Request, res: Response) => {
-    const { name, description, image, replicas, cpu, memory, env, volumes, ports } = req.body;
+    const { name, description, image, replicas, cpu, memory, env, volumes, port, exposedNetwork } = req.body;
 
     const response = await createApplication({
         name,
@@ -73,7 +73,8 @@ router.post("/create", async (req: Request, res: Response) => {
         memory: memory,
         env,
         volumes,
-        ports,
+        port,
+        exposedNetwork: Boolean(exposedNetwork),
     });
 
     if (response.statusCode !== 200) {
@@ -98,7 +99,7 @@ router.post("/deploy/:applicationId", async (req: Request, res: Response) => {
 /* PUT ROUTES */
 router.put("/update/:applicationId", async (req: Request, res: Response) => {
     const { applicationId } = req.params;
-    const { name, description, image, replicas, cpu, memory, env } = req.body;
+    const { name, description, image, replicas, cpu, memory, env, volumes, exposedNetwork } = req.body;
     console.log("body", req.body);
 
     const { statusCode, data, error } = await updateApplication(applicationId, {
@@ -109,6 +110,8 @@ router.put("/update/:applicationId", async (req: Request, res: Response) => {
         cpu: cpu,
         memory: memory,
         env,
+        volumes,
+        exposedNetwork: Boolean(exposedNetwork),
     });
 
     if (statusCode !== 200) {

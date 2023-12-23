@@ -12,6 +12,7 @@ export type Application = {
 	totalReplicas: number;
 	memory: number;
 	cpu: number;
+	network: boolean;
 	env: ApplicationEnv;
 	volumes: ApplicationVolume[];
 	deployments: ApplicationDeployments[];

@@ -1,0 +1,107 @@
+<div class="flex flex-col flex-1 w-full h-full sm:px-6">
+  <div class="flex items-center justify-between">
+    <h1 class="font-semibold text-xl">Deployments</h1>
+
+    <app-button [color]="'blue'" [text]="'New deployment'" routerLink="/deployments/new" />
+  </div>
+  @defer (when deployments()) {
+  <!-- Card Section -->
+  <div class="mt-8">
+    <!-- Grid -->
+    <div class="grid sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
+      @for (deployment of deployments(); track $index) {
+      <!-- Card -->
+      <a
+        class="group flex flex-col bg-white border shadow-sm rounded-xl hover:shadow-md transition dark:bg-slate-900 dark:border-gray-800 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600"
+        href="#"
+      >
+        <div class="p-4 md:p-5">
+          <div class="flex justify-between items-center">
+            <div>
+              <h3
+                class="group-hover:text-blue-600 font-semibold text-gray-800 dark:group-hover:text-gray-400 dark:text-gray-200"
+              >
+                Management
+              </h3>
+              <p class="text-sm text-gray-500">4 job positions</p>
+            </div>
+            <div class="ps-3">
+              <svg
+                class="flex-shrink-0 w-5 h-5"
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="m9 18 6-6-6-6" />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </a>
+      <!-- End Card -->
+      } @empty {
+      <p class="text-gray-500 dark:text-gray-400">No deployments found</p>
+      }
+    </div>
+    <!-- End Grid -->
+  </div>
+  <!-- End Card Section -->
+  } @loading {
+  <app-loader />
+  } @error {
+  <!-- Toast -->
+  <div
+    class="max-w-xs bg-white border border-gray-200 rounded-xl shadow-lg dark:bg-gray-800 dark:border-gray-700"
+    role="alert"
+  >
+    <div class="flex">
+      <div class="flex-shrink-0">
+        <svg
+          class="h-5 w-5 text-gray-600 mt-1 dark:text-gray-400"
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+          <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+        </svg>
+      </div>
+      <div class="ms-4">
+        <h3 class="text-gray-800 font-semibold dark:text-white">App notifications</h3>
+        <div class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+          Notifications may include alerts, sounds and icon badges.
+        </div>
+        <div class="mt-4">
+          <div class="flex space-x-3">
+            <button
+              type="button"
+              class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-blue-600 hover:text-blue-800 disabled:opacity-50 disabled:pointer-events-none focus:outline-none focus:text-blue-800 dark:text-blue-500 dark:focus:text-blue-400"
+            >
+              Don't allow
+            </button>
+            <button
+              type="button"
+              class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-blue-600 hover:text-blue-800 disabled:opacity-50 disabled:pointer-events-none focus:outline-none focus:text-blue-800 dark:text-blue-500 dark:focus:text-blue-400"
+            >
+              Allow
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- End Toast -->
+  }
+</div>

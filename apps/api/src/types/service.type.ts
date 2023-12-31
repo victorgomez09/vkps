@@ -1,42 +1,38 @@
 export type Service = {
-    apiVersion: "v1";
-    kind: "Service";
+    apiVersion: string;
+    kind: string;
     metadata: {
-        creationTimestamp: "2023-12-22T23:11:40.000Z";
-        name: "withoput-resources-service";
-        namespace: "vkps";
-        resourceVersion: "15580";
-        uid: "d74009df-25ff-4749-89b3-2ad2e4ed2dda";
+        creationTimestamp: Date;
+        name: string;
+        namespace: string;
+        resourceVersion: string;
+        uid: string;
     };
     spec: {
-        clusterIP: "10.101.225.104";
-        clusterIPs: ["10.101.225.104"];
-        externalTrafficPolicy: "Cluster";
-        internalTrafficPolicy: "Cluster";
-        ipFamilies: ["IPv4"];
-        ipFamilyPolicy: "SingleStack";
-        ports: [
-            {
-                name: "http";
-                nodePort: 30391;
-                port: 80;
-                protocol: "TCP";
-                targetPort: 80;
-            }
-        ];
+        clusterIP: string;
+        clusterIPs: string[];
+        externalTrafficPolicy: string;
+        internalTrafficPolicy: string;
+        ipFamilies: string[];
+        ipFamilyPolicy: string;
+        ports: {
+            name: string;
+            nodePort: number;
+            port: number;
+            protocol: string;
+            targetPort: number | string;
+        }[];
         selector: {
-            app: "withoput-resources";
+            app: string;
         };
-        sessionAffinity: "None";
-        type: "NodePort";
+        sessionAffinity: string;
+        type: string;
     };
     status: {
         loadBalancer: {
-            ingress: [
-                {
-                    hostname: "localhost";
-                }
-            ];
+            ingress: {
+                hostname: string;
+            }[];
         };
     };
 };

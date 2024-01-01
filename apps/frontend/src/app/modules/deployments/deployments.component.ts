@@ -6,11 +6,13 @@ import { DeploymentService } from '../../services/deployment.service';
 import { LoaderComponent } from '../../components/loader/loader.component';
 import { ButtonComponent } from '../../components/button/button.component';
 import { RouterModule } from '@angular/router';
+import { CardComponent } from '../../components/card/card.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-deployments',
   standalone: true,
-  imports: [LoaderComponent, ButtonComponent, RouterModule],
+  imports: [LoaderComponent, ButtonComponent, CardComponent, RouterModule, CommonModule],
   templateUrl: './deployments.component.html',
   styleUrl: './deployments.component.css'
 })

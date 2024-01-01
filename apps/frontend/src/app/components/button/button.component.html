@@ -1,29 +1,14 @@
 <button
   [type]="type"
-  [className]="
-    'py-2
-    px-3
-    inline-flex
-    items-center
-    gap-x-2
-    text-sm
-    font-semibold
-    rounded-lg
-    border
-    border-transparent
-    bg-' +
-    color +
-    '-600
-    text-white
-    hover:bg-' +
-    color +
-    '-700
-    disabled:opacity-50
-    disabled:pointer-events-none
-    dark:focus:outline-none
-    dark:focus:ring-1
-    dark:focus:ring-gray-600'
-  "
+  class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-white disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600"
+  [ngClass]="{
+    'bg-purple-600 hover:bg-purple-700': color === 'primary',
+    'bg-indigo-600 hover:bg-indigo-700': color === 'info',
+    'bg-gray-600 hover:bg-gray-700': color === 'secondary',
+    'bg-yellow-600 hover:bg-yellow-700': color === 'warning',
+    'bg-green-600 hover:bg-green-700': color === 'success',
+    'bg-red-600 hover:bg-red-700': color === 'danger'
+  }"
   [disabled]="disabled"
 >
   {{ text }}

@@ -12,6 +12,7 @@ export class Deployment {
   cpu!: string;
   exposedNetwork!: boolean;
   port!: number;
+  status!: string;
   envs?: DeploymentEnv[];
   volumes?: DeploymentVolume[];
   creationDate!: Date;

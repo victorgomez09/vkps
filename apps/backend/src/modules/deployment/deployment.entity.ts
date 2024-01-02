@@ -6,6 +6,7 @@ import {
   PrimaryKey,
   Property,
 } from '@mikro-orm/core';
+import { v4 } from 'uuid';
 
 import { DeploymentEnv } from '../deployment-env/deployment-env.entity';
 import { DeploymentVolume } from '../deployment-volume/deployment-volume.entity';
@@ -13,7 +14,7 @@ import { DeploymentVolume } from '../deployment-volume/deployment-volume.entity'
 @Entity({ tableName: 'deployments' })
 export class Deployment {
   @PrimaryKey()
-  id: string;
+  id: string = v4();
 
   @Property()
   deploymentId: string;
@@ -62,6 +63,6 @@ export class Deployment {
   @Property({ onCreate: () => new Date() })
   creationDate: Date;
 
-  @Property({ onUpdate: () => new Date() })
+  @Property({ onCreate: () => new Date(), onUpdate: () => new Date() })
   updateTime: Date;
 }

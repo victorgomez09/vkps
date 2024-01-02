@@ -35,12 +35,12 @@ export class BaseService {
     this.baseUrl = `${environment.apiUrl}/${this.baseApi}`;
   }
 
-  public get<RESPONSE>(endpoint: string, options?: Options): Observable<RESPONSE> {
+  protected get<RESPONSE>(endpoint: string, options?: Options): Observable<RESPONSE> {
     console.log(this.baseUrl + endpoint);
     return this.httpClient.get<RESPONSE>(this.baseUrl + endpoint, options);
   }
 
-  public post<REQUEST, RESPONSE>(
+  protected post<REQUEST, RESPONSE>(
     endpoint: string,
     body?: REQUEST,
     options?: Options
@@ -48,7 +48,7 @@ export class BaseService {
     return this.httpClient.post<RESPONSE>(this.baseUrl + endpoint, body, options);
   }
 
-  public put<REQUEST, RESPONSE>(
+  protected put<REQUEST, RESPONSE>(
     endpoint: string,
     body?: REQUEST,
     options?: Options
@@ -56,7 +56,7 @@ export class BaseService {
     return this.httpClient.put<RESPONSE>(this.baseUrl + endpoint, body, options);
   }
 
-  public delete<RESPONSE>(endpoint: string, options?: Options): Observable<RESPONSE> {
+  protected delete<RESPONSE>(endpoint: string, options?: Options): Observable<RESPONSE> {
     return this.httpClient.delete<RESPONSE>(this.baseUrl + endpoint, options);
   }
 }

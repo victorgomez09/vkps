@@ -11,7 +11,7 @@ import { Component, Input } from '@angular/core';
 export class ButtonComponent {
   @Input() text = '';
   @Input() color: 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' = 'primary';
-  @Input() size = 'sm';
+  @Input() size: 'sm' | 'lg' = 'sm';
   @Input() disabled = false;
   @Input() type = 'button';
 }

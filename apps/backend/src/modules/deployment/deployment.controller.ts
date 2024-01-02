@@ -14,7 +14,7 @@ import { DeploymentDto, DeploymentRequestDto } from './deployment.dto';
 import { DeploymentService } from './deployment.service';
 
 @ApiTags('deployments')
-@Controller('/deployments')
+@Controller('deployments')
 export class DeploymentController {
   constructor(private deploymentService: DeploymentService) {}
 

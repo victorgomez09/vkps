@@ -9,6 +9,7 @@ import {
 import {
   V1ConfigMap,
   V1PersistentVolumeClaim,
+  V1Pod,
   V1VolumeMount,
 } from '@kubernetes/client-node';
 import {
@@ -19,6 +20,7 @@ import {
   createNodePortService,
   createPersistentVolume,
   createPersistentVolumeClaim,
+  getDeployment,
   getDeploymentLogs,
   parseName,
 } from 'engine';
@@ -29,6 +31,15 @@ import { DeploymentVolumeService } from '../deployment-volume/deployment-volume.
 
 import { DeploymentRequestDto } from './deployment.dto';
 import { Deployment } from './deployment.entity';
+
+type DeploymentResponse = Deployment & {
+  workingReplicas: number;
+  totalReplicas: number;
+  pods: V1Pod[];
+  status?: string;
+  namespace?: string;
+  // service?: Service;
+};
 
 @Injectable()
 export class DeploymentService {
@@ -48,8 +59,44 @@ export class DeploymentService {
     return this.repository.findOne({ name });
   }
 
-  async findAll(): Promise<Deployment[]> {
-    return this.repository.findAll();
+  async findAll(): Promise<DeploymentResponse[]> {
+    const result: DeploymentResponse[] = [];
+
+    const deployments = await this.repository.findAll({
+      orderBy: { creationDate: 'DESC' },
+      populate: ['envs', 'volumes'],
+    });
+
+    for await (const deployment of deployments) {
+      const k8sDeployment = await getDeployment(
+        deployment.deploymentId,
+        K8S_NAMESPACE,
+      );
+
+      if (k8sDeployment.statusCode !== 200 || !k8sDeployment.data) {
+        result.push({
+          ...deployment,
+          workingReplicas: 0,
+          totalReplicas: 0,
+          pods: [],
+        });
+        continue;
+      }
+
+      result.push({
+        ...deployment,
+        workingReplicas: k8sDeployment.data.status?.availableReplicas || 0,
+        totalReplicas: k8sDeployment.data.status?.replicas || 0,
+        pods: k8sDeployment.data.pods || [],
+        status:
+          k8sDeployment.data.status?.availableReplicas > 0
+            ? 'Running'
+            : 'Stopped',
+        namespace: k8sDeployment.data.metadata.namespace,
+      });
+    }
+
+    return result;
   }
 
   async findLogsById(id: string): Promise<LogLines[]> {
@@ -74,7 +121,7 @@ export class DeploymentService {
   async create(data: DeploymentRequestDto): Promise<Deployment> {
     const { name } = data;
 
-    if (this.repository.findOne({ name: name })) {
+    if (await this.repository.findOne({ name: name })) {
       throw new ConflictException('Deployment already exists');
     }
 
@@ -91,11 +138,14 @@ export class DeploymentService {
     });
 
     await this.em.persistAndFlush(deployment);
+    const result = await this.repository.findOne({
+      deploymentId: deployment.deploymentId,
+    });
 
     if (data.envs.length > 0) {
       data.envs.forEach(async (env) => {
         await this.deploymentEnvService.create({
-          deploymentId: deployment.id,
+          deploymentId: result.id,
           description: env.description,
           key: env.key,
           value: env.value,
@@ -106,7 +156,7 @@ export class DeploymentService {
     if (data.volumes.length > 0) {
       data.volumes.forEach(async (volume) => {
         await this.deploymentVolumeService.create({
-          deploymentId: deployment.id,
+          deploymentId: result.id,
           path: volume.path,
           size: volume.size,
           accessMode: volume.accessMode,
@@ -116,7 +166,7 @@ export class DeploymentService {
       });
     }
 
-    return this.repository.findOne({ deploymentId: deployment.deploymentId });
+    return result;
   }
 
   async deploy(id: string): Promise<Deployment> {
@@ -209,7 +259,7 @@ export class DeploymentService {
       cpu: deployment.cpu,
       port: deployment.port,
     };
-    console.log('object', object);
+
     if (configMap) object['configMapRefName'] = configMap.metadata.name;
     if (pvc) object['persistentVolumeClaimRefName'] = pvc.metadata.name;
     if (volumeMounts.length > 0) object['volumeMounts'] = volumeMounts;

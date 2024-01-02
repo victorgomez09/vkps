@@ -27,6 +27,8 @@ export class DeploymentsComponent implements OnInit {
       injector: this.injector
     });
 
-    console.log(this.deployments());
+    this.deploymentService.findAll().subscribe((data) => {
+      console.log(data);
+    });
   }
 }

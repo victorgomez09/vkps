@@ -2,141 +2,160 @@
   <div class="flex items-center justify-between">
     <h1 class="font-semibold text-xl">Deployments</h1>
 
-    <app-button [color]="'primary'" [text]="'New deployment'" routerLink="/deployments/new" />
+    <a class="btn btn-primary" routerLink="/deployments/new">New deployment</a>
   </div>
   @defer (when deployments()) {
   <!-- Card Section -->
   <div class="mt-8">
-    <!-- Grid -->
-    <div class="grid sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
-      @for (deployment of deployments(); track $index) {
-      <!-- Card -->
-      <app-card class="flex">
-        <div class="flex flex-col lg:flex-row bg-white text-sm p-2 relative dark:bg-gray-950">
-          <div class="p-2 grid gap-1 flex-1">
-            <div class="font-medium">{{ deployment.name }}</div>
-            <div class="text-gray-500 dark:text-gray-400">
-              Namespace: Default, Replicas: {{ deployment.replicas }}/3
-            </div>
-          </div>
-          <div
-            data-orientation="horizontal"
-            role="none"
-            class="shrink-0 bg-gray-100 h-[1px] w-full my-2 lg:hidden"
-          ></div>
-          <div class="p-2 grid gap-1 flex-1">
-            <div class="flex items-start gap-2">
-              <div
-                class="inline-flex items-center rounded-full border px-2.5 py-0.5 w-fit text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-green-500"
-              >
-                {{ deployment.status }}
+    <div class="flex flex-col gap-4">
+      <div class="grid grid-cols-9 gap-2">
+        <input
+          type="text"
+          class="input input-bordered w-full col-span-7"
+          placeholder="Search deployments..."
+        />
+
+        <button class="btn col-span-1">Select date</button>
+        <button class="btn col-span-1">Namespace</button>
+      </div>
+      <!-- Grid -->
+      <div class="flex flex-col flex-1 mt-4">
+        @for (deployment of deployments(); track $index) {
+        <!-- Card -->
+        <div class="card shadow bg-base-200">
+          <div class="card-body flex flex-col items-center text-sm p-2 relative lg:flex-row">
+            <div class="p-2 grid gap-1 flex-1">
+              <div class="card-title text-base">{{ deployment.name }}</div>
+              <div class="text-base-content/60">
+                @if (!deployment.totalReplicas) { Deployment stopped, no pods running } @else {
+                Namespace: {{ deployment.namespace }}, Replicas: {{ deployment.workingReplicas }}/{{
+                  deployment.totalReplicas
+                }}
+                }
               </div>
             </div>
-          </div>
-          <div
-            data-orientation="horizontal"
-            role="none"
-            class="shrink-0 bg-gray-100 h-[1px] w-full my-2 lg:hidden"
-          ></div>
-          <div class="p-2 grid gap-1 flex-1">
-            <div class="flex items-center gap-2">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="w-4 h-4"
+            <div
+              data-orientation="horizontal"
+              role="none"
+              class="shrink-0 bg-gray-100 h-[1px] w-full my-2 lg:hidden"
+            ></div>
+            <div class="p-2 grid gap-1 flex-1">
+              <div class="flex items-start gap-2">
+                <div
+                  class="badge badge-error"
+                  [ngClass]="{ 'badge-accent': deployment.totalReplicas }"
+                >
+                  {{ deployment.totalReplicas ? 'Running' : 'Stopped' }}
+                </div>
+              </div>
+            </div>
+            <div
+              data-orientation="horizontal"
+              role="none"
+              class="shrink-0 bg-gray-100 h-[1px] w-full my-2 lg:hidden"
+            ></div>
+            <div class="p-2 grid gap-1 flex-1">
+              <div class="flex items-center gap-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="w-4 h-4"
+                >
+                  <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+                  <rect x="9" y="9" width="6" height="6"></rect>
+                  <path d="M15 2v2"></path>
+                  <path d="M15 20v2"></path>
+                  <path d="M2 15h2"></path>
+                  <path d="M2 9h2"></path>
+                  <path d="M20 15h2"></path>
+                  <path d="M20 9h2"></path>
+                  <path d="M9 2v2"></path>
+                  <path d="M9 20v2"></path>
+                </svg>
+                CPU: {{ deployment.cpu }}m
+              </div>
+              <div class="flex items-center gap-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="w-4 h-4"
+                >
+                  <path d="M6 19v-3"></path>
+                  <path d="M10 19v-3"></path>
+                  <path d="M14 19v-3"></path>
+                  <path d="M18 19v-3"></path>
+                  <path d="M8 11V9"></path>
+                  <path d="M16 11V9"></path>
+                  <path d="M12 11V9"></path>
+                  <path d="M2 15h20"></path>
+                  <path
+                    d="M2 7a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v1.1a2 2 0 0 0 0 3.837V17a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-5.1a2 2 0 0 0 0-3.837Z"
+                  ></path>
+                </svg>
+                Memory: {{ deployment.memory }}Mb
+              </div>
+            </div>
+            <div
+              data-orientation="horizontal"
+              role="none"
+              class="shrink-0 bg-gray-100 h-[1px] w-full my-2 lg:hidden"
+            ></div>
+            <div class="p-2 grid gap-1 flex-1">
+              <div class="flex items-center gap-2 text-gray-500 dark:text-gray-400">
+                Created: {{ deployment.creationDate | date : 'short' }}
+              </div>
+            </div>
+
+            <div class="dropdown dropdown-bottom dropdown-end">
+              <div tabindex="0" role="button" class="btn btn-ghost m-1">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="w-4 h-4"
+                >
+                  <circle cx="12" cy="12" r="1"></circle>
+                  <circle cx="19" cy="12" r="1"></circle>
+                  <circle cx="5" cy="12" r="1"></circle>
+                </svg>
+              </div>
+              <ul
+                tabindex="0"
+                class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
               >
-                <rect x="4" y="4" width="16" height="16" rx="2"></rect>
-                <rect x="9" y="9" width="6" height="6"></rect>
-                <path d="M15 2v2"></path>
-                <path d="M15 20v2"></path>
-                <path d="M2 15h2"></path>
-                <path d="M2 9h2"></path>
-                <path d="M20 15h2"></path>
-                <path d="M20 9h2"></path>
-                <path d="M9 2v2"></path>
-                <path d="M9 20v2"></path>
-              </svg>
-              CPU: 300m
-            </div>
-            <div class="flex items-center gap-2">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="w-4 h-4"
-              >
-                <path d="M6 19v-3"></path>
-                <path d="M10 19v-3"></path>
-                <path d="M14 19v-3"></path>
-                <path d="M18 19v-3"></path>
-                <path d="M8 11V9"></path>
-                <path d="M16 11V9"></path>
-                <path d="M12 11V9"></path>
-                <path d="M2 15h20"></path>
-                <path
-                  d="M2 7a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v1.1a2 2 0 0 0 0 3.837V17a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-5.1a2 2 0 0 0 0-3.837Z"
-                ></path>
-              </svg>
-              Memory: {{ deployment.cpu }}Mi
+                <li><a routerLink="/deployments/{{ deployment.id }}">View details</a></li>
+                <li><a>Delete</a></li>
+              </ul>
             </div>
           </div>
-          <div
-            data-orientation="horizontal"
-            role="none"
-            class="shrink-0 bg-gray-100 h-[1px] w-full my-2 lg:hidden"
-          ></div>
-          <div class="p-2 grid gap-1 flex-1">
-            <div class="flex items-center gap-2 text-gray-500 dark:text-gray-400">
-              Created: {{ deployment.creationDate | date : 'short' }}
-            </div>
-          </div>
-          <button
-            class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 w-10 absolute top-4 right-4"
-            type="button"
-            id="radix-:r9:"
-            aria-haspopup="menu"
-            aria-expanded="false"
-            data-state="closed"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              class="w-4 h-4"
-            >
-              <circle cx="12" cy="12" r="1"></circle>
-              <circle cx="19" cy="12" r="1"></circle>
-              <circle cx="5" cy="12" r="1"></circle>
-            </svg>
-            <span class="sr-only">Toggle menu</span>
-          </button>
         </div>
-      </app-card>
-      <!-- End Card -->
-      } @empty {
-      <p class="text-gray-500 dark:text-gray-400">No deployments found</p>
-      }
+        <!-- End Card -->
+        } @empty {
+        <p class="text-gray-500 dark:text-gray-400">No deployments found</p>
+        }
+      </div>
+      <!-- End Grid -->
     </div>
-    <!-- End Grid -->
   </div>
   <!-- End Card Section -->
   } @loading {

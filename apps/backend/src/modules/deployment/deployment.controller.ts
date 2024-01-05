@@ -30,12 +30,12 @@ export class DeploymentController {
     return new DeploymentDto(await this.deploymentService.findById(id));
   }
 
-  @Get('name/:id')
+  @Get('by-name/name')
   async getByName(@Param('name') name: string): Promise<DeploymentDto> {
     return new DeploymentDto(await this.deploymentService.findByName(name));
   }
 
-  @Get('logs/:id')
+  @Get(':id/logs')
   async getLogs(@Param('id') id: string): Promise<LogLines[]> {
     return await this.deploymentService.findLogsById(id);
   }
@@ -49,7 +49,7 @@ export class DeploymentController {
     );
   }
 
-  @Post('deploy/:id')
+  @Post(':id/deploy')
   async deploy(@Param('id') id: string): Promise<DeploymentDto> {
     return new DeploymentDto(await this.deploymentService.deploy(id));
   }

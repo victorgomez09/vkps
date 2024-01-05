@@ -51,12 +51,47 @@ export class DeploymentService {
     private deploymentVolumeService: DeploymentVolumeService,
   ) {}
 
-  async findById(id: string): Promise<Deployment | null> {
-    return this.repository.findOne({ id });
+  async findById(id: string): Promise<DeploymentResponse> {
+    const deployment = await this.repository.findOne(
+      { id },
+      {
+        populate: ['envs', 'volumes'],
+      },
+    );
+
+    if (!deployment) {
+      throw new NotFoundException('Deployment not found');
+    }
+
+    const k8sDeployment = await getDeployment(
+      deployment.deploymentId,
+      K8S_NAMESPACE,
+    );
+
+    if (k8sDeployment.statusCode !== 200 || !k8sDeployment.data) {
+      return {
+        ...deployment,
+        workingReplicas: 0,
+        totalReplicas: 0,
+        pods: [],
+      };
+    }
+
+    return {
+      ...deployment,
+      workingReplicas: k8sDeployment.data.status?.availableReplicas || 0,
+      totalReplicas: k8sDeployment.data.status?.replicas || 0,
+      pods: k8sDeployment.data?.pods || [],
+    };
   }
 
-  async findByName(name: string): Promise<Deployment | null> {
-    return this.repository.findOne({ name });
+  async findByName(name: string): Promise<Deployment> {
+    return this.repository.findOne(
+      { name },
+      {
+        populate: ['envs', 'volumes'],
+      },
+    );
   }
 
   async findAll(): Promise<DeploymentResponse[]> {
@@ -100,7 +135,12 @@ export class DeploymentService {
   }
 
   async findLogsById(id: string): Promise<LogLines[]> {
-    const deployment = await this.repository.findOne({ id });
+    const deployment = await this.repository.findOne(
+      { id },
+      {
+        populate: ['envs', 'volumes'],
+      },
+    );
 
     if (!deployment) {
       throw new NotFoundException('Deployment not found');
@@ -170,7 +210,12 @@ export class DeploymentService {
   }
 
   async deploy(id: string): Promise<Deployment> {
-    const deployment = await this.repository.findOne({ id });
+    const deployment = await this.repository.findOne(
+      { id },
+      {
+        populate: ['envs', 'volumes'],
+      },
+    );
 
     if (!deployment) {
       throw new NotFoundException('Deployment not found');

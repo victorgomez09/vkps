@@ -1,0 +1,52 @@
+<div class="flex flex-1 gap-4 w-full h-full overflow-hidden">
+  <!-- <div role="tablist" class="tabs tabs-boxed">
+    <a
+      role="tab"
+      class="tab"
+      [ngClass]="{ 'tab-active': selectedTab === 'details' }"
+      routerLink="/deployments/{{ id }}/details"
+    >
+      Details
+    </a>
+    <a
+      role="tab"
+      class="tab"
+      [ngClass]="{ 'tab-active': selectedTab === 'config' }"
+      routerLink="/deployments/{{ id }}/config"
+    >
+      Config
+    </a>
+    <a
+      role="tab"
+      class="tab"
+      [ngClass]="{ 'tab-active': selectedTab === 'logs' }"
+      routerLink="/deployments/{{ id }}/logs"
+    >
+      Logs
+    </a>
+  </div> -->
+  <ul class="menu bg-base-200 w-56 rounded-box">
+    <li>
+      <a
+        [ngClass]="{ active: selectedTab === 'details' }"
+        routerLink="/deployments/{{ id }}/details"
+      >
+        Details
+      </a>
+    </li>
+    <li>
+      <a [ngClass]="{ active: selectedTab === 'logs' }" routerLink="/deployments/{{ id }}/logs">
+        Logs
+      </a>
+    </li>
+    <li>
+      <a [ngClass]="{ active: selectedTab === 'config' }" routerLink="/deployments/{{ id }}/config">
+        Configuration
+      </a>
+    </li>
+  </ul>
+
+  <div class="flex flex-col flex-1 overflow-auto">
+    <router-outlet />
+  </div>
+</div>

@@ -1,4 +1,4 @@
-<div class="flex flex-col flex-1 w-full h-full sm:px-6">
+<div class="flex flex-col flex-1 w-full h-full sm:px-6 overflow-hidden">
   <div class="flex items-center justify-between">
     <h1 class="font-semibold text-xl">Deployments</h1>
 
@@ -143,7 +143,7 @@
                 tabindex="0"
                 class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
               >
-                <li><a routerLink="/deployments/{{ deployment.id }}">View details</a></li>
+                <li><a routerLink="/deployments/{{ deployment.id }}/config">View details</a></li>
                 <li><a>Delete</a></li>
               </ul>
             </div>

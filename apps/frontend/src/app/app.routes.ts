@@ -18,6 +18,32 @@ export const routes: Routes = [
         path: 'new',
         loadComponent: () =>
           import('./modules/deployments/new/new.component').then((m) => m.NewComponent)
+      },
+      {
+        path: ':id',
+        loadComponent: () =>
+          import('./components/deployment-layout/deployment-layout.component').then(
+            (m) => m.DeploymentLayoutComponent
+          ),
+        children: [
+          {
+            path: 'details',
+            loadComponent: () =>
+              import('./modules/deployments/id/details/details.component').then(
+                (m) => m.DetailsComponent
+              )
+          },
+          {
+            path: 'config',
+            loadComponent: () =>
+              import('./modules/deployments/id/id.component').then((m) => m.IdComponent)
+          },
+          {
+            path: 'logs',
+            loadComponent: () =>
+              import('./modules/deployments/id/logs/logs.component').then((m) => m.LogsComponent)
+          }
+        ]
       }
     ]
   }

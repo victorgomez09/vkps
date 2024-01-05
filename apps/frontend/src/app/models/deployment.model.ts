@@ -13,8 +13,10 @@ export class Deployment {
   port!: number;
   status!: string;
   namespace!: string;
+  replicas!: number;
   workingReplicas!: number;
   totalReplicas!: number;
+  pods?: any[];
   envs?: DeploymentEnv[];
   volumes?: DeploymentVolume[];
   creationDate!: Date;
@@ -32,4 +34,15 @@ export class DeploymentRequest {
   port!: number;
   envs?: DeploymentEnv[];
   volumes?: DeploymentVolume[];
+}
+
+export class DeploymentLogs {
+  id!: string;
+  time!: number;
+  app!: string;
+  pod!: string;
+  podID!: string;
+  container!: string;
+  color!: string;
+  log!: string;
 }

@@ -1,0 +1,280 @@
+@defer (when deployment()) {
+<div class="card flex-1 bg-base-200">
+  <div class="card-body">
+    <h2 class="card-title text-2xl">{{ deployment().name }}</h2>
+    <form [formGroup]="form" (ngSubmit)="handleSubmit()">
+      <div class="grid gap-8">
+        <div>
+          <div class="grid gap-4 mt-4">
+            <!-- Name input group -->
+            <div class="form-control w-full">
+              <div class="label">
+                <label for="deployment-name" class="label-text">Deployment name</label>
+              </div>
+              <input
+                type="text"
+                id="deployment-name"
+                class="input input-bordered w-full"
+                [ngClass]="{
+                  'input-error': form.get('name')?.touched && form.get('name')?.invalid
+                }"
+                formControlName="name"
+                placeholder="My very cool deployment"
+              />
+              @if (form.get('name')?.touched && form.get('name')?.invalid) {
+              <div class="label">
+                <span class="label-text-alt text-error">This field is required</span>
+              </div>
+              }
+            </div>
+            <!-- Image input group -->
+            <div class="form-control w-full">
+              <div class="label">
+                <label for="image-name" class="label-text">Image name</label>
+              </div>
+              <input
+                type="text"
+                id="image-name"
+                class="input input-bordered w-full"
+                [ngClass]="{
+                  'input-error': form.get('image')?.touched && form.get('image')?.invalid
+                }"
+                formControlName="image"
+                placeholder="nginx:latest"
+              />
+              @if (form.get('image')?.touched && form.get('image')?.invalid) {
+              <div class="label">
+                <span class="label-text-alt text-error">This field is required</span>
+              </div>
+              }
+            </div>
+          </div>
+        </div>
+
+        <div class="divider my-0"></div>
+
+        <div>
+          <h2 class="text-lg font-semibold">Scaling Options</h2>
+          <!-- Replicas input group -->
+          <div class="form-control w-full">
+            <div class="label">
+              <label for="replicas" class="label-text">Replicas</label>
+            </div>
+            <input
+              type="number"
+              min="1"
+              step="1"
+              id="replicas"
+              class="input input-bordered w-full"
+              [ngClass]="{
+                'input-error': form.get('replicas')?.touched && form.get('replicas')?.invalid
+              }"
+              formControlName="replicas"
+            />
+            @if (form.get('replicas')?.touched && form.get('replicas')?.invalid) {
+            <div class="label">
+              <span class="label-text-alt text-error">This field is required</span>
+            </div>
+            }
+          </div>
+
+          <!-- Memory input group -->
+          <div class="form-control w-full">
+            <div class="label">
+              <label for="memory" class="label-text">Memory</label>
+            </div>
+            <input
+              type="number"
+              min="256"
+              step="256"
+              id="memory"
+              class="input input-bordered w-full"
+              [ngClass]="{
+                'input-error': form.get('memory')?.touched && form.get('memory')?.invalid
+              }"
+              formControlName="memory"
+            />
+            @if (form.get('memory')?.touched && form.get('memory')?.invalid) {
+            <div class="label">
+              <span class="label-text-alt text-error">This field is required</span>
+            </div>
+            }
+          </div>
+
+          <!-- Cpu input group -->
+          <div class="form-control w-full">
+            <div class="label">
+              <label for="cpu" class="label-text">Cpu</label>
+            </div>
+            <input
+              type="number"
+              min="500"
+              step="500"
+              id="cpu"
+              class="input input-bordered w-full"
+              [ngClass]="{
+                'input-error': form.get('cpu')?.touched && form.get('cpu')?.invalid
+              }"
+              formControlName="cpu"
+            />
+            @if (form.get('cpu')?.touched && form.get('cpu')?.invalid) {
+            <div class="label">
+              <span class="label-text-alt text-error">This field is required</span>
+            </div>
+            }
+          </div>
+        </div>
+
+        <div class="divider my-0"></div>
+
+        <div>
+          <h2 class="text-lg font-semibold">Advanced Settings</h2>
+          <div class="grid gap-4 mt-4">
+            <!-- Exposed input group -->
+            <div class="form-control w-full">
+              <div class="label">
+                <label for="exposedNetwork" class="label-text">Expose to network</label>
+              </div>
+              <input
+                type="checkbox"
+                min="500"
+                step="500"
+                id="exposedNetwork"
+                class="toggle"
+                [ngClass]="{
+                  'input-error':
+                    form.get('exposedNetwork')?.touched && form.get('exposedNetwork')?.invalid
+                }"
+                formControlName="exposedNetwork"
+              />
+              @if (form.get('exposedNetwork')?.touched && form.get('exposedNetwork')?.invalid) {
+              <div class="label">
+                <span class="label-text-alt text-error">This field is required</span>
+              </div>
+              }
+            </div>
+
+            <!-- Port input group -->
+            <div class="form-control w-full">
+              <div class="label">
+                <label for="port" class="label-text">Port</label>
+              </div>
+              <input
+                type="number"
+                id="port"
+                class="input input-bordered w-full"
+                [ngClass]="{
+                  'input-error': form.get('port')?.touched && form.get('port')?.invalid
+                }"
+                formControlName="port"
+              />
+              @if (form.get('port')?.touched && form.get('port')?.invalid) {
+              <div class="label">
+                <span class="label-text-alt text-error">This field is required</span>
+              </div>
+              }
+            </div>
+
+            <!-- Env variables inputs group -->
+            <div class="flex flex-col gap-2">
+              <h1>Environment variables</h1>
+              <div formArrayName="env" class="flex flex-col gap-2">
+                @for (envField of env.controls; track envField; let indx = $index) {
+                <div [formGroupName]="indx" class="grid grid-cols-7 items-end gap-2">
+                  <div class="form-control w-full col-span-3">
+                    <div class="label">
+                      <label for="key" class="label-text">ENV_VARIABLE_KEY</label>
+                    </div>
+                    <input
+                      id="key"
+                      type="text"
+                      aria-describedby="key"
+                      formControlName="key"
+                      class="input input-bordered w-full"
+                    />
+                  </div>
+
+                  <div class="form-control w-full col-span-3">
+                    <div class="label">
+                      <label for="value" class="label-text">ENV_VARIABLE_VALUE</label>
+                    </div>
+                    <input
+                      id="value"
+                      type="text"
+                      aria-describedby="value"
+                      formControlName="value"
+                      class="input input-bordered w-full"
+                    />
+                  </div>
+
+                  <button type="button" class="btn btn-error" (click)="removeEnvField(indx)">
+                    -
+                  </button>
+                </div>
+                }
+              </div>
+
+              <button type="button" class="btn btn-secondary w-52" (click)="addEnvField()">
+                Add
+              </button>
+            </div>
+
+            <!-- Volumes inputs group -->
+            <div class="flex flex-col gap-2">
+              <h1>Volumes</h1>
+              <div formArrayName="volumes" class="flex flex-col gap-2">
+                @for (volField of volumes.controls; track volField; let indx = $index) {
+                <div [formGroupName]="indx" class="grid grid-cols-7 items-end gap-2">
+                  <div class="form-control w-full col-span-3">
+                    <div class="label">
+                      <label for="path" class="label-text">Volume path</label>
+                    </div>
+                    <input
+                      id="path"
+                      type="text"
+                      aria-describedby="path"
+                      formControlName="path"
+                      class="input input-bordered w-full"
+                    />
+                  </div>
+
+                  <div class="form-control w-full col-span-3">
+                    <div class="label">
+                      <label for="size" class="label-text">Size</label>
+                    </div>
+                    <input
+                      id="size"
+                      type="text"
+                      aria-describedby="size"
+                      formControlName="size"
+                      class="input input-bordered w-full"
+                    />
+                  </div>
+
+                  <button type="button" class="btn btn-error" (click)="removeVolumeField(indx)">
+                    -
+                  </button>
+                </div>
+                }
+              </div>
+
+              <button type="button" class="btn btn-secondary w-52" (click)="addVolumeField()">
+                Add
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mt-4">
+        <button type="submit" class="btn btn-primary btn-block" [disabled]="form.invalid">
+          Update
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+} @loading {
+<app-loader />
+} @error {
+<p class="text-gray-500 dark:text-gray-400">Deployment not found</p>
+}

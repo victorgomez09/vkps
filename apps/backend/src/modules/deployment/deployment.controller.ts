@@ -20,9 +20,9 @@ export class DeploymentController {
 
   @Get('')
   async getAll(): Promise<DeploymentDto[]> {
-    const deployment = await this.deploymentService.findAll();
+    const deployments = await this.deploymentService.findAll();
 
-    return deployment.map((d) => new DeploymentDto(d));
+    return deployments.map((d) => new DeploymentDto(d));
   }
 
   @Get(':id')

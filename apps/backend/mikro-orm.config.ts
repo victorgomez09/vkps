@@ -1,13 +1,26 @@
 import { Options } from '@mikro-orm/core';
 import { TSMigrationGenerator } from '@mikro-orm/migrations';
 
+import { AddonEnv } from './src/modules/addon-env/addon-env.entity';
+import { AddonVersion } from './src/modules/addon-version/addon-version.entity';
+import { AddonVolume } from './src/modules/addon-volume/addon-volume.entity';
+import { Addon } from './src/modules/addon/addon.entity';
 import { DeploymentEnv } from './src/modules/deployment-env/deployment-env.entity';
 import { DeploymentVolume } from './src/modules/deployment-volume/deployment-volume.entity';
 import { Deployment } from './src/modules/deployment/deployment.entity';
 import { User } from './src/modules/user/user.entity';
 
 const config: Options = {
-  entities: [User, Deployment, DeploymentEnv, DeploymentVolume], // no need for `entitiesTs` this way
+  entities: [
+    User,
+    Deployment,
+    DeploymentEnv,
+    DeploymentVolume,
+    Addon,
+    AddonEnv,
+    AddonVolume,
+    AddonVersion,
+  ], // no need for `entitiesTs` this way
   dbName: 'vkps',
   type: 'sqlite', // one of `mongo` | `mysql` | `mariadb` | `postgresql` | `sqlite`
   migrations: {

@@ -1,0 +1,213 @@
+<div class="flex flex-col flex-1 w-full h-full sm:px-6 overflow-hidden">
+  <div class="flex items-center justify-between">
+    <h1 class="font-semibold text-xl">Deployments</h1>
+
+    <a class="btn btn-primary" routerLink="/deployments/new">New deployment</a>
+  </div>
+  @defer (when deployments()) {
+  <!-- Card Section -->
+  <div class="mt-8">
+    <div class="flex flex-col gap-4">
+      <div class="grid grid-cols-9 gap-2">
+        <input
+          type="text"
+          class="input input-bordered w-full col-span-7"
+          placeholder="Search deployments..."
+        />
+
+        <button class="btn col-span-1">Select date</button>
+        <button class="btn col-span-1">Namespace</button>
+      </div>
+      <!-- Grid -->
+      <div class="flex flex-col flex-1 mt-4">
+        @for (deployment of deployments(); track $index) {
+        <!-- Card -->
+        <div class="card shadow bg-base-200">
+          <div class="card-body flex flex-col items-center text-sm p-2 relative lg:flex-row">
+            <div class="p-2 grid gap-1 flex-1">
+              <div class="card-title text-base">{{ deployment.name }}</div>
+              <div class="text-base-content/60">
+                @if (!deployment.totalReplicas) { Deployment stopped, no pods running } @else {
+                Namespace: {{ deployment.namespace }}, Replicas: {{ deployment.workingReplicas }}/{{
+                  deployment.totalReplicas
+                }}
+                }
+              </div>
+            </div>
+            <div
+              data-orientation="horizontal"
+              role="none"
+              class="shrink-0 bg-gray-100 h-[1px] w-full my-2 lg:hidden"
+            ></div>
+            <div class="p-2 grid gap-1 flex-1">
+              <div class="flex items-start gap-2">
+                <div
+                  class="badge badge-error"
+                  [ngClass]="{ 'badge-accent': deployment.totalReplicas }"
+                >
+                  {{ deployment.totalReplicas ? 'Running' : 'Stopped' }}
+                </div>
+              </div>
+            </div>
+            <div
+              data-orientation="horizontal"
+              role="none"
+              class="shrink-0 bg-gray-100 h-[1px] w-full my-2 lg:hidden"
+            ></div>
+            <div class="p-2 grid gap-1 flex-1">
+              <div class="flex items-center gap-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="w-4 h-4"
+                >
+                  <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+                  <rect x="9" y="9" width="6" height="6"></rect>
+                  <path d="M15 2v2"></path>
+                  <path d="M15 20v2"></path>
+                  <path d="M2 15h2"></path>
+                  <path d="M2 9h2"></path>
+                  <path d="M20 15h2"></path>
+                  <path d="M20 9h2"></path>
+                  <path d="M9 2v2"></path>
+                  <path d="M9 20v2"></path>
+                </svg>
+                CPU: {{ deployment.cpu }}m
+              </div>
+              <div class="flex items-center gap-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="w-4 h-4"
+                >
+                  <path d="M6 19v-3"></path>
+                  <path d="M10 19v-3"></path>
+                  <path d="M14 19v-3"></path>
+                  <path d="M18 19v-3"></path>
+                  <path d="M8 11V9"></path>
+                  <path d="M16 11V9"></path>
+                  <path d="M12 11V9"></path>
+                  <path d="M2 15h20"></path>
+                  <path
+                    d="M2 7a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v1.1a2 2 0 0 0 0 3.837V17a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-5.1a2 2 0 0 0 0-3.837Z"
+                  ></path>
+                </svg>
+                Memory: {{ deployment.memory }}Mb
+              </div>
+            </div>
+            <div
+              data-orientation="horizontal"
+              role="none"
+              class="shrink-0 bg-gray-100 h-[1px] w-full my-2 lg:hidden"
+            ></div>
+            <div class="p-2 grid gap-1 flex-1">
+              <div class="flex items-center gap-2 text-gray-500 dark:text-gray-400">
+                Created: {{ deployment.creationDate | date : 'short' }}
+              </div>
+            </div>
+
+            <div class="dropdown dropdown-bottom dropdown-end">
+              <div tabindex="0" role="button" class="btn btn-ghost m-1">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="w-4 h-4"
+                >
+                  <circle cx="12" cy="12" r="1"></circle>
+                  <circle cx="19" cy="12" r="1"></circle>
+                  <circle cx="5" cy="12" r="1"></circle>
+                </svg>
+              </div>
+              <ul
+                tabindex="0"
+                class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
+              >
+                <li><a routerLink="/deployments/{{ deployment.id }}/config">View details</a></li>
+                <li><a>Delete</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <!-- End Card -->
+        } @empty {
+        <p class="text-gray-500 dark:text-gray-400">No deployments found</p>
+        }
+      </div>
+      <!-- End Grid -->
+    </div>
+  </div>
+  <!-- End Card Section -->
+  } @loading {
+  <app-loader />
+  } @error {
+  <!-- Toast -->
+  <div
+    class="max-w-xs bg-white border border-gray-200 rounded-xl shadow-lg dark:bg-gray-800 dark:border-gray-700"
+    role="alert"
+  >
+    <div class="flex">
+      <div class="flex-shrink-0">
+        <svg
+          class="h-5 w-5 text-gray-600 mt-1 dark:text-gray-400"
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+          <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+        </svg>
+      </div>
+      <div class="ms-4">
+        <h3 class="text-gray-800 font-semibold dark:text-white">App notifications</h3>
+        <div class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+          Notifications may include alerts, sounds and icon badges.
+        </div>
+        <div class="mt-4">
+          <div class="flex space-x-3">
+            <button
+              type="button"
+              class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-blue-600 hover:text-blue-800 disabled:opacity-50 disabled:pointer-events-none focus:outline-none focus:text-blue-800 dark:text-blue-500 dark:focus:text-blue-400"
+            >
+              Don't allow
+            </button>
+            <button
+              type="button"
+              class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-blue-600 hover:text-blue-800 disabled:opacity-50 disabled:pointer-events-none focus:outline-none focus:text-blue-800 dark:text-blue-500 dark:focus:text-blue-400"
+            >
+              Allow
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- End Toast -->
+  }
+</div>

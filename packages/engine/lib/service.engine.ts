@@ -7,7 +7,7 @@ export async function getServiceByName(
   namespace: string
 ): Promise<EngineData<V1Service>> {
   try {
-    const { response, body: service } = await k8sCoreApi.readNamespacedService(name, namespace);
+    const { response, body: service } = await k8sCoreApi().readNamespacedService(name, namespace);
     if (response.statusCode !== 200) {
       return {
         statusCode: response.statusCode,
@@ -29,10 +29,11 @@ export async function getServiceByName(
 
 export async function createClusterIpService(
   name: string,
+  port: number,
   namespace: string
 ): Promise<EngineData<V1Service>> {
   try {
-    const { response, body: deployment } = await k8sAppsApi.readNamespacedDeployment(
+    const { response, body: deployment } = await k8sAppsApi().readNamespacedDeployment(
       name,
       namespace
     );
@@ -55,14 +56,14 @@ export async function createClusterIpService(
           {
             name: 'http',
             port: deployment.spec.template.spec.containers[0].ports[0].hostPort,
-            targetPort: deployment.spec.template.spec.containers[0].ports[0].containerPort
+            targetPort: port
           }
         ]
       }
     };
 
     // const { body: service } = await k8sCoreApi.createNamespacedService(namespace, data);
-    const { body: service } = await k8sCoreApi.replaceNamespacedService(
+    const { body: service } = await k8sCoreApi().replaceNamespacedService(
       `${name}-service`,
       namespace,
       data
@@ -82,10 +83,11 @@ export async function createClusterIpService(
 
 export async function createNodePortService(
   name: string,
+  port: number,
   namespace: string
 ): Promise<EngineData<V1Service>> {
   try {
-    const { response, body: deployment } = await k8sAppsApi.readNamespacedDeployment(
+    const { response, body: deployment } = await k8sAppsApi().readNamespacedDeployment(
       name,
       namespace
     );
@@ -109,13 +111,13 @@ export async function createNodePortService(
           {
             name: 'http',
             port: deployment.spec.template.spec.containers[0].ports[0].hostPort,
-            targetPort: deployment.spec.template.spec.containers[0].ports[0].containerPort
+            targetPort: port
           }
         ]
       }
     };
 
-    const { body: service } = await k8sCoreApi.replaceNamespacedService(
+    const { body: service } = await k8sCoreApi().replaceNamespacedService(
       `${name}-service`,
       namespace,
       data

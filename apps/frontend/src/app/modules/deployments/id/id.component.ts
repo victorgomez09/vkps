@@ -29,7 +29,8 @@ export class IdComponent implements OnInit {
 
       this.form = this.fb.group({
         name: [this.deployment().name, [Validators.required]],
-        image: [this.deployment().image, [Validators.required]],
+        repositoryUrl: [this.deployment().repositoryUrl],
+        image: [this.deployment().image],
         replicas: [this.deployment().replicas, [Validators.required, Validators.min(1)]],
         memory: [this.deployment().memory, [Validators.required, Validators.min(256)]],
         cpu: [this.deployment().cpu, [Validators.required, Validators.min(500)]],

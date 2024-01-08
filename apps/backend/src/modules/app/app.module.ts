@@ -15,8 +15,9 @@ import { AddonVersionModule } from '../addon-version/addon-version.module';
 import { AddonVolumeModule } from '../addon-volume/addon-volume.module';
 import { AddonModule } from '../addon/addon.module';
 
-import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { AppConfigurationModule } from '../app-configuration/app-configuration.module';
+import { InitModule } from '../init/init.module';
 
 @Module({
   imports: [
@@ -31,9 +32,10 @@ import { AppService } from './app.service';
     AddonVersionModule,
     AddonEnvModule,
     AddonVolumeModule,
+    AppConfigurationModule,
+    InitModule,
     ConfigModule.forRoot({ isGlobal: true, load: [() => GLOBAL_CONFIG] }),
   ],
-  controllers: [AppController],
   providers: [AppService],
   exports: [],
 })

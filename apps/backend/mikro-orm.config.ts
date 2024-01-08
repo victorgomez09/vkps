@@ -9,9 +9,12 @@ import { DeploymentEnv } from './src/modules/deployment-env/deployment-env.entit
 import { DeploymentVolume } from './src/modules/deployment-volume/deployment-volume.entity';
 import { Deployment } from './src/modules/deployment/deployment.entity';
 import { User } from './src/modules/user/user.entity';
+import { AppConfiguration } from './src/modules/app-configuration/app-configuration.entity';
 
 const config: Options = {
+  allowGlobalContext: true,
   entities: [
+    AppConfiguration,
     User,
     Deployment,
     DeploymentEnv,

@@ -27,3 +27,6 @@ export const SLUG_SEPARATOR = '-';
 
 // K8s
 export const K8S_NAMESPACE = 'vkps';
+
+// GIT
+export const GIT_PATH = '/tmp/vkps/repositories';

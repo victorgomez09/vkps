@@ -3,6 +3,7 @@ import {
   Collection,
   Entity,
   OneToMany,
+  OneToOne,
   PrimaryKey,
   Property,
 } from '@mikro-orm/core';
@@ -10,6 +11,7 @@ import { v4 } from 'uuid';
 
 import { DeploymentEnv } from '../deployment-env/deployment-env.entity';
 import { DeploymentVolume } from '../deployment-volume/deployment-volume.entity';
+import { Buildpack } from '../buildpack/buildpack.entity';
 
 @Entity({ tableName: 'deployments' })
 export class Deployment {
@@ -25,7 +27,10 @@ export class Deployment {
   @Property()
   description: string;
 
-  @Property()
+  @Property({ nullable: true })
+  repositoryUrl: string;
+
+  @Property({ nullable: true })
   image: string;
 
   @Property()
@@ -59,6 +64,9 @@ export class Deployment {
   volumes: Collection<DeploymentVolume> = new Collection<DeploymentVolume>(
     this,
   );
+
+  @OneToOne(() => Buildpack)
+  buildpack?: Buildpack;
 
   @Property({ onCreate: () => new Date() })
   creationDate: Date;

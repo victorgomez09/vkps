@@ -30,6 +30,44 @@
                   </div>
                   }
                 </div>
+              </div>
+
+              <div class="form-control w-full">
+                <div class="label">
+                  <label for="description" class="label-text">Description</label>
+                </div>
+                <textarea
+                  name="description"
+                  rows="2"
+                  class="textarea textarea-bordered"
+                  formControlName="description"
+                ></textarea>
+              </div>
+            </div>
+
+            <!-- <div class="divider my-0"></div> -->
+
+            <div>
+              <div role="tablist" class="tabs tabs-bordered">
+                <a
+                  role="tab"
+                  class="tab"
+                  [ngClass]="{ 'tab-active': selectedSource === 'docker' }"
+                  (click)="selectedSource = 'docker'"
+                >
+                  Docker
+                </a>
+                <a
+                  role="tab"
+                  class="tab"
+                  [ngClass]="{ 'tab-active': selectedSource === 'git' }"
+                  (click)="selectedSource = 'git'"
+                >
+                  Git
+                </a>
+              </div>
+              <div class="mt-4">
+                @if (selectedSource === 'docker') {
                 <!-- Image input group -->
                 <div class="form-control w-full">
                   <div class="label">
@@ -51,6 +89,30 @@
                   </div>
                   }
                 </div>
+                } @else {
+                <!-- Image input group -->
+                <div class="form-control w-full">
+                  <div class="label">
+                    <label for="repository-url" class="label-text">Repository url</label>
+                  </div>
+                  <input
+                    type="text"
+                    id="repository-url"
+                    class="input input-bordered w-full"
+                    [ngClass]="{
+                      'input-error':
+                        form.get('repositoryUrl')?.touched && form.get('repositoryUrl')?.invalid
+                    }"
+                    formControlName="repositoryUrl"
+                    placeholder="https://github.com/victorgomez09/vkps"
+                  />
+                  @if (form.get('repositoryUrl')?.touched && form.get('repositoryUrl')?.invalid) {
+                  <div class="label">
+                    <span class="label-text-alt text-error">This field is required</span>
+                  </div>
+                  }
+                </div>
+                }
               </div>
             </div>
 

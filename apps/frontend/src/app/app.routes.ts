@@ -34,6 +34,13 @@ export const routes: Routes = [
               )
           },
           {
+            path: 'buildpack',
+            loadComponent: () =>
+              import('./modules/deployments/id/buildpack/buildpack.component').then(
+                (m) => m.BuildpackComponent
+              )
+          },
+          {
             path: 'config',
             loadComponent: () =>
               import('./modules/deployments/id/id.component').then((m) => m.IdComponent)

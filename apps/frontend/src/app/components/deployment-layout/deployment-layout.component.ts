@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Signal, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { DeploymentService } from '../../services/deployment.service';
 import { $deployment } from '../../store/deployment.store';
+import { Deployment } from '../../models/deployment.model';
 
 @Component({
   selector: 'app-deployment-layout',
@@ -14,6 +15,7 @@ import { $deployment } from '../../store/deployment.store';
 export class DeploymentLayoutComponent implements OnInit {
   public id!: string;
   public selectedTab!: string;
+  public deployment!: Signal<Deployment>;
 
   constructor(
     private deploymentService: DeploymentService,
@@ -32,6 +34,7 @@ export class DeploymentLayoutComponent implements OnInit {
     this.deploymentService.findById(this.id).subscribe((data) => {
       console.log('data from template', data);
       $deployment.next(data);
+      this.deployment = signal(data);
     });
   }
 }

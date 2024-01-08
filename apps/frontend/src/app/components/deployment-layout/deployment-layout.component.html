@@ -34,6 +34,16 @@
         Details
       </a>
     </li>
+    @if (deployment().repositoryUrl) {
+    <li>
+      <a
+        [ngClass]="{ active: selectedTab === 'buildpack' }"
+        routerLink="/deployments/{{ id }}/buildpack"
+      >
+        Buildpack
+      </a>
+    </li>
+    }
     <li>
       <a [ngClass]="{ active: selectedTab === 'logs' }" routerLink="/deployments/{{ id }}/logs">
         Logs

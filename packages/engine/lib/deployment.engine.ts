@@ -55,17 +55,17 @@ export const createDeployment = async (
                     hostPort: 80,
                     containerPort: deployment.port
                   }
-                ],
-                resources: {
-                  requests: {
-                    cpu: deployment.cpu,
-                    memory: deployment.memory
-                  },
-                  limits: {
-                    cpu: deployment.cpu,
-                    memory: deployment.memory
-                  }
-                }
+                ]
+                // resources: {
+                //   requests: {
+                //     cpu: deployment.cpu,
+                //     memory: deployment.memory
+                //   },
+                //   limits: {
+                //     cpu: deployment.cpu,
+                //     memory: deployment.memory
+                //   }
+                // }
               }
             ]
           }
@@ -95,7 +95,7 @@ export const createDeployment = async (
       ];
     }
 
-    const { response, body: deploymentData } = await k8sAppsApi.createNamespacedDeployment(
+    const { response, body: deploymentData } = await k8sAppsApi().createNamespacedDeployment(
       deployment.namespace,
       object
     );
@@ -125,7 +125,7 @@ export const getDeployment = async (
 ): Promise<EngineData<DeploymentResponse>> => {
   try {
     console.log('getDeployment', name, namespace);
-    const { response, body: deploymentData } = await k8sAppsApi.readNamespacedDeployment(
+    const { response, body: deploymentData } = await k8sAppsApi().readNamespacedDeployment(
       name,
       namespace,
       pretty,
@@ -161,7 +161,7 @@ export const getDeploymentLogs = async (
       logs += chunk.toString();
     });
 
-    const { body } = await k8sAppsApi.readNamespacedDeployment(deploymentName, namespace);
+    const { body } = await k8sAppsApi().readNamespacedDeployment(deploymentName, namespace);
 
     const { data } = await getPodsFromDeployment(deploymentName);
 
@@ -227,7 +227,7 @@ export async function updateDeploymentReplicas(
   replicas: number
 ): Promise<EngineData<V1Deployment>> {
   try {
-    const { response, body: deployment } = await k8sAppsApi.readNamespacedDeployment(
+    const { response, body: deployment } = await k8sAppsApi().readNamespacedDeployment(
       name,
       namespace
     );
@@ -242,7 +242,7 @@ export async function updateDeploymentReplicas(
     deployment.spec.replicas = replicas;
 
     // replace
-    await k8sAppsApi.replaceNamespacedDeployment(name, namespace, deployment);
+    await k8sAppsApi().replaceNamespacedDeployment(name, namespace, deployment);
 
     return {
       statusCode: response.statusCode || 200,
@@ -262,7 +262,7 @@ export async function updateDeploymentMemory(
   memory: string
 ): Promise<EngineData<V1Deployment>> {
   try {
-    const { response, body: deploymentData } = await k8sAppsApi.readNamespacedDeployment(
+    const { response, body: deploymentData } = await k8sAppsApi().readNamespacedDeployment(
       name,
       namespace
     );
@@ -279,7 +279,7 @@ export async function updateDeploymentMemory(
     deploymentData.spec.template.spec.containers[0].resources.limits.memory = memory;
 
     // replace
-    const { body: deployment } = await k8sAppsApi.replaceNamespacedDeployment(
+    const { body: deployment } = await k8sAppsApi().replaceNamespacedDeployment(
       name,
       namespace,
       deploymentData
@@ -308,7 +308,7 @@ export async function updateDeploymentCpu(
   cpu: string
 ): Promise<EngineData<V1Deployment>> {
   try {
-    const { response, body: deploymentData } = await k8sAppsApi.readNamespacedDeployment(
+    const { response, body: deploymentData } = await k8sAppsApi().readNamespacedDeployment(
       name,
       namespace
     );
@@ -324,7 +324,7 @@ export async function updateDeploymentCpu(
     deploymentData.spec.template.spec.containers[0].resources.limits.cpu = cpu;
 
     // replace
-    const { body: deployment } = await k8sAppsApi.replaceNamespacedDeployment(
+    const { body: deployment } = await k8sAppsApi().replaceNamespacedDeployment(
       name,
       namespace,
       deploymentData
@@ -348,7 +348,7 @@ export async function updateDeploymentImage(
   image: string
 ): Promise<EngineData<V1Deployment>> {
   try {
-    const { response, body: deployment } = await k8sAppsApi.readNamespacedDeployment(
+    const { response, body: deployment } = await k8sAppsApi().readNamespacedDeployment(
       name,
       namespace
     );
@@ -363,7 +363,7 @@ export async function updateDeploymentImage(
     deployment.spec.template.spec.containers[0].image = image;
 
     // replace
-    await k8sAppsApi.replaceNamespacedDeployment(name, namespace, deployment);
+    await k8sAppsApi().replaceNamespacedDeployment(name, namespace, deployment);
 
     return {
       statusCode: response.statusCode || 200,
@@ -382,7 +382,7 @@ export const deleteDeployment = async (
   namespace: string
 ): Promise<EngineData<V1Status>> => {
   try {
-    const { response, body } = await k8sAppsApi.deleteNamespacedDeployment(name, namespace);
+    const { response, body } = await k8sAppsApi().deleteNamespacedDeployment(name, namespace);
 
     return {
       statusCode: response.statusCode || 200,

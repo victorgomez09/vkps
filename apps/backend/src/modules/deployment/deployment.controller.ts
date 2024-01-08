@@ -68,6 +68,7 @@ export class DeploymentController {
       memory,
       name,
       port,
+      repositoryUrl,
       replicas,
       volumes,
     } = deploymentData;
@@ -81,6 +82,7 @@ export class DeploymentController {
         memory,
         name,
         port,
+        repositoryUrl,
         replicas,
         volumes,
       }),

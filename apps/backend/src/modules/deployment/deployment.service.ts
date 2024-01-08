@@ -24,13 +24,15 @@ import {
   getDeploymentLogs,
   parseName,
 } from 'engine';
-import { K8S_NAMESPACE } from 'src/constants/global.constants';
+import { GIT_PATH, K8S_NAMESPACE } from 'src/constants/global.constants';
 
 import { DeploymentEnvService } from '../deployment-env/deployment-env.service';
 import { DeploymentVolumeService } from '../deployment-volume/deployment-volume.service';
 
 import { DeploymentRequestDto } from './deployment.dto';
 import { Deployment } from './deployment.entity';
+import { BuildpackService } from '../buildpack/buildpack.service';
+import { executeCommand } from 'src/shared/utils/exec.util';
 
 type DeploymentResponse = Deployment & {
   workingReplicas: number;
@@ -49,6 +51,7 @@ export class DeploymentService {
     private em: EntityManager,
     private deploymentEnvService: DeploymentEnvService,
     private deploymentVolumeService: DeploymentVolumeService,
+    private buildpackService: BuildpackService,
   ) {}
 
   async findById(id: string): Promise<DeploymentResponse> {
@@ -165,11 +168,21 @@ export class DeploymentService {
       throw new ConflictException('Deployment already exists');
     }
 
+    let buildpack: string;
+    if (data.repositoryUrl) {
+      executeCommand(`git clone ${data.repositoryUrl} ${data.name}`, GIT_PATH);
+      buildpack = await this.buildpackService.selectBuildPack(
+        `${GIT_PATH}/${data.name}`,
+      );
+    }
+
     const deployment = this.repository.create({
       cpu: data.cpu,
       deploymentId: parseName(name),
       description: data.description,
       exposedNetwork: data.exposedNetwork,
+      repositoryUrl: data.repositoryUrl,
+      buildpack: buildpack,
       image: data.image,
       memory: data.memory,
       name: name,
@@ -314,9 +327,17 @@ export class DeploymentService {
     console.log('result', result);
 
     if (deployment.exposedNetwork) {
-      createNodePortService(deployment.deploymentId, K8S_NAMESPACE);
+      createNodePortService(
+        deployment.deploymentId,
+        deployment.port,
+        K8S_NAMESPACE,
+      );
     } else {
-      createClusterIpService(deployment.deploymentId, K8S_NAMESPACE);
+      createClusterIpService(
+        deployment.deploymentId,
+        deployment.port,
+        K8S_NAMESPACE,
+      );
     }
 
     return deployment;

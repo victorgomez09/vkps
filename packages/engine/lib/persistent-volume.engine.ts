@@ -1,81 +1,87 @@
-import { V1PersistentVolume } from "@kubernetes/client-node";
+import { V1PersistentVolume } from '@kubernetes/client-node';
 
-import { k8sCoreApi } from "./utils.engine";
-import { EngineData } from './types'
+import { k8sCoreApi } from './utils.engine';
+import { EngineData } from './types';
 
 export type PersistentVolume = {
-    namespace: string;
-    name: string;
-    labels: { [key: string]: string };
-    accessModes: string[];
-    storage: string;
-    path: string;
+  namespace: string;
+  name: string;
+  labels: { [key: string]: string };
+  accessModes: string[];
+  storage: string;
+  path: string;
 };
 
 export const createPersistentVolume = async (
-    volume: PersistentVolume
+  volume: PersistentVolume
 ): Promise<EngineData<V1PersistentVolume>> => {
-    try {
-        const { response, body: persistentVolume } =
-            await k8sCoreApi.createPersistentVolume({
-                apiVersion: 'v1',
-                kind: 'PersistentVolume',
-                metadata: {
-                    name: volume.name,
-                    labels: volume.labels,
-                },
-                spec: {
-                    storageClassName: `ls-${volume.name}`,
-                    accessModes: volume.accessModes,
-                    capacity: {
-                        storage: volume.storage,
-                    },
-                    hostPath: {
-                        path: volume.path,
-                    },
-                },
-            });
+  try {
+    const { response, body: persistentVolume } = await k8sCoreApi().createPersistentVolume({
+      apiVersion: 'v1',
+      kind: 'PersistentVolume',
+      metadata: {
+        name: volume.name,
+        labels: volume.labels
+      },
+      spec: {
+        storageClassName: `ls-${volume.name}`,
+        accessModes: volume.accessModes,
+        capacity: {
+          storage: volume.storage
+        },
+        hostPath: {
+          path: volume.path
+        }
+      }
+    });
 
-        return {
-            statusCode: response.statusCode || 200,
-            data: persistentVolume,
-        };
-    } catch (error) {
-        return {
-            error: error.body.message,
-            statusCode: error.statusCode,
-        };
-    }
+    return {
+      statusCode: response.statusCode || 200,
+      data: persistentVolume
+    };
+  } catch (error) {
+    return {
+      error: error.body ? error.body.message : error,
+      statusCode: error.statusCode
+    };
+  }
 };
 
 export const deletePersistentVolume = async (volume: PersistentVolume) => {
-    try {
-        if (!(await k8sCoreApi.readPersistentVolume(volume.name))) {
-            return {
-                error: 'PersistentVolume does not exist',
-            };
-        }
-
-        return await k8sCoreApi.deletePersistentVolume(volume.name);
-    } catch (error) {
-        return {
-            error: (error as Error).message,
-        };
+  try {
+    if (!(await k8sCoreApi().readPersistentVolume(volume.name))) {
+      return {
+        error: 'PersistentVolume does not exist'
+      };
     }
+
+    return await k8sCoreApi().deletePersistentVolume(volume.name);
+  } catch (error) {
+    return {
+      error: (error as Error).message
+    };
+  }
 };
 
-export const getPersistentVolume = async (volume: PersistentVolume) => {
-    try {
-        if (!(await k8sCoreApi.readPersistentVolume(volume.name))) {
-            return {
-                error: 'PersistentVolume does not exist',
-            };
-        }
-
-        return await k8sCoreApi.readPersistentVolume(volume.name);
-    } catch (error) {
-        return {
-            error: (error as Error).message,
-        };
+export const getPersistentVolume = async (
+  pvName: string
+): Promise<EngineData<V1PersistentVolume>> => {
+  try {
+    if (!(await k8sCoreApi().readPersistentVolume(pvName))) {
+      return {
+        statusCode: 500,
+        error: 'PersistentVolume does not exist'
+      };
     }
+
+    return {
+      statusCode: 200,
+      data: (await k8sCoreApi().readPersistentVolume(pvName)).body
+    };
+  } catch (error) {
+    return {
+      statusCode: 500,
+      error: (error as Error).message
+    };
+  }
 };

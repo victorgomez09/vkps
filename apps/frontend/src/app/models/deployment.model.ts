@@ -6,7 +6,8 @@ export class Deployment {
   deploymentId!: string;
   name!: string;
   description?: string;
-  image!: string;
+  repositoryUrl?: string;
+  image?: string;
   memory!: string;
   cpu!: string;
   exposedNetwork!: boolean;

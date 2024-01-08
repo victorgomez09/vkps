@@ -1,5 +1,14 @@
-import { Component, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, OnInit, WritableSignal, signal } from '@angular/core';
+import {
+  AbstractControl,
+  FormArray,
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  ValidationErrors,
+  ValidatorFn,
+  Validators
+} from '@angular/forms';
 import { ButtonComponent } from '../../../components/button/button.component';
 import { CardComponent } from '../../../components/card/card.component';
 import { CommonModule } from '@angular/common';
@@ -16,13 +25,20 @@ import { DeploymentEnv } from '../../../models/deploymentenv.model';
 })
 export class NewComponent implements OnInit {
   public form!: FormGroup;
+  public selectedSource!: 'docker' | 'git';
+  public signalSelected!: WritableSignal<'docker' | 'git'>;
 
   constructor(private deploymentService: DeploymentService, private fb: FormBuilder) {}
 
   ngOnInit(): void {
+    this.selectedSource = 'docker';
+    this.signalSelected = signal('docker');
+
     this.form = this.fb.group({
       name: ['', [Validators.required]],
-      image: ['', [Validators.required]],
+      description: [''],
+      repositoryUrl: [''],
+      image: [''],
       replicas: [1, [Validators.required, Validators.min(1)]],
       memory: ['256', [Validators.required, Validators.min(256)]],
       cpu: ['500', [Validators.required, Validators.min(500)]],

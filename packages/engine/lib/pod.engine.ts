@@ -18,7 +18,7 @@ export const getPodsFromDeployment = async (
   deploymentName: string
 ): Promise<EngineData<V1PodList>> => {
   try {
-    const { response, body: pods } = await k8sCoreApi.listPodForAllNamespaces(
+    const { response, body: pods } = await k8sCoreApi().listPodForAllNamespaces(
       false,
       '',
       '',
@@ -42,7 +42,7 @@ export const getPodLogs = async (
   namespace: string = 'default'
 ): Promise<EngineData<string>> => {
   try {
-    const { response, body } = await k8sCoreApi.readNamespacedPodLog(pod, namespace);
+    const { response, body } = await k8sCoreApi().readNamespacedPodLog(pod, namespace);
 
     return {
       statusCode: response.statusCode || 200,

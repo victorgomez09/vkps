@@ -1,3 +1,3 @@
 export const environment = {
-  apiUrl: 'http://localhost:3000/api/v1'
+  apiUrl: 'https://solid-goggles-4g9xjgp7497fj9g9-3300.app.github.dev/api/v1'
 };

@@ -18,6 +18,8 @@ import { AddonModule } from '../addon/addon.module';
 import { AppService } from './app.service';
 import { AppConfigurationModule } from '../app-configuration/app-configuration.module';
 import { InitModule } from '../init/init.module';
+import { Buildpack } from '../buildpack/buildpack.entity';
+import { BuildpackVersion } from '../buildpack-version/buildpack-version.entity';
 
 @Module({
   imports: [
@@ -33,7 +35,9 @@ import { InitModule } from '../init/init.module';
     AddonEnvModule,
     AddonVolumeModule,
     AppConfigurationModule,
-    InitModule,
+    Buildpack,
+    BuildpackVersion,
+    // InitModule,
     ConfigModule.forRoot({ isGlobal: true, load: [() => GLOBAL_CONFIG] }),
   ],
   providers: [AppService],

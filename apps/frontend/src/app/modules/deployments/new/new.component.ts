@@ -87,6 +87,7 @@ export class NewComponent implements OnInit {
       .create({
         name: this.f['name'].value,
         description: '',
+        repositoryUrl: this.f['repositoryUrl'].value,
         image: this.f['image'].value,
         replicas: this.f['replicas'].value,
         memory: String(this.f['memory'].value),

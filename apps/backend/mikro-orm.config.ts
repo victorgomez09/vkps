@@ -10,6 +10,8 @@ import { DeploymentVolume } from './src/modules/deployment-volume/deployment-vol
 import { Deployment } from './src/modules/deployment/deployment.entity';
 import { User } from './src/modules/user/user.entity';
 import { AppConfiguration } from './src/modules/app-configuration/app-configuration.entity';
+import { Buildpack } from './src/modules/buildpack/buildpack.entity';
+import { BuildpackVersion } from './src/modules/buildpack-version/buildpack-version.entity';
 
 const config: Options = {
   allowGlobalContext: true,
@@ -23,6 +25,8 @@ const config: Options = {
     AddonEnv,
     AddonVolume,
     AddonVersion,
+    Buildpack,
+    BuildpackVersion,
   ], // no need for `entitiesTs` this way
   dbName: 'vkps',
   type: 'sqlite', // one of `mongo` | `mysql` | `mariadb` | `postgresql` | `sqlite`

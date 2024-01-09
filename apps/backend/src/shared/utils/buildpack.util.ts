@@ -1,6 +1,6 @@
 import fs from 'fs';
 
-import { isARM } from '../utils/arch.util';
+import { isARM } from './arch.util';
 
 const staticApps = [
   'static',

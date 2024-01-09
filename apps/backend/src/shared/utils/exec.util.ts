@@ -1,7 +1,8 @@
-import { execSync } from 'child_process';
+import { spawnSync } from 'child_process';
 
 export const executeCommand = (command: string, path: string) => {
-  return execSync(command, {
+  return spawnSync(command, {
     cwd: path,
+    shell: true,
   });
 };

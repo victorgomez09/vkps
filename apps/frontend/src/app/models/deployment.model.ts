@@ -27,7 +27,8 @@ export class Deployment {
 export class DeploymentRequest {
   name!: string;
   description?: string;
-  image!: string;
+  repositoryUrl?: string;
+  image?: string;
   replicas!: string;
   memory!: string;
   cpu!: string;

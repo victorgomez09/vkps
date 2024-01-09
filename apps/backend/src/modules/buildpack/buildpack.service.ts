@@ -1,6 +1,6 @@
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { EntityManager, EntityRepository } from '@mikro-orm/core';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 
 import { Buildpack } from './buildpack.entity';
 import { searchFile } from 'src/shared/utils/file.util';
@@ -20,11 +20,20 @@ export class BuildpackService {
     return this.repository.findAll();
   }
 
-  async selectBuildPack(projectDir: string): Promise<string> {
-    let buildpack: string;
+  async findByName(name: string): Promise<Buildpack> {
+    const buildpack = await this.repository.findOne({ name });
+    if (!buildpack) {
+      throw new NotFoundException('Buildpack not found');
+    }
+
+    return buildpack;
+  }
+
+  async selectBuildPack(projectDir: string): Promise<Buildpack> {
+    let buildpack: Buildpack;
 
     if (searchFile(projectDir, 'package.json')) {
-      buildpack = 'nodejs';
+      buildpack = await this.findByName('nodejs');
     }
 
     return buildpack;
@@ -35,6 +44,7 @@ export class BuildpackService {
     let buildpack: string;
     if (searchFile(data.projectDir, 'package.json')) {
       buildpack = 'nodejs';
+      this.repository;
     }
 
     switch (buildpack) {

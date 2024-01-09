@@ -1,5 +1,5 @@
 import { writeFileSync } from 'fs';
-import { checkPnpm } from './common';
+import { checkPnpm } from '../utils/buildpack.util';
 
 type NodeProps = {
   baseImage: string;

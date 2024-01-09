@@ -93,7 +93,7 @@ export class DeploymentRequestDto {
   repositoryUrl?: string;
 
   @IsString()
-  image: string;
+  image?: string;
 
   @IsNumber()
   replicas: number;

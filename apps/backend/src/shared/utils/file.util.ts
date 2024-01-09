@@ -16,12 +16,10 @@ export const searchFile = (dir: string, fileName: string): boolean => {
     // if the file is a directory, recursively search the directory
     if (fileStat.isDirectory()) {
       searchFile(filePath, fileName);
-    } else if (file.endsWith(fileName)) {
+      // } else if (file.endsWith(fileName)) {
+    } else if (file === fileName) {
       // if the file is a match, print it
-      console.log(filePath);
       return true;
     }
-
-    return false;
   }
 };

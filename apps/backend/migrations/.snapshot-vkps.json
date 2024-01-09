@@ -441,6 +441,149 @@
           "nullable": false,
           "mappedType": "text"
         },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "text"
+        },
+        "creation_date": {
+          "name": "creation_date",
+          "type": "datetime",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 0,
+          "mappedType": "datetime"
+        },
+        "modification_date": {
+          "name": "modification_date",
+          "type": "datetime",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 0,
+          "mappedType": "datetime"
+        }
+      },
+      "name": "buildpacks",
+      "indexes": [
+        {
+          "keyName": "primary",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {}
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "text"
+        },
+        "version": {
+          "name": "version",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "text"
+        },
+        "buildpack_id": {
+          "name": "buildpack_id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "text"
+        },
+        "creation_date": {
+          "name": "creation_date",
+          "type": "datetime",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 0,
+          "mappedType": "datetime"
+        },
+        "modification_date": {
+          "name": "modification_date",
+          "type": "datetime",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 0,
+          "mappedType": "datetime"
+        }
+      },
+      "name": "buildpack_versions",
+      "indexes": [
+        {
+          "columnNames": [
+            "buildpack_id"
+          ],
+          "composite": false,
+          "keyName": "buildpack_versions_buildpack_id_index",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "keyName": "primary",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {
+        "buildpack_versions_buildpack_id_foreign": {
+          "constraintName": "buildpack_versions_buildpack_id_foreign",
+          "columnNames": [
+            "buildpack_id"
+          ],
+          "localTableName": "buildpack_versions",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "buildpacks",
+          "updateRule": "cascade"
+        }
+      }
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "text"
+        },
         "deployment_id": {
           "name": "deployment_id",
           "type": "text",
@@ -531,6 +674,15 @@
           "nullable": false,
           "mappedType": "integer"
         },
+        "buildpack_id": {
+          "name": "buildpack_id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "text"
+        },
         "creation_date": {
           "name": "creation_date",
           "type": "datetime",
@@ -555,6 +707,15 @@
       "name": "deployments",
       "indexes": [
         {
+          "columnNames": [
+            "buildpack_id"
+          ],
+          "composite": false,
+          "keyName": "deployments_buildpack_id_unique",
+          "primary": false,
+          "unique": true
+        },
+        {
           "keyName": "primary",
           "columnNames": [
             "id"
@@ -565,7 +726,20 @@
         }
       ],
       "checks": [],
-      "foreignKeys": {}
+      "foreignKeys": {
+        "deployments_buildpack_id_foreign": {
+          "constraintName": "deployments_buildpack_id_foreign",
+          "columnNames": [
+            "buildpack_id"
+          ],
+          "localTableName": "deployments",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "buildpacks",
+          "updateRule": "cascade"
+        }
+      }
     },
     {
       "columns": {

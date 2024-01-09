@@ -33,6 +33,7 @@ import { DeploymentRequestDto } from './deployment.dto';
 import { Deployment } from './deployment.entity';
 import { BuildpackService } from '../buildpack/buildpack.service';
 import { executeCommand } from 'src/shared/utils/exec.util';
+import { Buildpack } from '../buildpack/buildpack.entity';
 
 type DeploymentResponse = Deployment & {
   workingReplicas: number;
@@ -168,12 +169,14 @@ export class DeploymentService {
       throw new ConflictException('Deployment already exists');
     }
 
-    let buildpack: string;
+    let buildpack: Buildpack;
     if (data.repositoryUrl) {
       executeCommand(`git clone ${data.repositoryUrl} ${data.name}`, GIT_PATH);
       buildpack = await this.buildpackService.selectBuildPack(
         `${GIT_PATH}/${data.name}`,
       );
+    } else {
+      buildpack = await this.buildpackService.findByName('docker');
     }
 
     const deployment = this.repository.create({

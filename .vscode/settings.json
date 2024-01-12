@@ -1,22 +1,4 @@
 {
-  "eslint.workingDirectories": [
-    {
-      "mode": "auto"
-    }
-  ],
-  "sqltools.useNodeRuntime": true,
-  "sqltools.connections": [
-    {
-      "previewLimit": 50,
-      "driver": "SQLite",
-      "name": "vkps",
-      "database": "apps/api/prisma/dev.db"
-    },
-    {
-      "previewLimit": 50,
-      "driver": "SQLite",
-      "name": "vkps back",
-      "database": "${workspaceFolder:vkps}/apps/backend/vkps"
-    }
-  ]
+    "java.compile.nullAnalysis.mode": "automatic",
+    "java.configuration.updateBuildConfiguration": "interactive"
 }

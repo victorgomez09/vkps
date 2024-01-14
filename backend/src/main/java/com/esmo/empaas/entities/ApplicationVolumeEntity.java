@@ -51,5 +51,5 @@ public class ApplicationVolumeEntity {
 
     @UpdateTimestamp
     @Column(name = "modification_date")
-    private Date modificationdate;
+    private Date modificationDate;
 }

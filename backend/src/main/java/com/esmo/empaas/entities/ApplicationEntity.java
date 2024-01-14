@@ -3,18 +3,10 @@ package com.esmo.empaas.entities;
 import java.util.Date;
 import java.util.List;
 
+import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -67,11 +59,30 @@ public class ApplicationEntity {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "application")
     private List<ApplicationEnvEntity> envs;
 
+    @ManyToOne
+    @JoinColumn(name = "buildpack_id")
+    private BuildpackEntity buildpack;
+
+    @Column(name = "buildpack_version")
+    private String buildpackVersion;
+
+    @Column(name = "install_command")
+    private String installCommand;
+
+    @Column(name = "build_command")
+    private String buildCommand;
+
+    @Column(name = "start_command")
+    private String startCommand;
+
+    @Column(name = "base_directory")
+    private String baseDirectory;
+
     @CreationTimestamp
     @Column(name = "creation_date")
     private Date creationDate;
 
     @UpdateTimestamp
     @Column(name = "modification_date")
-    private Date modificationdate;
+    private Date modificationDate;
 }

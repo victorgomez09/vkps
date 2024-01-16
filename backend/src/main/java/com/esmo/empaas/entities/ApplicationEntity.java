@@ -4,14 +4,9 @@ import java.util.Date;
 import java.util.List;
 
 import jakarta.persistence.*;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Table(name = "applications")
@@ -20,6 +15,7 @@ import lombok.Setter;
 @Builder
 @Getter
 @Setter
+@ToString
 public class ApplicationEntity {
 
     @Id

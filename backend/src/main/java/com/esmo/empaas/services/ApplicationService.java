@@ -54,15 +54,19 @@ public class ApplicationService {
     }
 
     public ApplicationEntity create(ApplicationEntity data) {
-        if (repository.findById(data.getId()).isPresent()) {
-            throw new ResourceAlreadyExistsException("Application", "id", data.getId());
+        System.out.println("data: " + data.toString());
+
+        if (repository.findByName(data.getName()).isPresent()) {
+            throw new ResourceAlreadyExistsException("Application", "name", data.getName());
         }
 
-        if (data.getRepositoryUrl() != null && !data.getRepositoryUrl().isEmpty()) {
-            cmdUtil.executeCommand("git clone " + data.getRepositoryUrl() + " " + Constants.REPOSITORIES_PATH);
+        ApplicationEntity application = repository.save(data);
+
+        if (application.getRepositoryUrl() != null && !application.getRepositoryUrl().isEmpty()) {
+            cmdUtil.executeCommand("git clone " + application.getRepositoryUrl() + " " + Constants.REPOSITORIES_PATH);
         }
 
-        return repository.save(data);
+        return application;
     }
 
     public void deploy(String id) {
@@ -78,7 +82,7 @@ public class ApplicationService {
                     application.getPort(), application.getInstallCommand(), application.getBuildCommand(), application.getStartCommand(), application.getBaseDirectory(),
                     application.getEnvs().stream().collect(Collectors.toMap(ApplicationEnvEntity::getKey, ApplicationEnvEntity::getValue)));
 
-            cmdUtil.executeCommand("docker build -t localhost:5000/" + application.getName() + " .");
+            cmdUtil.executeCommand("docker build -t localhost:5000/" + application.getName() + " " + Constants.REPOSITORIES_PATH + "/" + application.getName());
             cmdUtil.executeCommand("docker push localhost:5000/" + application.getName());
         }
 

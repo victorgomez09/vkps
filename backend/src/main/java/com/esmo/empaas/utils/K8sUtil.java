@@ -33,8 +33,7 @@ public class K8sUtil {
             ApiClient client = Config.defaultClient();
             Configuration.setDefaultApiClient(client);
         } catch (IOException e) {
-            System.out.println("error");
-//            logger.error(e.getMessage(), e);
+            logger.error(e.getMessage(), e);
         }
     }
 
@@ -60,23 +59,20 @@ public class K8sUtil {
         V1ConfigMap result = null;
 
         try {
-            result = k8sCoreClient().createNamespacedConfigMap(Constants.K8S_NAMESPACE, new V1ConfigMap() {
+            V1ObjectMeta metadata = new V1ObjectMeta();
+            metadata.setName(name);
+            metadata.setLabels(new HashMap<String, String>() {
                 {
-                    setApiVersion("v1");
-                    setKind("ConfigMap");
-                    setMetadata(new V1ObjectMeta() {
-                        {
-                            setName(name);
-                            setLabels(new HashMap<String, String>() {
-                                {
-                                    put("app", name);
-                                }
-                            });
-                        }
-                    });
-                    setData(data);
+                    put("app", name);
                 }
-            }, null, null, null,
+            });
+
+            V1ConfigMap body = new V1ConfigMap();
+            body.setApiVersion("v1");
+            body.setKind("ConfigMap");
+            body.setData(data);
+
+            result = k8sCoreClient().createNamespacedConfigMap(Constants.K8S_NAMESPACE, body, null, null, null,
                     null);
         } catch (ApiException | IOException e) {
             logger.error(e.getMessage(), e);
@@ -90,38 +86,34 @@ public class K8sUtil {
         V1PersistentVolume result = null;
 
         try {
-            result = k8sCoreClient().createPersistentVolume(new V1PersistentVolume() {
+            V1ObjectMeta metadata = new V1ObjectMeta();
+            metadata.setName(name);
+            metadata.setLabels(new HashMap<String, String>() {
                 {
-                    setApiVersion("v1");
-                    setKind("PersistentVolume");
-                    setMetadata(new V1ObjectMeta() {
-                        {
-                            setName(name);
-                            setLabels(new HashMap<String, String>() {
-                                {
-                                    put("app", name);
-                                }
-                            });
-                        }
-                    });
-                    setSpec(new V1PersistentVolumeSpec() {
-                        {
-                            setStorageClassName("local-storage");
-                            setAccessModes(Collections.singletonList(accessMode));
-                            setCapacity(new HashMap<String, Quantity>() {
-                                {
-                                    put("storage", new Quantity(String.valueOf(size)));
-                                }
-                            });
-                            setHostPath(new V1HostPathVolumeSource() {
-                                {
-                                    setPath(path);
-                                }
-                            });
-                        }
-                    });
+                    put("app", name);
                 }
-            }, null, null,
+            });
+
+            V1HostPathVolumeSource source = new V1HostPathVolumeSource();
+            source.setPath(path);
+
+            V1PersistentVolumeSpec spec = new V1PersistentVolumeSpec();
+            spec.setStorageClassName("local-storage");
+            spec.setAccessModes(Collections.singletonList(accessMode));
+            spec.setCapacity(new HashMap<String, Quantity>() {
+                {
+                    put("storage", new Quantity(String.valueOf(size)));
+                }
+            });
+            spec.setHostPath(source);
+
+            V1PersistentVolume body = new V1PersistentVolume();
+            body.setApiVersion("v1");
+            body.setKind("PersistentVolume");
+            body.setMetadata(metadata);
+            body.setSpec(spec);
+
+            result = k8sCoreClient().createPersistentVolume(body, null, null,
                     null, null);
         } catch (ApiException | IOException e) {
             logger.error(e.getMessage(), e);
@@ -135,38 +127,34 @@ public class K8sUtil {
         V1PersistentVolumeClaim result = null;
 
         try {
+            V1ObjectMeta metadata = new V1ObjectMeta();
+            metadata.setName(name);
+            metadata.setLabels(new HashMap<>() {
+                {
+                    put("app", name);
+                }
+            });
+
+            V1ResourceRequirements resources = new V1ResourceRequirements();
+            resources.setRequests(new HashMap<>() {
+                {
+                    put("storage", new Quantity(String.valueOf(size)));
+                }
+            });
+
+            V1PersistentVolumeClaimSpec spec = new V1PersistentVolumeClaimSpec();
+            spec.setAccessModes(Collections.singletonList(accessMode));
+            spec.setStorageClassName("local-storage");
+            spec.setResources(resources);
+
+            V1PersistentVolumeClaim body = new V1PersistentVolumeClaim();
+            body.setApiVersion("v1");
+            body.setKind("PersistentVolumeClaim");
+            body.setMetadata(metadata);
+            body.setSpec(spec);
+
             result = k8sCoreClient().createNamespacedPersistentVolumeClaim(Constants.K8S_NAMESPACE,
-                    new V1PersistentVolumeClaim() {
-                        {
-                            setApiVersion("v1");
-                            setKind("PersistentVolumeClaim");
-                            setMetadata(new V1ObjectMeta() {
-                                {
-                                    setName(name);
-                                    setLabels(new HashMap<>() {
-                                        {
-                                            put("app", name);
-                                        }
-                                    });
-                                }
-                            });
-                            setSpec(new V1PersistentVolumeClaimSpec() {
-                                {
-                                    setAccessModes(Collections.singletonList(accessMode));
-                                    setStorageClassName("local-storage");
-                                    setResources(new V1ResourceRequirements() {
-                                        {
-                                            setRequests(new HashMap<>() {
-                                                {
-                                                    put("storage", new Quantity(String.valueOf(size)));
-                                                }
-                                            });
-                                        }
-                                    });
-                                }
-                            });
-                        }
-                    },
+                    body,
                     null, null,
                     null, null);
         } catch (ApiException | IOException e) {
@@ -181,136 +169,99 @@ public class K8sUtil {
         V1Deployment result = null;
 
         try {
+            V1ObjectMeta metadata = new V1ObjectMeta();
+            metadata.setName(name);
+            metadata.setLabels(new HashMap<String, String>() {
+                {
+                    put("app", name);
+                }
+            });
+
+            V1LabelSelector selector = new V1LabelSelector();
+            selector.setMatchLabels(new HashMap<String, String>() {
+                {
+                    put("app", name);
+                }
+            });
+
+            V1ResourceRequirements resources = new V1ResourceRequirements();
+            resources.setLimits(new HashMap<String, Quantity>() {
+                {
+                    put("cpu",
+                            new Quantity(String.valueOf(cpu)));
+                    put("memory", new Quantity(
+                            String.valueOf(memory)));
+                }
+            });
+            resources.setRequests(new HashMap<String, Quantity>() {
+                {
+                    put("cpu",
+                            new Quantity(String.valueOf(cpu)));
+                    put("memory", new Quantity(
+                            String.valueOf(memory)));
+                }
+            });
+
+            V1ContainerPort ports = new V1ContainerPort();
+            ports.setContainerPort(port);
+
+            V1ConfigMapEnvSource envSource = new V1ConfigMapEnvSource();
+            envSource.setName(configMapRefName);
+
+            V1EnvFromSource env = new V1EnvFromSource();
+            env.setConfigMapRef(envSource);
+
+            List<V1VolumeMount> volumes = Collections.emptyList();
+            persistentVolumeClaimNames.forEach(pvc -> {
+                V1VolumeMount volume = new V1VolumeMount();
+                volume.setName(pvc);
+                volume.setMountPath("/data");
+
+                volumes.add(volume);
+            });
+
+            V1Container container = new V1Container();
+            container.setName(name);
+            container.setImage(image);
+            container.setImagePullPolicy("Always");
+            container.setResources(resources);
+            container.setPorts(Collections.singletonList(ports));
+            container.setEnvFrom(Collections.singletonList(env));
+            container.volumeMounts(volumes);
+
+            List<V1Volume> volumesPod = Collections.emptyList();
+            persistentVolumeClaimNames.forEach(pvc -> {
+                V1PersistentVolumeClaimVolumeSource claimSource = new V1PersistentVolumeClaimVolumeSource();
+                claimSource.claimName(pvc);
+
+                V1Volume volume = new V1Volume();
+                volume.setName(pvc);
+                volume.setPersistentVolumeClaim(claimSource);
+
+                volumesPod.add(volume);
+            });
+
+            V1PodSpec pod = new V1PodSpec();
+            pod.setContainers(Collections.singletonList(container));
+            pod.setVolumes(volumesPod);
+
+            V1PodTemplateSpec template = new V1PodTemplateSpec();
+            template.setMetadata(metadata);
+            template.setSpec(pod);
+
+            V1DeploymentSpec spec = new V1DeploymentSpec();
+            spec.setReplicas(replicas);
+            spec.setSelector(selector);
+            spec.setTemplate(template);
+
+            V1Deployment body = new V1Deployment();
+            body.setApiVersion("v1");
+            body.setKind("Deployment");
+            body.setMetadata(metadata);
+            body.setSpec(spec);
+
             result = k8sAppsClient().createNamespacedDeployment(Constants.K8S_NAMESPACE,
-                    new V1Deployment() {
-                        {
-                            setApiVersion("apps/v1");
-                            setKind("Deployment");
-                            setMetadata(new V1ObjectMeta() {
-                                {
-                                    setName(name);
-                                    setLabels(new HashMap<String, String>() {
-                                        {
-                                            put("app", name);
-                                        }
-                                    });
-                                }
-                            });
-                            setSpec(new V1DeploymentSpec() {
-                                {
-                                    setReplicas(replicas);
-                                    setSelector(new V1LabelSelector() {
-                                        {
-                                            setMatchLabels(new HashMap<String, String>() {
-                                                {
-                                                    put("app", name);
-                                                }
-                                            });
-                                        }
-                                    });
-                                    setTemplate(new V1PodTemplateSpec() {
-                                        {
-                                            metadata(new V1ObjectMeta() {
-                                                {
-                                                    setLabels(new HashMap<String, String>() {
-                                                        {
-                                                            put("app", name);
-                                                        }
-                                                    });
-                                                }
-                                            });
-                                            spec(new V1PodSpec() {
-                                                {
-                                                    setContainers(List.of(new V1Container() {
-                                                        {
-                                                            name(name);
-                                                            image(image);
-                                                            imagePullPolicy("Always");
-                                                            resources(new V1ResourceRequirements() {
-                                                                {
-                                                                    limits(new HashMap<String, Quantity>() {
-                                                                        {
-                                                                            put("cpu",
-                                                                                    new Quantity(String.valueOf(cpu)));
-                                                                            put("memory", new Quantity(
-                                                                                    String.valueOf(memory)));
-                                                                        }
-                                                                    });
-                                                                    requests(new HashMap<String, Quantity>() {
-                                                                        {
-                                                                            put("cpu",
-                                                                                    new Quantity(String.valueOf(cpu)));
-                                                                            put("memory", new Quantity(
-                                                                                    String.valueOf(memory)));
-                                                                        }
-                                                                    });
-                                                                }
-                                                            });
-                                                            ports(List.of(new V1ContainerPort() {
-                                                                {
-                                                                    containerPort(port);
-                                                                }
-                                                            }));
-                                                            // volumeMounts(Arrays.asList(new V1VolumeMount() {
-                                                            // {
-                                                            // name(persistentVolumeClaimName);
-                                                            // mountPath("/data");
-                                                            // }
-                                                            // }));
-
-                                                            envFrom(List.of(new V1EnvFromSource() {
-                                                                {
-                                                                    configMapRef(new V1ConfigMapEnvSource() {
-                                                                        {
-                                                                            name(configMapRefName);
-                                                                        }
-                                                                    });
-                                                                }
-                                                            }));
-
-                                                            volumeMounts(
-                                                                    persistentVolumeClaimNames.stream().map(pvc -> {
-                                                                        return new V1VolumeMount() {
-                                                                            {
-                                                                                name(pvc);
-                                                                                mountPath("/data");
-                                                                            }
-                                                                        };
-                                                                    }).collect(Collectors.toList()));
-                                                        }
-                                                    }));
-                                                    // voluumes(Arrays.asList(new V1Volume() {
-                                                    // {
-                                                    // name(persistentVolumeClaimNames);
-                                                    // persistentVolumeClaim(
-                                                    // new V1PersistentVolumeClaimVolumeSource() {
-                                                    // {
-                                                    // claimName(persistentVolumeClaimNames);
-                                                    // }
-                                                    // });
-                                                    // }
-                                                    // }));
-                                                    volumes(persistentVolumeClaimNames.stream().map(pvc -> {
-                                                        return new V1Volume() {
-                                                            {
-                                                                name(pvc);
-                                                                persistentVolumeClaim(
-                                                                        new V1PersistentVolumeClaimVolumeSource() {
-                                                                            {
-                                                                                claimName(pvc);
-                                                                            }
-                                                                        });
-                                                            }
-                                                        };
-                                                    }).collect(Collectors.toList()));
-                                                }
-                                            });
-                                        }
-                                    });
-                                }
-                            });
-                        }
-                    }, null, null, null,
+                    body, null, null, null,
                     null);
         } catch (ApiException | IOException e) {
             logger.error(e.getMessage(), e);
@@ -321,9 +272,12 @@ public class K8sUtil {
 
     public List<V1Pod> getPods(String deploymentId) {
         try {
-            V1Deployment deployment = k8sAppsClient().readNamespacedDeployment(deploymentId, Constants.K8S_NAMESPACE, null);
+            V1Deployment deployment = k8sAppsClient().readNamespacedDeployment(deploymentId, Constants.K8S_NAMESPACE,
+                    null);
 
-            return k8sCoreClient().listPodForAllNamespaces(null, null, null, "app=" + Objects.requireNonNull(deployment.getMetadata()).getName(), null, null, null, null, null, null, null).getItems();
+            return k8sCoreClient().listPodForAllNamespaces(null, null, null,
+                    "app=" + Objects.requireNonNull(deployment.getMetadata()).getName(), null, null, null, null, null,
+                    null, null).getItems();
         } catch (ApiException | IOException e) {
             logger.error(e.getMessage(), e);
         }
@@ -337,19 +291,18 @@ public class K8sUtil {
                 V1Pod pod = k8sCoreClient().readNamespacedPod(name, Constants.K8S_NAMESPACE, null);
 
                 // Log method 1
-                String readNamespacedPodLog =
-                        k8sCoreClient().readNamespacedPodLog(
-                                pod.getMetadata() != null ? pod.getMetadata().getName() : name,
-                                Constants.K8S_NAMESPACE,
-                                null,
-                                Boolean.FALSE,
-                                null,
-                                Integer.MAX_VALUE,
-                                null,
-                                Boolean.FALSE,
-                                Integer.MAX_VALUE,
-                                40,
-                                Boolean.FALSE);
+                String readNamespacedPodLog = k8sCoreClient().readNamespacedPodLog(
+                        pod.getMetadata() != null ? pod.getMetadata().getName() : name,
+                        Constants.K8S_NAMESPACE,
+                        null,
+                        Boolean.FALSE,
+                        null,
+                        Integer.MAX_VALUE,
+                        null,
+                        Boolean.FALSE,
+                        Integer.MAX_VALUE,
+                        40,
+                        Boolean.FALSE);
                 System.out.println(readNamespacedPodLog);
 
                 // Log method 2

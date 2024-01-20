@@ -1,0 +1,23 @@
+meta {
+  name: create
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:8080/applications/create
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+     "name": "test 3" ,
+     "description": "test 3 desc",
+     "dockerImage": "postgres",
+     "replicas": 1,
+     "memory": "500",
+     "cpu": "100",
+     "port": 5432
+  }
+}

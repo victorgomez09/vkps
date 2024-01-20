@@ -1,11 +1,10 @@
 package com.esmo.empaas.utils;
 
-import com.esmo.empaas.entities.ApplicationEnvEntity;
-import org.springframework.stereotype.Component;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.stereotype.Component;
 
 @Component
 public class DockerUtil {

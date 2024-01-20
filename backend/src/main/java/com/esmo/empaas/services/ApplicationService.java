@@ -3,6 +3,7 @@ package com.esmo.empaas.services;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -46,21 +47,17 @@ public class ApplicationService {
 		return repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Application", "id", id));
 	}
 
-	public String findLogs(String applicationId) {
+	public Map<String, String> findLogs(String applicationId) {
 		ApplicationEntity application = repository.findById(applicationId)
 				.orElseThrow(() -> new ResourceNotFoundException("Application", "id", applicationId));
 
 		List<String> pods = k8sUtil.getPods(application.getName()).stream().map(V1Pod::getMetadata)
 				.filter(Objects::nonNull).map(V1ObjectMeta::getName).toList();
 
-		k8sUtil.getLogs(pods);
-
-		return "";
+		return k8sUtil.getLogs(pods);
 	}
 
 	public ApplicationEntity create(ApplicationEntity data) {
-		System.out.println("data: " + data.toString());
-
 		if (repository.findByName(data.getName()).isPresent()) {
 			throw new ResourceAlreadyExistsException("Application", "name", data.getName());
 		}
@@ -112,7 +109,7 @@ public class ApplicationService {
 				V1PersistentVolumeClaim pvc = k8sUtil.createPersistentVolumeClaim(application.getName(),
 						v.getAccessMode(), v.getSize());
 
-				pvcNamesList.add(pvc.getMetadata() == null ? null : pvc.getMetadata().getName());
+				pvcNamesList.add(Objects.requireNonNull(pvc.getMetadata()).getName());
 			});
 		}
 

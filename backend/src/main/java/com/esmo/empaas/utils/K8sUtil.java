@@ -1,7 +1,5 @@
 package com.esmo.empaas.utils;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -12,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import io.kubernetes.client.PodLogs;
 import io.kubernetes.client.custom.Quantity;
 import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.apis.AppsV1Api;
@@ -39,7 +36,6 @@ import io.kubernetes.client.openapi.models.V1PodTemplateSpec;
 import io.kubernetes.client.openapi.models.V1ResourceRequirements;
 import io.kubernetes.client.openapi.models.V1Volume;
 import io.kubernetes.client.openapi.models.V1VolumeMount;
-import io.kubernetes.client.util.Streams;
 
 @Component()
 public class K8sUtil {
@@ -228,39 +224,47 @@ public class K8sUtil {
 
 	public List<V1Pod> getPods(String deploymentId) {
 		try {
-			V1Deployment deployment = k8sAppsClient().readNamespacedDeployment(deploymentId, Constants.K8S_NAMESPACE,
-					null);
+			V1Deployment deployment = k8sAppsClient().readNamespacedDeployment(stringUtil.parseName(deploymentId),
+					Constants.K8S_NAMESPACE, null);
 
 			return k8sCoreClient().listPodForAllNamespaces(null, null, null,
-					"app=" + Objects.requireNonNull(deployment.getMetadata()).getName(), null, null, null, null, null,
+					"name=" + Objects.requireNonNull(deployment.getMetadata()).getName(), null, null, null, null, null,
 					null, null).getItems();
 		} catch (ApiException e) {
-			logger.error(e.getMessage(), e);
+			logger.error(String.valueOf(e.getCode()), e.getMessage(), e.getResponseBody());
 		}
 
 		return Collections.emptyList();
 	}
 
-	public void getLogs(List<String> podNames) {
+	public Map<String, String> getLogs(List<String> podNames) {
+		Map<String, String> podsLogs = new HashMap<>();
+		
 		podNames.forEach(name -> {
 			try {
 				V1Pod pod = k8sCoreClient().readNamespacedPod(name, Constants.K8S_NAMESPACE, null);
 
 				// Log method 1
 				String readNamespacedPodLog = k8sCoreClient().readNamespacedPodLog(
-						pod.getMetadata() != null ? pod.getMetadata().getName() : name, Constants.K8S_NAMESPACE, null,
+						pod.getMetadata() != null ? Objects.requireNonNull(pod.getMetadata()).getName() : name, Constants.K8S_NAMESPACE, null,
 						Boolean.FALSE, null, Integer.MAX_VALUE, null, Boolean.FALSE, Integer.MAX_VALUE, 40,
 						Boolean.FALSE);
-				System.out.println(readNamespacedPodLog);
+				if (readNamespacedPodLog != null) {
+					podsLogs.put(Objects.requireNonNull(pod.getMetadata()).getName(), readNamespacedPodLog);
+				}
 
 				// Log method 2
-				PodLogs logs = new PodLogs();
-				InputStream is = logs.streamNamespacedPodLog(pod);
-				Streams.copy(is, System.out);
-			} catch (ApiException | IOException e) {
+//				PodLogs logs = new PodLogs();
+//				InputStream is = logs.streamNamespacedPodLog(pod);
+//				Streams.copy(is, System.out);
+			} catch (ApiException e) {
+				logger.error(String.valueOf(e.getCode()), e.getMessage(), e);
+			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
 			}
 		});
+		
+		return podsLogs;
 	}
 
 	public V1Deployment getDeployment(String deploymentId) {

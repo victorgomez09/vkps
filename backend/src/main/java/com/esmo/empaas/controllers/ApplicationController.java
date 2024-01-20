@@ -1,6 +1,7 @@
 package com.esmo.empaas.controllers;
 
 import java.util.List;
+import java.util.Map;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
@@ -43,7 +44,7 @@ public class ApplicationController {
 	}
 
 	@GetMapping("/{id}/logs")
-	public ResponseEntity<String> findLogs(@PathVariable String id) {
+	public ResponseEntity<Map<String, String>> findLogs(@PathVariable String id) {
 		return ResponseEntity.ok(service.findLogs(id));
 	}
 

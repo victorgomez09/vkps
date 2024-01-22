@@ -40,6 +40,8 @@ public class AddonService {
 
         addon.setName(data.getName());
         addon.setDescription(data.getDescription());
+        addon.setImage(data.getImage());
+        addon.setInfoUrl(data.getInfoUrl());
         addon.setLogo(data.getLogo());
         addon.setPort(data.getPort());
         addon.setVersions(data.getVersions());

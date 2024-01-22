@@ -1,0 +1,59 @@
+{
+    "name": "postgresql",
+    "fancyName": "postgreSQL",
+    "image": "postgres",
+    "infoUrl": "https://hub.docker.com/_/postgres",
+    "description": "PostgreSQL, often simply 'Postgres', is an object-relational database management system (ORDBMS) with an emphasis on extensibility and standards-compliance.",
+    "port": 5432,
+    "versions": [
+        {
+            "version": "latest"
+        },
+        {
+            "version": "16"
+        },
+        {
+            "version": "15"
+        },
+        {
+            "version": "14"
+        }
+    ],
+    "envs": [
+        {
+            "key": "POSTGRES_PASSWORD",
+            "value": "empaas"
+        },
+        {
+            "key": "POSTGRES_USER",
+            "value": "empaas"
+        },
+        {
+            "key": "POSTGRES_DB",
+            "value": "emppas"
+        },
+        {
+            "key": "POSTGRES_INITDB_ARGS",
+            "value": ""
+        },
+        {
+            "key": "POSTGRES_INITDB_WALDIR",
+            "value": ""
+        },
+        {
+            "key": "POSTGRES_HOST_AUTH_METHOD",
+            "value": ""
+        },
+        {
+            "key": "PGDATA",
+            "value": ""
+        }
+    ],
+    "volumes": [
+        {
+            "path": "/var/lib/postgresql",
+            "size": 2048,
+            "accessMode": "ReadWriteOnce"
+        }
+    ]
+}

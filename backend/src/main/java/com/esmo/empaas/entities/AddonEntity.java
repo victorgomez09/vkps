@@ -45,6 +45,9 @@ public class AddonEntity {
     @Column(name = "image")
     private String image;
 
+    @Column(name = "info_url")
+    private String infoUrl;
+
     @Column(name = "description")
     private String description;
 

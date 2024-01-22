@@ -1,0 +1,60 @@
+{
+    "name": "mysql",
+    "fancyName": "MySQL",
+    "image": "mysql",
+    "infoUrl": "https://hub.docker.com/_/mysql",
+    "description": "MySQL is the world's most popular open source database. With its proven performance, reliability and ease-of-use, MySQL has become the leading database choice for web-based applications.",
+    "port": 3306,
+    "versions": [
+        {
+            "version": "latest"
+        },
+        {
+            "version": "8.3"
+        },
+        {
+            "version": "8"
+        }
+    ],
+    "envs": [
+        {
+            "key": "MYSQL_ROOT_PASSWORD",
+            "value": "empaas"
+        },
+        {
+            "key": "MYSQL_DATABASE",
+            "value": "empaas"
+        },
+        {
+            "key": "MYSQL_USER",
+            "value": "empaas"
+        },
+        {
+            "key": "MYSQL_PASSWORD",
+            "value": "empaas"
+        },
+        {
+            "key": "MYSQL_ALLOW_EMPTY_PASSWORD",
+            "value": ""
+        },
+        {
+            "key": "MYSQL_RANDOM_ROOT_PASSWORD",
+            "value": ""
+        },
+        {
+            "key": "MYSQL_ONETIME_PASSWORD",
+            "value": ""
+        },
+        {
+            "key": "MYSQL_INITDB_SKIP_TZINFO",
+            "value": ""
+        }
+    ],
+    "volumes": [
+        {
+            "path": "/var/lib/mysql",
+            "size": 2048,
+            "accessMode": "ReadWriteOnce"
+        }
+    ]
+}

@@ -1,0 +1,58 @@
+{
+    "name": "code-server",
+    "fancyName": "VS Code Server",
+    "image": "lscr.io/linuxserver/code-server",
+    "infoUrl": "https://hub.docker.com/r/linuxserver/code-server",
+    "description": "Code-server is VS Code running on a remote server, accessible through the browser. Code on your Chromebook, tablet, and laptop with a consistent dev environment.",
+    "port": 8080,
+    "versions": [
+        {
+            "version": "latest"
+        }
+    ],
+    "envs": [
+        {
+            "key": "PUID",
+            "value": "1000"
+        },
+        {
+            "key": "PGID",
+            "value": "1000"
+        },
+        {
+            "key": "TZ",
+            "value": "Etc/UTC"
+        },
+        {
+            "key": "PASSWORD",
+            "value": ""
+        },
+        {
+            "key": "HASHED_PASSWORD",
+            "value": ""
+        },
+        {
+            "key": "SUDO_PASSWORD",
+            "value": ""
+        },
+        {
+            "key": "SUDO_PASSWORD_HASH",
+            "value": ""
+        },
+        {
+            "key": "PROXY_DOMAIN",
+            "value": ""
+        },
+        {
+            "key": "DEFAULT_WORKSPACE",
+            "value": ""
+        }
+    ],
+    "volumes": [
+        {
+            "path": "/config",
+            "size": 2048,
+            "accessMode": "ReadWriteOnce"
+        }
+    ]
+}

@@ -17,6 +17,7 @@ public class AddonDto {
     private String name;
     private String fancyName;
     private String image;
+    private String infoUrl;
     private String description;
     private String logo;
     private int port;

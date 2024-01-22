@@ -1,6 +1,6 @@
 {
     "name": "postgresql",
-    "fancyName": "postgreSQL",
+    "fancyName": "PostgreSQL",
     "image": "postgres",
     "infoUrl": "https://hub.docker.com/_/postgres",
     "description": "PostgreSQL, often simply 'Postgres', is an object-relational database management system (ORDBMS) with an emphasis on extensibility and standards-compliance.",

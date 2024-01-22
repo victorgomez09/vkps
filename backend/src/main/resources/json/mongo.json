@@ -1,0 +1,42 @@
+{
+    "name": "mongodb",
+    "fancyName": "Mongo DB",
+    "image": "mongo",
+    "infoUrl": "https://hub.docker.com/_/mongo",
+    "description": "MongoDB is a free and open-source cross-platform document-oriented database program. Classified as a NoSQL database program, MongoDB uses JSON-like documents with schemata.",
+    "port": 27017,
+    "versions": [
+        {
+            "version": "latest"
+        }
+    ],
+    "envs": [
+        {
+            "key": "MONGO_INITDB_ROOT_USERNAME",
+            "value": "empaas"
+        },
+        {
+            "key": "MYSQL_DATABASE",
+            "value": "empaas"
+        },
+        {
+            "key": "MONGO_INITDB_ROOT_PASSWORD",
+            "value": "empaas"
+        },
+        {
+            "key": "MYSQL_PASSWORD",
+            "value": "empaas"
+        },
+        {
+            "key": "MONGO_INITDB_DATABASE",
+            "value": "empaas"
+        }
+    ],
+    "volumes": [
+        {
+            "path": "/data/db",
+            "size": 2048,
+            "accessMode": "ReadWriteOnce"
+        }
+    ]
+}

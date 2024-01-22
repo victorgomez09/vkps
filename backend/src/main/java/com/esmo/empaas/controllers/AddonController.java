@@ -33,7 +33,7 @@ public class AddonController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<AddonDto>> findAll(@RequestParam String param) {
+    public ResponseEntity<List<AddonDto>> findAll() {
         return ResponseEntity
                 .ok(addonService.findAll().stream().map(a -> mapper.map(a, AddonDto.class))
                         .collect(Collectors.toList()));

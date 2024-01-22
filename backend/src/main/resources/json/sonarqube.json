@@ -1,0 +1,31 @@
+{
+    "name": "sonarqube",
+    "fancyName": "SonarQube",
+    "image": "sonarqube",
+    "infoUrl": "https://hub.docker.com/_/sonarqube",
+    "description": "SonarQube is the leading tool for continuously inspecting the Code Quality and Security of your codebases, and guiding development teams during Code Reviews.",
+    "port": 3000,
+    "versions": [
+        {
+            "version": "latest"
+        }
+    ],
+    "envs": [],
+    "volumes": [
+        {
+            "path": "/opt/sonarqube/data",
+            "size": 2048,
+            "accessMode": "ReadWriteOnce"
+        },
+        {
+            "path": "/opt/sonarqube/extensions",
+            "size": 2048,
+            "accessMode": "ReadWriteOnce"
+        },
+        {
+            "path": "/opt/sonarqube/logs",
+            "size": 2048,
+            "accessMode": "ReadWriteOnce"
+        }
+    ]
+}

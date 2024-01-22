@@ -1,0 +1,31 @@
+@defer (when addons()) {
+<div class="flex flex-1">
+  <div
+    class="grid grid-flow-rows grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mt-4"
+  >
+    @for (addon of addons(); track $index) {
+    <div class="card bg-base-200 shadow-sm cursor-pointer hover:shadow">
+      <div class="card-body justify-center items-center">
+        <div class="avatar">
+          <div class="w-24 rounded">
+            <img
+              src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg"
+            />
+          </div>
+        </div>
+        <div class="card-title justify-center">{{ addon.fancyName }}</div>
+        <div>
+          <p class="font-thin text-wrap text-ellipsis">
+            {{ addon.description }}
+          </p>
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+</div>
+} @loading {
+<div class="flex flex-1">
+  <span class="loading loading-spinner text-secondary"></span>
+</div>
+}

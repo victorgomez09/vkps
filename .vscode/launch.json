@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-EmpaasApplication<empaas>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.esmo.empaas.EmpaasApplication",
+            "projectName": "empaas",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

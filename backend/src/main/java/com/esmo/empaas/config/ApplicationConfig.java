@@ -50,7 +50,7 @@ public class ApplicationConfig {
 				k8sUtil.k8sCoreClient().createNamespace(body, null, null, null, null);
 			}
 		} catch (ApiException e) {
-			logger.error("API EXCEPTION: {}", e.getResponseBody());
+			logger.error("API EXCEPTION: {}, {}", e.getCode(), e.getResponseBody());
 		} catch (IOException e) {
 			logger.error(e.getMessage(), e);
 		}

@@ -14,11 +14,13 @@
     "envs": [
         {
             "key": "GF_SERVER_ROOT_URL",
-            "value": ""
+            "value": "",
+            "explanation": "URL from wich you can access Grafana Dashboard"
         },
         {
             "key": "GF_INSTALL_PLUGINS",
-            "value": ""
+            "value": "",
+            "explanation": "You can install plugins in Grafana from the official and community plugins page or by using a custom URL to install a private plugin."
         }
     ],
     "volumes": [

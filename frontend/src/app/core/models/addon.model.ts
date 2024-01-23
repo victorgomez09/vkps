@@ -3,6 +3,8 @@ export type Addon = {
   name: string;
   fancyName: string;
   image: string;
+  logo: string;
+  infoUrl: string;
   description: string;
   versions: AddonVersion[];
   envs: AddonEnv[];
@@ -22,6 +24,7 @@ export type AddonEnv = {
   key: string;
   value: string;
   optional: boolean;
+  explanation: string;
 };
 
 export type AddonVolume = {

@@ -23,31 +23,38 @@
     "envs": [
         {
             "key": "POSTGRES_PASSWORD",
-            "value": "empaas"
+            "value": "empaas",
+            "explanation": " must not be empty or undefined. This environment variable sets the superuser password for PostgreSQL."
         },
         {
             "key": "POSTGRES_USER",
-            "value": "empaas"
+            "value": "empaas",
+            "explanation": "This optional environment variable is used in conjunction with POSTGRES_PASSWORD to set a user and its password. This variable will create the specified user with superuser power and a database with the same name."
         },
         {
             "key": "POSTGRES_DB",
-            "value": "emppas"
+            "value": "emppas",
+            "explanation": "This optional environment variable can be used to define a different name for the default database that is created when the image is first started."
         },
         {
             "key": "POSTGRES_INITDB_ARGS",
-            "value": ""
+            "value": "",
+            "explanation": "This optional environment variable can be used to send arguments to postgres initdb. The value is a space separated string of arguments as postgres initdb would expect them."
         },
         {
             "key": "POSTGRES_INITDB_WALDIR",
-            "value": ""
+            "value": "",
+            "explanation": "This optional environment variable can be used to define another location for the Postgres transaction log. By default the transaction log is stored in a subdirectory of the main Postgres data folder (PGDATA). Sometimes it can be desireable to store the transaction log in a different directory which may be backed by storage with different performance or reliability characteristics."
         },
         {
             "key": "POSTGRES_HOST_AUTH_METHOD",
-            "value": ""
+            "value": "",
+            "explanation": "This optional variable can be used to control the auth-method for host connections for all databases, all users, and all addresses. If unspecified then scram-sha-256 password authentication is used."
         },
         {
             "key": "PGDATA",
-            "value": ""
+            "value": "",
+            "explanation": "This optional variable can be used to define another location - like a subdirectory - for the database files. The default is /var/lib/postgresql/data."
         }
     ],
     "volumes": [

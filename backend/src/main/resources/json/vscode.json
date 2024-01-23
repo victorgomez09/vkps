@@ -14,39 +14,48 @@
     "envs": [
         {
             "key": "PUID",
-            "value": "1000"
+            "value": "1000",
+            "explanation": "For UserID."
         },
         {
             "key": "PGID",
-            "value": "1000"
+            "value": "1000",
+            "explanation": "For GroupID."
         },
         {
             "key": "TZ",
-            "value": "Etc/UTC"
+            "value": "Etc/UTC",
+            "explanation": "Specify a timezone to use."
         },
         {
             "key": "PASSWORD",
-            "value": ""
+            "value": "",
+            "explanation": "Specify a timezone to use."
         },
         {
             "key": "HASHED_PASSWORD",
-            "value": ""
+            "value": "",
+            "explanation": "Optional web gui password, if PASSWORD or HASHED_PASSWORD is not provided, there will be no auth."
         },
         {
             "key": "SUDO_PASSWORD",
-            "value": ""
+            "value": "",
+            "explanation": "Optional web gui password, overrides PASSWORD, instructions on how to create it is below."
         },
         {
             "key": "SUDO_PASSWORD_HASH",
-            "value": ""
+            "value": "",
+            "explanation": "Optionally set sudo password via hash (takes priority over SUDO_PASSWORD var). Format is $type$salt$hashed."
         },
         {
             "key": "PROXY_DOMAIN",
-            "value": ""
+            "value": "",
+            "explanation": "If this optional variable is set, this domain will be proxied for subdomain proxying."
         },
         {
             "key": "DEFAULT_WORKSPACE",
-            "value": ""
+            "value": "",
+            "explanation": "If this optional variable is set, code-server will open this directory by default."
         }
     ],
     "volumes": [

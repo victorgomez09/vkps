@@ -1,89 +1,125 @@
 @defer (when addon()) {
-<div class="flex flex-1 w-full h-full p-2">
+<div class="flex flex-1 gap-2 w-full h-full p-2">
+  <!-- Menu -->
+  <ul class="menu bg-base-200 w-56 rounded-box">
+    <li><a class="active">Configuration</a></li>
+    <li><a href="{{ addon().infoUrl }}" target="_blank">Docs</a></li>
+  </ul>
+
+  <!-- Card -->
   <div class="card shadow bg-base-200 w-full h-full">
-    <div class="card-body p-4 overflow-auto">
-      <h2 class="card-title">{{ addon().fancyName }}</h2>
-      <div class="flex flex-col gap-2 mt-2 h-full max-h-0">
-        <div class="mt-2 grid grid-cols-2 gap-2 items-center">
-          <label for="name" class="font-bold">Name</label>
-          <input name="name" id="name" class="input input-bordered w-full" />
-          <!-- {#if $name.dirty && $name.invalid}
-          <div class="label">
-            <span class="label-text-error">{$name.errors}</span>
-          </div>
-          {/if} -->
-        </div>
+    <div class="card-body p-4 w-full h-full">
+      <div class="flex justify-between items-center">
+        <h2 class="card-title">{{ addon().fancyName }}</h2>
 
-        <div class="mt-2 grid grid-cols-2 items-center">
-          <label for="description" class="font-bold">Description</label>
-          <textarea
-            name="description"
-            id="description"
-            class="textarea textarea-bordered w-full"
-          ></textarea>
+        <div class="flex gap-2">
+          <button
+            class="btn btn-primary btn-sm"
+            (click)="deployAddon()"
+            [disabled]="form.invalid"
+          >
+            Create
+          </button>
         </div>
-
-        <div class="mt-2 grid grid-cols-2 items-center">
-          <label for="image" class="font-bold">Image</label>
-          <input
-            name="image"
-            id="image"
-            class="input input-bordered w-full"
-            disabled
-            placeholder="asdf"
-          />
-        </div>
-
-        <div class="mt-2 grid grid-cols-2 items-center">
-          <label for="version" class="font-bold">Version</label>
-          <div class="dropdown">
-            <div
-              name="version"
-              id="version"
-              tabindex="0"
-              role="button"
-              class="btn btn-active justify-start w-full m-1"
-            >
-              {{ selectedVersion() }}
-            </div>
-            <ul
-              tabindex="0"
-              class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-full"
-            >
-              @for (version of addon().versions; track $index) {
-              <li
+      </div>
+      <div class="flex flex-col gap-2 mt-2 w-full h-full px-2 overflow-auto">
+        <form [formGroup]="form" class="h-full max-h-0">
+          <div class="mt-2 grid grid-cols-2 gap-2 items-center">
+            <label for="name" class="font-bold">Name</label>
+            <div class="flex flex-col">
+              <input
+                name="name"
+                id="name"
+                class="input input-bordered w-full"
                 [ngClass]="{
-                  'bg-base-200 rounded-btn':
-                    selectedVersion() === version.version
+                  'input-error': f['name'].touched && f['name'].errors
                 }"
-              >
-                <a>{{ version.version }}</a>
-              </li>
+                formControlName="name"
+              />
+              @if (f['name'].touched && f['name'].errors) {
+              <div class="label">
+                <span class="text-error">Name is required</span>
+              </div>
               }
-            </ul>
-          </div>
-        </div>
-
-        <div class="mt-2 grid grid-cols-2 items-center">
-          <label for="name" class="font-bold">Port</label>
-          <input
-            name="name"
-            id="name"
-            class="input input-bordered w-full"
-            type="number"
-          />
-          <!-- {#if $name.dirty && $name.invalid}
-            <div class="label">
-              <span class="label-text-error">{$name.errors}</span>
             </div>
-            {/if} -->
-        </div>
+          </div>
 
-        <div class="divider divider-start">
-          <span class="font-bold text-xl">Env variables</span>
-        </div>
-        @if (addon().envs.length > 0) {
-        <div class="mb-2">
+          <div class="mt-2 grid grid-cols-2 items-center">
+            <label for="description" class="font-bold">Description</label>
+            <textarea
+              name="description"
+              id="description"
+              class="textarea textarea-bordered w-full"
+              formControlName="description"
+            ></textarea>
+          </div>
+
+          <div class="mt-2 grid grid-cols-2 items-center">
+            <label for="image" class="font-bold">Image</label>
+            <input
+              name="image"
+              id="image"
+              class="input input-bordered w-full"
+              [value]="addon().image"
+              disabled
+            />
+          </div>
+
+          <div class="mt-2 grid grid-cols-2 items-center">
+            <label for="version" class="font-bold">Version</label>
+            <div class="dropdown">
+              <div
+                name="version"
+                id="version"
+                tabindex="0"
+                role="button"
+                class="btn btn-active justify-start w-full m-1"
+              >
+                {{ selectedVersion() }}
+              </div>
+              <ul
+                tabindex="0"
+                class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-full"
+              >
+                @for (version of addon().versions; track $index) {
+                <li
+                  [ngClass]="{
+                    'bg-base-200 rounded-btn':
+                      selectedVersion() === version.version
+                  }"
+                >
+                  <a>{{ version.version }}</a>
+                </li>
+                }
+              </ul>
+            </div>
+          </div>
+
+          <div class="mt-2 grid grid-cols-2 items-center">
+            <label for="name" class="font-bold">Port</label>
+            <div class="flex flex-col">
+              <input
+                name="name"
+                id="name"
+                [ngClass]="{
+                  'input-error': f['port'].touched && f['port'].errors
+                }"
+                class="input input-bordered w-full"
+                type="number"
+                formControlName="port"
+              />
+              @if (f['port'].touched && f['port'].errors) {
+              <div class="label">
+                <span class="text-error">Port is required</span>
+              </div>
+              }
+            </div>
+          </div>
+
+          @if (addon().envs) {
+          <div class="divider divider-start mt-12">
+            <span class="font-bold text-xl">Env variables</span>
+          </div>
           @for (env of addon().envs; track $index) {
           <div class="mt-2 grid grid-cols-2 items-center">
             <div class="flex items-end">
@@ -117,8 +153,7 @@
                   class="card compact dropdown-content z-[1] shadow bg-base-100 rounded-box w-64"
                 >
                   <div tabindex="0" class="card-body">
-                    <h2 class="card-title">You needed more info?</h2>
-                    <p>Here is a description!</p>
+                    <p>{{ env.explanation }}</p>
                   </div>
                 </div>
               </div>
@@ -128,21 +163,51 @@
               }
             </div>
 
-            <input
-              name="env-{{ env.key }}"
-              id="env-{{ env.key }}"
-              class="input input-bordered w-full"
-              [placeholder]="env.value"
-            />
-            <!-- {#if $name.dirty && $name.invalid}
-                  <div class="label">
-                    <span class="label-text-error">{$name.errors}</span>
-                  </div>
-                  {/if} -->
+            <div class="flex flex-col">
+              <input
+                name="env-{{ env.key }}"
+                id="env-{{ env.key }}"
+                [ngClass]="{
+                  'input-error': f[env.key].touched && f[env.key].errors
+                }"
+                class="input input-bordered w-full"
+                formControlName="{{ env.key }}"
+              />
+              @if (f[env.key].touched && f[env.key].errors) {
+              <div class="label">
+                <span class="text-error">{{ env.key }} is required</span>
+              </div>
+              }
+            </div>
           </div>
-          }
-        </div>
-        }
+          } } @if (addon().volumes) {
+          <div class="divider divider-start mt-12">
+            <span class="font-bold text-xl">Volumes</span>
+          </div>
+          @for (volume of addon().volumes; track $index) {
+          <div class="mt-2 grid grid-cols-2 items-center">
+            <label for="env-{{ volume.path }}" class="font-bold">{{
+              volume.path
+            }}</label>
+            <div class="flex flex-col">
+              <input
+                name="env-{{ volume.path }}"
+                id="env-{{ volume.path }}"
+                [ngClass]="{
+                  'input-error': f[volume.path].touched && f[volume.path].errors
+                }"
+                class="input input-bordered w-full"
+                formControlName="{{ volume.path }}"
+              />
+              @if (f[volume.path].touched && f[volume.path].errors) {
+              <div class="label">
+                <span class="text-error">{{ volume.path }} is required</span>
+              </div>
+              }
+            </div>
+          </div>
+          } }
+        </form>
       </div>
     </div>
   </div>

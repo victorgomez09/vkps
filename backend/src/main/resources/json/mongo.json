@@ -14,23 +14,18 @@
     "envs": [
         {
             "key": "MONGO_INITDB_ROOT_USERNAME",
-            "value": "empaas"
-        },
-        {
-            "key": "MYSQL_DATABASE",
-            "value": "empaas"
+            "value": "empaas",
+            "explanation": "These variable create a new user. This user is created in the admin authentication database and given the role of root, which is a 'superuser' role."
         },
         {
             "key": "MONGO_INITDB_ROOT_PASSWORD",
-            "value": "empaas"
-        },
-        {
-            "key": "MYSQL_PASSWORD",
-            "value": "empaas"
+            "value": "empaas",
+            "explanation": "These variable set that user's password. This user is created in the admin authentication database and given the role of root, which is a 'superuser' role."
         },
         {
             "key": "MONGO_INITDB_DATABASE",
-            "value": "empaas"
+            "value": "empaas",
+            "explanation": "his variable allows you to specify the name of a database to be used for creation scripts in /docker-entrypoint-initdb.d/*.js (see Initializing a fresh instance below). MongoDB is fundamentally designed for 'create on first use', so if you do not insert data with your JavaScript files, then no database is created."
         }
     ],
     "volumes": [

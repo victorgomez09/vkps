@@ -20,35 +20,43 @@
     "envs": [
         {
             "key": "MYSQL_ROOT_PASSWORD",
-            "value": "empaas"
+            "value": "empaas",
+            "explanation": "This variable is mandatory and specifies the password that will be set for the MySQL root superuser account."
         },
         {
             "key": "MYSQL_DATABASE",
-            "value": "empaas"
+            "value": "empaas",
+            "explanation": "This variable is optional and allows you to specify the name of a database to be created on image startup."
         },
         {
             "key": "MYSQL_USER",
-            "value": "empaas"
+            "value": "empaas",
+            "explanation": "Used to create a new user. This user will be granted superuser permissions (see above) for the database specified by the MYSQL_DATABASE variable."
         },
         {
             "key": "MYSQL_PASSWORD",
-            "value": "empaas"
+            "value": "empaas",
+            "explanation":  "Used to set that user's password. This user will be granted superuser permissions (see above) for the database specified by the MYSQL_DATABASE variable."
         },
         {
             "key": "MYSQL_ALLOW_EMPTY_PASSWORD",
-            "value": ""
+            "value": "",
+            "explanation": "This is an optional variable. Set to a non-empty value, like yes, to allow the container to be started with a blank password for the root user."
         },
         {
             "key": "MYSQL_RANDOM_ROOT_PASSWORD",
-            "value": ""
+            "value": "",
+            "explanation": "This is an optional variable. Set to a non-empty value, like yes, to generate a random initial password for the root user (using pwgen)."
         },
         {
             "key": "MYSQL_ONETIME_PASSWORD",
-            "value": ""
+            "value": "",
+            "explanation": "Sets root (not the user specified in MYSQL_USER!) user as expired once init is complete, forcing a password change on first login. Any non-empty value will activate this setting."
         },
         {
             "key": "MYSQL_INITDB_SKIP_TZINFO",
-            "value": ""
+            "value": "",
+            "explanation": "By default, the entrypoint script automatically loads the timezone data needed for the CONVERT_TZ() function. If it is not needed, any non-empty value disables timezone loading."
         }
     ],
     "volumes": [

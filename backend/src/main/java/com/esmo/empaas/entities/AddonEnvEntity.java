@@ -41,6 +41,9 @@ public class AddonEnvEntity {
     @Column(name = "optional")
     private boolean optional;
 
+    @Column(name = "explanation", columnDefinition = "TEXT")
+    private String explanation;
+
     @ManyToOne
     @JoinColumn(name = "addon_id")
     private AddonEntity addon;

@@ -22,8 +22,12 @@ public class AddonService {
         return addonRepository.findAll();
     }
 
-    public AddonEntity findbyId(String id) {
+    public AddonEntity findById(String id) {
         return addonRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Addon", "id", id));
+    }
+
+    public AddonEntity findByName(String name) {
+        return addonRepository.findByName(name).orElseThrow(() -> new ResourceNotFoundException("Addon", "name", name));
     }
 
     public AddonEntity create(AddonEntity data) {

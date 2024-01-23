@@ -4,7 +4,10 @@
     class="grid grid-flow-rows grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mt-4"
   >
     @for (addon of addons(); track $index) {
-    <div class="card bg-base-200 shadow-sm cursor-pointer hover:shadow">
+    <div
+      class="card bg-base-200 shadow-sm cursor-pointer hover:shadow"
+      routerLink="/addons/new/{{ addon.name }}"
+    >
       <div class="card-body justify-center items-center">
         <div class="avatar">
           <div class="w-24 rounded">

@@ -14,4 +14,8 @@ export class AddonService extends BaseService {
   findAll(): Observable<Addon[]> {
     return this.get('');
   }
+
+  findByName(name: string): Observable<Addon> {
+    return this.get(`/findByName/${name}`);
+  }
 }

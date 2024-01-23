@@ -1,0 +1,152 @@
+@defer (when addon()) {
+<div class="flex flex-1 w-full h-full p-2">
+  <div class="card shadow bg-base-200 w-full h-full">
+    <div class="card-body p-4 overflow-auto">
+      <h2 class="card-title">{{ addon().fancyName }}</h2>
+      <div class="flex flex-col gap-2 mt-2 h-full max-h-0">
+        <div class="mt-2 grid grid-cols-2 gap-2 items-center">
+          <label for="name" class="font-bold">Name</label>
+          <input name="name" id="name" class="input input-bordered w-full" />
+          <!-- {#if $name.dirty && $name.invalid}
+          <div class="label">
+            <span class="label-text-error">{$name.errors}</span>
+          </div>
+          {/if} -->
+        </div>
+
+        <div class="mt-2 grid grid-cols-2 items-center">
+          <label for="description" class="font-bold">Description</label>
+          <textarea
+            name="description"
+            id="description"
+            class="textarea textarea-bordered w-full"
+          ></textarea>
+        </div>
+
+        <div class="mt-2 grid grid-cols-2 items-center">
+          <label for="image" class="font-bold">Image</label>
+          <input
+            name="image"
+            id="image"
+            class="input input-bordered w-full"
+            disabled
+            placeholder="asdf"
+          />
+        </div>
+
+        <div class="mt-2 grid grid-cols-2 items-center">
+          <label for="version" class="font-bold">Version</label>
+          <div class="dropdown">
+            <div
+              name="version"
+              id="version"
+              tabindex="0"
+              role="button"
+              class="btn btn-active justify-start w-full m-1"
+            >
+              {{ selectedVersion() }}
+            </div>
+            <ul
+              tabindex="0"
+              class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-full"
+            >
+              @for (version of addon().versions; track $index) {
+              <li
+                [ngClass]="{
+                  'bg-base-200 rounded-btn':
+                    selectedVersion() === version.version
+                }"
+              >
+                <a>{{ version.version }}</a>
+              </li>
+              }
+            </ul>
+          </div>
+        </div>
+
+        <div class="mt-2 grid grid-cols-2 items-center">
+          <label for="name" class="font-bold">Port</label>
+          <input
+            name="name"
+            id="name"
+            class="input input-bordered w-full"
+            type="number"
+          />
+          <!-- {#if $name.dirty && $name.invalid}
+            <div class="label">
+              <span class="label-text-error">{$name.errors}</span>
+            </div>
+            {/if} -->
+        </div>
+
+        <div class="divider divider-start">
+          <span class="font-bold text-xl">Env variables</span>
+        </div>
+        @if (addon().envs.length > 0) {
+        <div class="mb-2">
+          @for (env of addon().envs; track $index) {
+          <div class="mt-2 grid grid-cols-2 items-center">
+            <div class="flex items-end">
+              <label for="env-{{ env.key }}" class="font-bold">{{
+                env.key
+              }}</label>
+
+              <div class="dropdown dropdown-right">
+                <div
+                  tabindex="0"
+                  role="button"
+                  class="btn btn-circle btn-ghost btn-xs text-info"
+                >
+                  <svg
+                    tabindex="0"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    class="w-4 h-4 stroke-current outline-none"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    ></path>
+                  </svg>
+                </div>
+                <div
+                  tabindex="0"
+                  class="card compact dropdown-content z-[1] shadow bg-base-100 rounded-box w-64"
+                >
+                  <div tabindex="0" class="card-body">
+                    <h2 class="card-title">You needed more info?</h2>
+                    <p>Here is a description!</p>
+                  </div>
+                </div>
+              </div>
+
+              @if (env.optional) {
+              <span class="font-light italic">Optional</span>
+              }
+            </div>
+
+            <input
+              name="env-{{ env.key }}"
+              id="env-{{ env.key }}"
+              class="input input-bordered w-full"
+              [placeholder]="env.value"
+            />
+            <!-- {#if $name.dirty && $name.invalid}
+                  <div class="label">
+                    <span class="label-text-error">{$name.errors}</span>
+                  </div>
+                  {/if} -->
+          </div>
+          }
+        </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>
+} @loading {
+<span class="loading loading-spinner text-secondary"></span>
+}

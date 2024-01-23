@@ -3,11 +3,12 @@ import { toSignal } from '@angular/core/rxjs-interop';
 
 import { Addon } from '../../core/models/addon.model';
 import { AddonService } from '../../shared/services/addon.service';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-addons',
   standalone: true,
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './addons.component.html',
   styleUrl: './addons.component.scss',
 })

@@ -15,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -41,7 +40,12 @@ public class AddonController {
 
     @GetMapping("/{id}")
     public ResponseEntity<AddonDto> findById(@PathVariable String id) {
-        return ResponseEntity.ok(mapper.map(addonService.findbyId(id), AddonDto.class));
+        return ResponseEntity.ok(mapper.map(addonService.findById(id), AddonDto.class));
+    }
+
+    @GetMapping("/findByName/{name}")
+    public ResponseEntity<AddonDto> findByName(@PathVariable String name) {
+        return ResponseEntity.ok(mapper.map(addonService.findByName(name), AddonDto.class));
     }
 
     @PostMapping()

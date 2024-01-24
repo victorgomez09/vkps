@@ -5,7 +5,7 @@ import {
   WritableSignal,
   signal,
 } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Addon } from '../../../core/models/addon.model';
 import { AddonService } from '../../../shared/services/addon.service';
 import { CommonModule } from '@angular/common';
@@ -17,6 +17,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { SidebarComponent } from '../../../shared/components/sidebar/sidebar.component';
+import { ApplicationService } from '../../../shared/services/application.service';
 
 @Component({
   selector: 'app-new',
@@ -34,8 +35,10 @@ export class NewComponent implements OnInit {
 
   constructor(
     private addonService: AddonService,
+    private applicationService: ApplicationService,
     private route: ActivatedRoute,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private router: Router
   ) {
     this.addon = signal({} as Addon);
     this.selectedVersion = signal('latest');
@@ -81,6 +84,50 @@ export class NewComponent implements OnInit {
       ...this.form.value,
       version: this.selectedVersion(),
     });
+
+    const envs: { key: string; value: string }[] = [];
+    this.addon().envs.forEach((env) => {
+      envs.push({
+        key: env.key,
+        value: this.form.value[env.key],
+      });
+    });
+
+    const volumes: { path: string; size: string }[] = [];
+    this.addon().volumes.forEach((volume) => {
+      volumes.push({
+        path: this.form.value[volume.path],
+        size: volume.size.toString(),
+      });
+    });
+
+    const payload = {
+      name: this.form.value.name,
+      description: this.form.value.description,
+      dockerImage: `${this.form.value.image}-${this.selectedVersion()}`,
+      port: this.form.value.port,
+      replicas: 1,
+      cpu: '100',
+      memory: '128',
+      isBot: false,
+      envs: envs,
+      volumes: volumes,
+    };
+
+    console.log('payload', payload);
+    try {
+      this.applicationService.create(payload).subscribe((data) => {
+        console.log('data', data);
+        if (data) {
+          this.router.navigate(['../../'], { relativeTo: this.route });
+        }
+      });
+    } catch (error) {
+      console.log('error', error);
+    }
+
+    // private List<ApplicationEnvDto> envs;
+    // private List<ApplicationVolumeDto> volumes;
   }
 
   get f() {

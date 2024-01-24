@@ -1,0 +1,48 @@
+@defer (when applications()) {
+<div class="flex flex-1 flex-col gap-2 w-full h-full">
+  <div
+    class="grid grid-col gap-8 auto-cols-max grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 p-4"
+  >
+    @for (application of applications(); track $index) {
+    <div class="card bg-base-200 shadow">
+      <div class="card-body">
+        <h2 class="card-title">{{ application.name }}</h2>
+        <div class="flex flex-col italic font-thin">
+          <div>
+            <span class="font-semibold">Port: </span>
+            {{ application.port }}
+          </div>
+
+          @if (application.repositoryUrl) {
+          <div class="truncate">
+            <span class="font-semibold">Repository: </span>
+            {{ application.repositoryUrl }}
+          </div>
+          } @else {
+          <div class="truncate">
+            <span class="font-semibold">Image: </span>
+            {{ application.dockerImage }}
+          </div>
+          }
+
+          <div>
+            <span class="font-semibold">Replicas: </span>
+            {{ application.replicas }}
+          </div>
+
+          <div>
+            <span class="font-semibold">CPU: </span>
+            {{ application.cpu }}
+          </div>
+
+          <div>
+            <span class="font-semibold">Memory: </span>
+            {{ application.memory }}
+          </div>
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+</div>
+}

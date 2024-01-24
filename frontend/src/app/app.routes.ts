@@ -2,6 +2,18 @@ import { Routes } from '@angular/router';
 
 export const routes: Routes = [
   {
+    path: 'applications',
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./routes/applications/applications.component').then(
+            (c) => c.ApplicationsComponent
+          ),
+      },
+    ],
+  },
+  {
     path: 'addons',
     children: [
       {

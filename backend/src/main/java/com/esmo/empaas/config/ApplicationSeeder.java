@@ -20,40 +20,41 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Configuration
 public class ApplicationSeeder {
 
-        @Value("classpath:json/*")
-        private Resource[] resources;
+	@Value("classpath:json/*")
+	private Resource[] resources;
 
-        @Bean
-        CommandLineRunner runner(AddonRepository addonRepository, AddonVersionRepository addonVersionRepository,
-                        AddonEnvRepository addonEnvRepository, AddonVolumeRepository addonVolumeRepository) {
-                return args -> {
-                        ObjectMapper mapper = new ObjectMapper();
+	@Bean
+	CommandLineRunner runner(AddonRepository addonRepository, AddonVersionRepository addonVersionRepository,
+			AddonEnvRepository addonEnvRepository, AddonVolumeRepository addonVolumeRepository) {
+		return args -> {
+			ObjectMapper mapper = new ObjectMapper();
 
-                        for (Resource resource : resources) {
-                                TypeReference<AddonEntity> typeReference = new TypeReference<AddonEntity>() {
-                                };
-                                InputStream inputStream = TypeReference.class
-                                                .getResourceAsStream("/json/" + resource.getFilename());
-                                try {
-                                        AddonEntity addon = addonRepository
-                                                        .save(mapper.readValue(inputStream, typeReference));
-                                        addon.getVersions().forEach(version -> {
-                                                version.setAddon(addon);
-                                                addonVersionRepository.save(version);
-                                        });
-                                        addon.getEnvs().forEach(env -> {
-                                                env.setAddon(addon);
-                                                env.setOptional(env.getValue().isEmpty());
-                                                addonEnvRepository.save(env);
-                                        });
-                                        addon.getVolumes().forEach(volume -> {
-                                                volume.setAddon(addon);
-                                                addonVolumeRepository.save(volume);
-                                        });
-                                } catch (IOException e) {
-                                        System.out.println("Unable to save addon: " + e.getMessage());
-                                }
-                        }
-                };
-        }
+			for (Resource resource : resources) {
+				TypeReference<AddonEntity> typeReference = new TypeReference<AddonEntity>() {
+				};
+				InputStream inputStream = TypeReference.class.getResourceAsStream("/json/" + resource.getFilename());
+				try {
+					AddonEntity addon = mapper.readValue(inputStream, typeReference);
+					if (addonRepository.findByName(addon.getName()).isEmpty()) {
+						addonRepository.save(addon);
+						addon.getVersions().forEach(version -> {
+							version.setAddon(addon);
+							addonVersionRepository.save(version);
+						});
+						addon.getEnvs().forEach(env -> {
+							env.setAddon(addon);
+							env.setOptional(env.getValue().isEmpty());
+							addonEnvRepository.save(env);
+						});
+						addon.getVolumes().forEach(volume -> {
+							volume.setAddon(addon);
+							addonVolumeRepository.save(volume);
+						});
+					}
+				} catch (IOException e) {
+					System.out.println("Unable to save addon: " + e.getMessage());
+				}
+			}
+		};
+	}
 }

@@ -14,18 +14,18 @@ import lombok.ToString;
 @ToString
 public class ApplicationDto {
 
-    private String id;
-    private String name;
-    private String description;
-    private String repositoryUrl;
-    private String dockerImage;
-    private String cpu;
-    private String memory;
-    private Integer port;
-    private Boolean isBot;
-    private Integer replicas;
-    private List<ApplicationEnvDto> envs;
-    private List<ApplicationVolumeDto> volumes;
-    private Date creationDate;
-    private Date modificationDate;
+	private String id;
+	private String name;
+	private String description;
+	private String repositoryUrl;
+	private String dockerImage;
+	private String cpu;
+	private String memory;
+	private Integer port;
+	private Boolean isBot;
+	private Integer replicas;
+	private List<ApplicationEnvDto> envs;
+	private List<ApplicationVolumeDto> volumes;
+	private Date creationDate;
+	private Date modificationDate;
 }

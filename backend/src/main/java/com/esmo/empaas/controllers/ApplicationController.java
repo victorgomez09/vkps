@@ -55,7 +55,7 @@ public class ApplicationController {
 //		return ResponseEntity.ok("Application deployed");
 	}
 
-	@PostMapping("/create")
+	@PostMapping()
 	public ResponseEntity<ApplicationDto> create(@RequestBody ApplicationDto data) {
 		return ResponseEntity
 				.ok(mapper.map(service.create(mapper.map(data, ApplicationEntity.class)), ApplicationDto.class));

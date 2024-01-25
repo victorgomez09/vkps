@@ -23,6 +23,8 @@ public class ApplicationDto {
 	private String memory;
 	private Integer port;
 	private Boolean isBot;
+	private String addonVersion;
+	private String addonName;
 	private Integer replicas;
 	private List<ApplicationEnvDto> envs;
 	private List<ApplicationVolumeDto> volumes;

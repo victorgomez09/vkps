@@ -13,15 +13,15 @@ import lombok.ToString;
 @ToString
 public class AddonDto {
 
-    private String id;
-    private String name;
-    private String fancyName;
-    private String image;
-    private String infoUrl;
-    private String description;
-    private String logo;
-    private int port;
-    private List<AddonVersionDto> versions;
-    private List<AddonEnvDto> envs;
-    private List<AddonVolumeDto> volumes;
+	private String id;
+	private String name;
+	private String fancyName;
+	private String image;
+	private String infoUrl;
+	private String description;
+	private String logo;
+	private int port;
+	private List<AddonVersionDto> versions;
+	private List<AddonEnvDto> envs;
+	private List<AddonVolumeDto> volumes;
 }

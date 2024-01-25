@@ -11,8 +11,8 @@ import lombok.ToString;
 @ToString
 public class AddonVolumeDto {
 
-    private String id;
-    private String path;
-    private int size;
-    private String accessMode;
+	private String id;
+	private String path;
+	private int size;
+	private String accessMode;
 }

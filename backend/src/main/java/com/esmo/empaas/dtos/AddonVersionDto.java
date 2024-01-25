@@ -11,6 +11,6 @@ import lombok.ToString;
 @ToString
 public class AddonVersionDto {
 
-    private String id;
-    private String version;
+	private String id;
+	private String version;
 }

@@ -56,7 +56,7 @@ public class AddonEntity {
 
 	@Column(name = "port")
 	private int port;
-
+	
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "addon")
 	private List<AddonEnvEntity> envs;
 

@@ -11,6 +11,13 @@ export const routes: Routes = [
             (c) => c.ApplicationsComponent
           ),
       },
+      {
+        path: ':id',
+        loadComponent: () =>
+          import('./routes/applications/id/id.component').then(
+            (c) => c.IdComponent
+          ),
+      },
     ],
   },
   {

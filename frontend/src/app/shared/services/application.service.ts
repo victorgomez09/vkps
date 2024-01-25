@@ -16,6 +16,10 @@ export class ApplicationService extends BaseService {
     return this.get('');
   }
 
+  public findOne(id: string): Observable<Application> {
+    return this.get(`/${id}`);
+  }
+
   public create(data: Application): Observable<Application> {
     return this.post('', data);
   }

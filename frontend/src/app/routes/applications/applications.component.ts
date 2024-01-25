@@ -2,11 +2,12 @@ import { Component, Injector, OnInit, Signal } from '@angular/core';
 import { Application } from '../../core/models/application.model';
 import { ApplicationService } from '../../shared/services/application.service';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-applications',
   standalone: true,
-  imports: [],
+  imports: [RouterModule],
   templateUrl: './applications.component.html',
   styleUrl: './applications.component.scss',
 })

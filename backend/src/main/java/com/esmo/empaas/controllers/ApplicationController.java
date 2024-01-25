@@ -51,8 +51,6 @@ public class ApplicationController {
 	@PostMapping("/{id}/deploy")
 	public ResponseEntity<V1Deployment> deploy(@PathVariable String id) {
 		return ResponseEntity.ok(service.deploy(id));
-
-//		return ResponseEntity.ok("Application deployed");
 	}
 
 	@PostMapping()

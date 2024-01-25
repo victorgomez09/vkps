@@ -11,9 +11,9 @@ import lombok.ToString;
 @ToString
 public class AddonEnvDto {
 
-    private String id;
-    private String key;
-    private String value;
-    private boolean optional;
-    private String explanation;
+	private String id;
+	private String key;
+	private String value;
+	private boolean optional;
+	private String explanation;
 }

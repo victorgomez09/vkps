@@ -1,0 +1,98 @@
+@defer(when application()) {
+<div class="flex flex-1 gap-2 h-full w-full">
+  <ul class="menu bg-base-200 rounded-box w-56">
+    <li><a class="active">Configuration</a></li>
+    <li><a class="disabled">Logs</a></li>
+    <li><a class="disabled">Stats</a></li>
+  </ul>
+
+  <div class="card bg-base-200 w-full">
+    <div class="card-body p-4">
+      <h2 class="card-title">{{ application().name }}</h2>
+
+      <div class="flex flex-col gap-2">
+        <div class="mt-2 grid grid-cols-2 gap-2 items-center">
+          <label for="name" class="font-bold">Name</label>
+          <div class="flex flex-col">
+            <input
+              name="name"
+              id="name"
+              class="input input-bordered w-full"
+              formControlName="name"
+            />
+            <!-- @if (f['name'].touched && f['name'].errors) {
+            <div class="label">
+              <span class="text-error">Name is required</span>
+            </div>
+            } -->
+          </div>
+        </div>
+
+        <div class="mt-2 grid grid-cols-2 gap-2 items-center">
+          <label for="name" class="font-bold">Description</label>
+          <div class="flex flex-col">
+            <textarea
+              name="name"
+              id="name"
+              class="textarea textarea-bordered w-full"
+              formControlName="name"
+            ></textarea>
+            <!-- @if (f['name'].touched && f['name'].errors) {
+              <div class="label">
+                <span class="text-error">Name is required</span>
+              </div>
+              } -->
+          </div>
+        </div>
+
+        <div class="mt-2 grid grid-cols-2 gap-2 items-center">
+          <label for="name" class="font-bold">Image</label>
+          <div class="flex flex-col">
+            <input
+              name="name"
+              id="name"
+              class="input input-bordered w-full"
+              formControlName="name"
+            />
+            <!-- @if (f['name'].touched && f['name'].errors) {
+              <div class="label">
+                <span class="text-error">Name is required</span>
+              </div>
+              } -->
+          </div>
+
+          <div class="mt-2 grid grid-cols-2 items-center">
+            <label for="version" class="font-bold">Version</label>
+            <div class="dropdown">
+              <div
+                name="version"
+                id="version"
+                tabindex="0"
+                role="button"
+                class="btn btn-active justify-start w-full m-1"
+              >
+                {{ selectedVersion() }}
+              </div>
+              <ul
+                tabindex="0"
+                class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-full"
+              >
+                @for (version of addon().versions; track $index) {
+                <li
+                  [ngClass]="{
+                    'bg-base-200 rounded-btn':
+                      selectedVersion() === version.version
+                  }"
+                >
+                  <a>{{ version.version }}</a>
+                </li>
+                }
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+}

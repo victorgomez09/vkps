@@ -62,6 +62,8 @@ public class ApplicationService {
 			throw new ResourceAlreadyExistsException("Application", "name", data.getName());
 		}
 
+		data.getEnvs().forEach(e -> e.setApplication(data));
+		data.getVolumes().forEach(v -> v.setApplication(data));
 		ApplicationEntity application = repository.save(data);
 
 		if (application.getRepositoryUrl() != null && !application.getRepositoryUrl().isEmpty()) {

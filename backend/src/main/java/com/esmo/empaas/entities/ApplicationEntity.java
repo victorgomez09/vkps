@@ -18,67 +18,73 @@ import org.hibernate.annotations.UpdateTimestamp;
 @ToString
 public class ApplicationEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.UUID)
+	private String id;
 
-    @Column(name = "name", unique = true)
-    private String name;
+	@Column(name = "name", unique = true)
+	private String name;
 
-    @Column(name = "description")
-    private String description;
+	@Column(name = "description")
+	private String description;
 
-    @Column(name = "repository_url", nullable = true)
-    private String repositoryUrl;
+	@Column(name = "repository_url", nullable = true)
+	private String repositoryUrl;
 
-    @Column(name = "dockerImage", nullable = true)
-    private String dockerImage;
+	@Column(name = "dockerImage", nullable = true)
+	private String dockerImage;
 
-    @Column(name = "replicas")
-    private int replicas;
+	@Column(name = "replicas")
+	private int replicas;
 
-    @Column(name = "memory")
-    private int memory;
+	@Column(name = "memory")
+	private int memory;
 
-    @Column(name = "cpu")
-    private int cpu;
+	@Column(name = "cpu")
+	private int cpu;
 
-    @Column(name = "is_bot")
-    private boolean isBot;
+	@Column(name = "is_bot")
+	private boolean isBot;
 
-    @Column(name = "port", nullable = true)
-    private int port;
+	@Column(name = "addon_version")
+	private String addonVersion;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "application")
-    private List<ApplicationVolumeEntity> volumes;
+	@Column(name = "addon_name")
+	private String addonName;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "application")
-    private List<ApplicationEnvEntity> envs;
+	@Column(name = "port", nullable = true)
+	private int port;
 
-    @ManyToOne
-    @JoinColumn(name = "buildpack_id")
-    private BuildpackEntity buildpack;
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "application")
+	private List<ApplicationVolumeEntity> volumes;
 
-    @Column(name = "buildpack_version")
-    private String buildpackVersion;
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "application")
+	private List<ApplicationEnvEntity> envs;
 
-    @Column(name = "install_command")
-    private String installCommand;
+	@ManyToOne
+	@JoinColumn(name = "buildpack_id")
+	private BuildpackEntity buildpack;
 
-    @Column(name = "build_command")
-    private String buildCommand;
+	@Column(name = "buildpack_version")
+	private String buildpackVersion;
 
-    @Column(name = "start_command")
-    private String startCommand;
+	@Column(name = "install_command")
+	private String installCommand;
 
-    @Column(name = "base_directory")
-    private String baseDirectory;
+	@Column(name = "build_command")
+	private String buildCommand;
 
-    @CreationTimestamp
-    @Column(name = "creation_date")
-    private Date creationDate;
+	@Column(name = "start_command")
+	private String startCommand;
 
-    @UpdateTimestamp
-    @Column(name = "modification_date")
-    private Date modificationDate;
+	@Column(name = "base_directory")
+	private String baseDirectory;
+
+	@CreationTimestamp
+	@Column(name = "creation_date")
+	private Date creationDate;
+
+	@UpdateTimestamp
+	@Column(name = "modification_date")
+	private Date modificationDate;
 }
